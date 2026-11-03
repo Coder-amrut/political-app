@@ -859,9 +859,11 @@
   opacity: 0.9;
 }
 
-/* Bottom Waves & Dots Decorative Footer */
+/* Bottom Waves & Dots Decorative Footer (Pinned strictly at the lowest level of the screen) */
 .officer-bottom-wave-footer {
-  position: relative;
+  position: sticky;
+  bottom: 0;
+  left: 0;
   width: calc(100% + 44px);
   margin-left: -22px;
   margin-right: -22px;
@@ -870,6 +872,10 @@
   margin-top: auto;
   pointer-events: none;
   background: #ffffff;
+  z-index: 20;
+  margin-bottom: 0;
+  line-height: 0;
+  display: block;
 }
 
 .officer-bottom-svg {

@@ -841,22 +841,24 @@ export default function WorkerLogin({ onLoginSuccess, initialMode = 'login' }) {
                   width: '100%',
                   padding: '12px 16px',
                   borderRadius: '14px',
-                  background: '#f1f5f9',
-                  border: '1.5px solid #cbd5e1',
-                  color: '#0f172a',
+                  background: '#f8fafc',
+                  border: '1.5px solid #2563eb',
+                  color: '#1d4ed8',
                   fontSize: '14px',
-                  fontWeight: '750',
+                  fontWeight: '800',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: '8px',
                   cursor: 'pointer',
-                  marginBottom: '10px',
+                  marginTop: '4px',
+                  marginBottom: '16px',
+                  boxShadow: '0 2px 8px rgba(37, 99, 235, 0.1)',
                   transition: 'all 0.2s ease'
                 }}
               >
-                <Lock size={15} color="#2563eb" />
-                <span>{isMr ? 'आधीच खाते आहे? येथे लॉगिन करा' : 'Already have an account? Sign In'}</span>
+                <Lock size={16} color="#2563eb" />
+                <span>{isMr ? 'आधीच खाते आहे? थेट लॉगिन करा (Sign In)' : 'Already have an account? Sign In'}</span>
               </button>
             </form>
           )}

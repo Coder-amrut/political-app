@@ -341,7 +341,7 @@ export default function WorkerLogin({ onLoginSuccess, initialMode = 'login' }) {
             </div>
             <div className="officer-brand-text">
               <span className="officer-brand-title">Mechanism</span>
-              <span className="officer-brand-subtitle">{isMr ? 'पदाधिकारी व कार्यकर्ता पोर्टल' : 'Officer & Worker Portal'}</span>
+              <span className="officer-brand-subtitle">{isMr ? 'पदाधिकारी पोर्टल' : 'Officer Portal'}</span>
             </div>
           </div>
 

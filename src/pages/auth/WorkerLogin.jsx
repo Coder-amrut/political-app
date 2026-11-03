@@ -833,18 +833,31 @@ export default function WorkerLogin({ onLoginSuccess, initialMode = 'login' }) {
                 <ArrowRight size={18} />
               </button>
 
-              {/* Bottom Switch Link to Login */}
-              <div className="officer-switch-footer" style={{ padding: '8px 0 10px', textAlign: 'center' }}>
-                <span>{isMr ? 'आधीच खाते आहे?' : 'Already have an account?'} </span>
-                <button
-                  type="button"
-                  className="officer-switch-link"
-                  onClick={() => switchMode('login')}
-                  style={{ textDecoration: 'underline', fontWeight: 800 }}
-                >
-                  {isMr ? 'येथे थेट लॉगिन करा' : 'Sign In directly here'}
-                </button>
-              </div>
+              {/* Clear Prominent Login Button inside Create Account */}
+              <button
+                type="button"
+                onClick={() => switchMode('login')}
+                style={{
+                  width: '100%',
+                  padding: '12px 16px',
+                  borderRadius: '14px',
+                  background: '#f1f5f9',
+                  border: '1.5px solid #cbd5e1',
+                  color: '#0f172a',
+                  fontSize: '14px',
+                  fontWeight: '750',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  cursor: 'pointer',
+                  marginBottom: '10px',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <Lock size={15} color="#2563eb" />
+                <span>{isMr ? 'आधीच खाते आहे? येथे लॉगिन करा' : 'Already have an account? Sign In'}</span>
+              </button>
             </form>
           )}
 

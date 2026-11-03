@@ -876,10 +876,10 @@ export default function WorkerLogin({ onLoginSuccess, initialMode = 'login' }) {
             fill="none"
             preserveAspectRatio="none"
           >
-            <path d="M -10 60 C 35 22, 105 28, 175 60 Z" fill="#fbb06e" />
-            <path d="M -10 60 C 22 12, 75 28, 125 60 Z" fill="#0c274c" />
-            <path d="M 270 60 C 330 18, 395 10, 450 60 Z" fill="#fb923c" />
-            <path d="M 305 60 C 355 20, 405 12, 450 60 Z" fill="#ff5500" />
+            <path d="M -10 65 C 35 22, 105 28, 175 65 Z" fill="#fbb06e" />
+            <path d="M -10 65 C 22 12, 75 28, 125 65 Z" fill="#0c274c" />
+            <path d="M 270 65 C 330 18, 395 10, 450 65 Z" fill="#fb923c" />
+            <path d="M 305 65 C 355 20, 405 12, 450 65 Z" fill="#ff5500" />
           </svg>
         </div>
 

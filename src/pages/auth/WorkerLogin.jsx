@@ -466,6 +466,26 @@ export default function WorkerLogin({ onLoginSuccess, initialMode = 'login' }) {
         {/* ================= WHITE CARD CONTAINER ================= */}
         <div className="officer-card-container">
 
+          {/* Segmented Top Mode Switcher (Login vs Register) */}
+          <div className="officer-card-tab-row" style={{ marginBottom: '16px' }}>
+            <button
+              type="button"
+              className={`officer-card-tab-btn ${mode === 'login' ? 'active' : 'inactive'}`}
+              onClick={() => switchMode('login')}
+            >
+              <Lock size={15} />
+              <span>{isMr ? 'लॉगिन करा' : 'Sign In'}</span>
+            </button>
+            <button
+              type="button"
+              className={`officer-card-tab-btn ${mode === 'register' ? 'active' : 'inactive'}`}
+              onClick={() => switchMode('register')}
+            >
+              <UserPlus size={15} />
+              <span>{isMr ? 'नवीन खाते' : 'Create Account'}</span>
+            </button>
+          </div>
+
           {/* Notification Alerts */}
           {error && (
             <div className="officer-alert-banner officer-alert-error">
@@ -589,12 +609,13 @@ export default function WorkerLogin({ onLoginSuccess, initialMode = 'login' }) {
               </div>
 
               {/* Bottom Switch Link to Register */}
-              <div className="officer-switch-footer">
+              <div className="officer-switch-footer" style={{ padding: '8px 0 16px', textAlign: 'center' }}>
                 <span>{isMr ? 'खाते नाही?' : "Don't have an account?"} </span>
                 <button
                   type="button"
                   className="officer-switch-link"
                   onClick={() => switchMode('register')}
+                  style={{ textDecoration: 'underline', fontWeight: 800 }}
                 >
                   {isMr ? 'नवीन खाते तयार करा' : 'Create new account'}
                 </button>
@@ -800,6 +821,7 @@ export default function WorkerLogin({ onLoginSuccess, initialMode = 'login' }) {
                 type="submit"
                 className="officer-submit-btn"
                 disabled={loading}
+                style={{ marginTop: '10px', marginBottom: '14px' }}
               >
                 <span>
                   {loading
@@ -812,14 +834,15 @@ export default function WorkerLogin({ onLoginSuccess, initialMode = 'login' }) {
               </button>
 
               {/* Bottom Switch Link to Login */}
-              <div className="officer-switch-footer">
+              <div className="officer-switch-footer" style={{ padding: '8px 0 24px', textAlign: 'center' }}>
                 <span>{isMr ? 'आधीच खाते आहे?' : 'Already have an account?'} </span>
                 <button
                   type="button"
                   className="officer-switch-link"
                   onClick={() => switchMode('login')}
+                  style={{ textDecoration: 'underline', fontWeight: 800 }}
                 >
-                  {isMr ? 'लॉगिन करा' : 'Sign In'}
+                  {isMr ? 'येथे थेट लॉगिन करा' : 'Sign In directly here'}
                 </button>
               </div>
             </form>

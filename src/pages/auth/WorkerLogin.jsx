@@ -332,7 +332,7 @@ export default function WorkerLogin({ onLoginSuccess, initialMode = 'login' }) {
   return (
     <div className="officer-auth-container">
       <div className="officer-phone-frame">
-        <div className="officer-phone-scroll-body">
+        <div className={`officer-phone-scroll-body ${mode === 'login' ? 'login-view' : 'register-view'}`}>
 
           {/* ================= APP HEADER ================= */}
           <header className="officer-app-header">
@@ -610,7 +610,7 @@ export default function WorkerLogin({ onLoginSuccess, initialMode = 'login' }) {
                 </div>
 
                 {/* Bottom Switch Link to Register */}
-                <div className="officer-switch-footer" style={{ padding: '2px 0 0', textAlign: 'center' }}>
+                <div className="officer-switch-footer" style={{ textAlign: 'center' }}>
                   <span>{isMr ? 'खाते नाही?' : "Don't have an account?"} </span>
                   <button
                     type="button"
@@ -859,7 +859,7 @@ export default function WorkerLogin({ onLoginSuccess, initialMode = 'login' }) {
                   }}
                 >
                   <Lock size={16} color="#2563eb" />
-                  <span>{isMr ? 'आधीच खाते आहे? थेट लॉगिन करा (Sign In)' : 'Already have an account? Sign In'}</span>
+                  <span>{isMr ? 'आधीच खाते आहे? थेट लॉगिन करा ' : 'Already have an account? Sign In'}</span>
                 </button>
               </form>
             )}

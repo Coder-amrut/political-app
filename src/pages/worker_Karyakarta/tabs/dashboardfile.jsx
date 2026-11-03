@@ -364,8 +364,8 @@ export default function DashboardTab({
           className="dashboard-theme-card"
           onClick={() => setActiveTab('Contact & Meetings')}
           style={{
-            background: '#f8fbff',
-            border: '1.5px solid #bfdbfe',
+            background: '#e0f2ff',
+            border: '1.5px solid #3b82f6',
             boxShadow: '0 4px 16px rgba(37, 99, 235, 0.05)',
           }}
           onMouseEnter={(e) => {
@@ -437,8 +437,8 @@ export default function DashboardTab({
           className="dashboard-theme-card"
           onClick={() => setActiveTab('Contact & Meetings')}
           style={{
-            background: '#f7fdf9',
-            border: '1.5px solid #bbf7d0',
+            background: '#e6ffed',
+            border: '1.5px solid #10b981',
             boxShadow: '0 4px 16px rgba(5, 150, 105, 0.05)',
           }}
           onMouseEnter={(e) => {
@@ -510,8 +510,8 @@ export default function DashboardTab({
           className="dashboard-theme-card"
           onClick={() => setActiveTab('Survey')}
           style={{
-            background: '#fffdf5',
-            border: '1.5px solid #fde68a',
+            background: '#fffbeb',
+            border: '1.5px solid #f59e0b',
             boxShadow: '0 4px 16px rgba(245, 158, 11, 0.05)',
           }}
           onMouseEnter={(e) => {
@@ -583,8 +583,8 @@ export default function DashboardTab({
           className="dashboard-theme-card"
           onClick={() => setActiveTab('Complaints')}
           style={{
-            background: '#faf7ff',
-            border: '1.5px solid #e9d5ff',
+            background: '#f5e8ff',
+            border: '1.5px solid #d8b4fe',
             boxShadow: '0 4px 16px rgba(124, 58, 237, 0.05)',
           }}
           onMouseEnter={(e) => {
@@ -704,7 +704,7 @@ export default function DashboardTab({
           style={{
             cursor: 'pointer',
             background: '#ffffff',
-            border: '1.5px solid #bbf7d0',
+            border: '1.5px solid #10b981',
             borderRadius: '20px',
             padding: '18px 20px',
             display: 'flex',
@@ -746,7 +746,7 @@ export default function DashboardTab({
           style={{
             cursor: 'pointer',
             background: '#ffffff',
-            border: '1.5px solid #bfdbfe',
+            border: '1.5px solid #3b82f6',
             borderRadius: '20px',
             padding: '18px 20px',
             display: 'flex',
@@ -788,7 +788,7 @@ export default function DashboardTab({
           style={{
             cursor: 'pointer',
             background: '#ffffff',
-            border: '1.5px solid #e9d5ff',
+            border: '1.5px solid #d8b4fe',
             borderRadius: '20px',
             padding: '18px 20px',
             display: 'flex',

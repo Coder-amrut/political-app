@@ -939,3 +939,567 @@
   to { transform: rotate(360deg); }
 }
 
+/* ================= 13. COLORFUL DASHBOARD 6 CONTAINERS ================= */
+.admin-metric-card-colorful {
+  border-radius: 18px;
+  padding: 14px 15px;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.admin-metric-card-colorful:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.45);
+}
+
+.admin-metric-card-colorful:active {
+  transform: scale(0.97);
+}
+
+.admin-metric-card-colorful::after {
+  content: '';
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  pointer-events: none;
+}
+
+.admin-card-voters {
+  background: linear-gradient(135deg, #ff5200 0%, #dc2626 100%);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.28);
+}
+
+.admin-card-booths {
+  background: linear-gradient(135deg, #1d4ed8 0%, #0284c7 100%);
+  box-shadow: 0 6px 20px rgba(29, 78, 216, 0.28);
+}
+
+.admin-card-approvals {
+  background: linear-gradient(135deg, #be123c 0%, #e11d48 100%);
+  box-shadow: 0 6px 20px rgba(225, 29, 72, 0.28);
+}
+
+.admin-card-workers {
+  background: linear-gradient(135deg, #047857 0%, #10b981 100%);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.28);
+}
+
+.admin-card-issues {
+  background: linear-gradient(135deg, #b45309 0%, #f59e0b 100%);
+  box-shadow: 0 6px 20px rgba(217, 119, 6, 0.28);
+}
+
+.admin-card-villages {
+  background: linear-gradient(135deg, #6d28d9 0%, #4f46e5 100%);
+  box-shadow: 0 6px 20px rgba(109, 40, 217, 0.28);
+}
+
+.admin-metric-card-colorful .admin-metric-icon {
+  background: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+  backdrop-filter: blur(4px);
+}
+
+.admin-metric-card-colorful .admin-metric-value {
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.18);
+  font-size: 22px;
+}
+
+.admin-metric-card-colorful .admin-metric-label {
+  color: rgba(255, 255, 255, 0.92);
+  font-weight: 700;
+  font-size: 11px;
+}
+
+.admin-click-hint {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 9.5px;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 700;
+  margin-top: 6px;
+  padding-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* ================= 14. COMPREHENSIVE DOSSIER MODALS ================= */
+.admin-detail-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 21, 41, 0.75);
+  backdrop-filter: blur(6px);
+  z-index: 70;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.admin-detail-modal-sheet {
+  width: 100%;
+  max-width: 440px;
+  max-height: 88vh;
+  background: #ffffff;
+  border-top-left-radius: 26px;
+  border-top-right-radius: 26px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 -12px 45px rgba(0, 0, 0, 0.4);
+  animation: slideUpModal 0.26s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.admin-dossier-header {
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #ffffff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  flex-shrink: 0;
+}
+
+.admin-dossier-header-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-dossier-header-title h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 850;
+  line-height: 1.2;
+}
+
+.admin-dossier-header-title p {
+  margin: 2px 0 0;
+  font-size: 11px;
+  opacity: 0.88;
+}
+
+.admin-dossier-close-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.admin-dossier-close-btn:hover {
+  background: rgba(255, 255, 255, 0.35);
+  transform: scale(1.05);
+}
+
+.admin-dossier-body {
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Dossier Info Group */
+.admin-dossier-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.admin-dossier-field {
+  background: #f8fafc;
+  padding: 9px 12px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+}
+
+.admin-dossier-field-label {
+  font-size: 10px;
+  color: #64748b;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.admin-dossier-field-val {
+  font-size: 12.5px;
+  color: #0f172a;
+  font-weight: 800;
+}
+
+/* ================= 15. VILLAGE SELECTOR CONTROLS ================= */
+.admin-village-picker-box {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+}
+
+.admin-picker-row {
+  display: flex;
+  gap: 8px;
+}
+
+.admin-picker-control {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.admin-picker-label {
+  font-size: 10.5px;
+  font-weight: 800;
+  color: #334155;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.admin-quick-district-pills {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 4px 0 2px;
+  scrollbar-width: none;
+}
+
+.admin-quick-district-pills::-webkit-scrollbar {
+  display: none;
+}
+
+.admin-district-pill {
+  flex-shrink: 0;
+  padding: 5px 11px;
+  border-radius: 20px;
+  border: 1px solid #cbd5e1;
+  background-color: #f1f5f9;
+  color: #334155;
+  font-size: 11px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.admin-district-pill:hover {
+  background-color: #e2e8f0;
+}
+
+.admin-district-pill.active {
+  background: linear-gradient(135deg, #ff5200 0%, #ea580c 100%);
+  color: #ffffff;
+  border-color: #ff5200;
+  box-shadow: 0 2px 8px rgba(255, 82, 0, 0.28);
+}
+
+.admin-picker-select, .admin-picker-input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1.5px solid #cbd5e1;
+  font-size: 12px;
+  font-weight: 750;
+  color: #0f172a;
+  background-color: #ffffff;
+  outline: none;
+  transition: all 0.15s ease;
+  box-sizing: border-box;
+}
+
+.admin-picker-select {
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23334155' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 13px;
+  padding-right: 28px;
+}
+
+.admin-picker-select:focus, .admin-picker-input:focus {
+  border-color: #ff5200;
+  box-shadow: 0 0 0 3px rgba(255, 82, 0, 0.14);
+  background-color: #ffffff;
+}
+
+.admin-picker-select option {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  padding: 9px 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+/* Demographic Table Summary Strip */
+.admin-village-table-summary-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-bottom: 10px;
+  padding: 0 2px;
+}
+
+.admin-summary-pill {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 6px 8px;
+  text-align: center;
+}
+
+.admin-summary-pill.highlight {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+.admin-summary-pill .pill-lbl {
+  display: block;
+  font-size: 9.5px;
+  font-weight: 750;
+  color: #64748b;
+  margin-bottom: 2px;
+}
+
+.admin-summary-pill .pill-val {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.admin-summary-pill.highlight .pill-val {
+  color: #1d4ed8;
+}
+
+.admin-village-highlight-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.admin-village-highlight-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.admin-v-stat {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  padding: 9px 8px;
+  border-radius: 12px;
+  text-align: center;
+  backdrop-filter: blur(4px);
+}
+
+.admin-v-stat-num {
+  font-size: 17px;
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1.1;
+}
+
+.admin-v-stat-lbl {
+  font-size: 9.5px;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 700;
+  margin-top: 3px;
+}
+
+/* Clickable item hover styling */
+.admin-clickable-card {
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.admin-clickable-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  border-color: #ff5200 !important;
+}
+
+.admin-clickable-card:active {
+  transform: scale(0.98);
+}
+
+/* ================= DISTRICT / TALUKA PICKER MODAL POPUP ================= */
+.admin-picker-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(6px);
+  z-index: 9999;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: fadeIn 0.2s ease;
+}
+
+@media (min-width: 640px) {
+  .admin-picker-modal-overlay {
+    align-items: center;
+    padding: 20px;
+  }
+}
+
+.admin-picker-modal-content {
+  background: #ffffff;
+  width: 100%;
+  max-width: 440px;
+  max-height: 82vh;
+  border-radius: 20px 20px 0 0;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.3);
+  animation: slideUpModal 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+@media (min-width: 640px) {
+  .admin-picker-modal-content {
+    border-radius: 16px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+  }
+}
+
+@keyframes slideUpModal {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.admin-picker-modal-header {
+  padding: 14px 16px;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f8fafc;
+}
+
+.admin-picker-modal-search {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 13px;
+  background: #f8fafc;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.admin-picker-modal-search:focus {
+  border-color: #2563eb;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.admin-picker-modal-list {
+  overflow-y: auto;
+  flex: 1;
+  padding: 8px 12px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.admin-picker-modal-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.admin-picker-modal-item:hover {
+  background: #f1f5f9;
+}
+
+.admin-picker-modal-item.selected {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+/* Custom In-App Picker Trigger */
+.admin-custom-picker-trigger {
+  width: 100%;
+  padding: 10px 12px;
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  min-height: 42px;
+}
+
+.admin-custom-picker-trigger:hover {
+  border-color: #2563eb;
+  background: #f8fafc;
+}
+
+.admin-custom-picker-trigger:active {
+  transform: scale(0.99);
+}
+
+.admin-custom-picker-trigger .picker-trigger-val {
+  font-size: 13px;
+  font-weight: 750;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-modal-close-round {
+  background: #f1f5f9;
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-weight: 900;
+  color: #64748b;
+  transition: background 0.15s ease;
+}
+
+.admin-modal-close-round:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ClipboardCheck,
   Shield,
@@ -13,6 +13,35 @@ import {
   ClipboardList,
   ArrowLeft
 } from 'lucide-react';
+import { workerApi } from '../workerApi';
+
+const DEFAULT_CASTES = [
+  { id: 1, name: 'मराठा', mr: 'मराठा', en: 'Maratha', category: 'OPEN' },
+  { id: 2, name: 'कुणबी', mr: 'कुणबी', en: 'Kunbi', category: 'OBC' },
+  { id: 3, name: 'माळी', mr: 'माळी', en: 'Mali', category: 'OBC' },
+  { id: 4, name: 'धनगर', mr: 'धनगर', en: 'Dhangar', category: 'NT-C' },
+  { id: 5, name: 'वंजारी', mr: 'वंजारी', en: 'Vanjari', category: 'NT-D' },
+  { id: 6, name: 'लिंगायत', mr: 'लिंगायत', en: 'Lingayat', category: 'OPEN' },
+  { id: 7, name: 'ब्राह्मण', mr: 'ब्राह्मण', en: 'Brahmin', category: 'OPEN' },
+  { id: 8, name: 'चांभार', mr: 'चांभार', en: 'Chambhar', category: 'SC' },
+  { id: 9, name: 'मातंग', mr: 'मातंग', en: 'Matang', category: 'SC' },
+  { id: 10, name: 'नवबौद्ध / बौद्ध', mr: 'नवबौद्ध / बौद्ध', en: 'Buddhist / Neo-Buddhist', category: 'SC' },
+  { id: 11, name: 'भिल्ल', mr: 'भिल्ल', en: 'Bhil', category: 'ST' },
+  { id: 12, name: 'महादेव कोळी', mr: 'महादेव कोळी', en: 'Mahadev Koli', category: 'ST' },
+  { id: 13, name: 'जैन', mr: 'जैन', en: 'Jain', category: 'OPEN' },
+  { id: 14, name: 'मुस्लिम', mr: 'मुस्लिम', en: 'Muslim', category: 'OBC' },
+  { id: 15, name: 'मारवाडी', mr: 'मारवाडी', en: 'Marwari', category: 'OPEN' },
+  { id: 16, name: 'तेली', mr: 'तेली', en: 'Teli', category: 'OBC' },
+  { id: 17, name: 'सुतार', mr: 'सुतार', en: 'Sutar', category: 'OBC' },
+  { id: 18, name: 'लोहार', mr: 'लोहार', en: 'Lohar', category: 'NT-B' },
+  { id: 19, name: 'कुंभार', mr: 'कुंभार', en: 'Kumbhar', category: 'OBC' },
+  { id: 20, name: 'न्हावी', mr: 'न्हावी', en: 'Nhavi', category: 'OBC' },
+  { id: 21, name: 'धोबी', mr: 'धोबी', en: 'Dhobi', category: 'OBC' },
+  { id: 22, name: 'आगरी', mr: 'आगरी', en: 'Agri', category: 'OBC' },
+  { id: 23, name: 'कोष्टी', mr: 'कोष्टी', en: 'Koshti', category: 'SBC' },
+  { id: 24, name: 'कैकाडी', mr: 'कैकाडी', en: 'Kaikadi', category: 'VJNT' },
+  { id: 25, name: 'इतर', mr: 'इतर', en: 'Other', category: 'OTHER' },
+];
 
 export default function SurveyTab({
   isMr,
@@ -45,6 +74,25 @@ export default function SurveyTab({
 
   // Confirmation state for Save & Cancel popups ('save' | 'cancel' | null)
   const [confirmAction, setConfirmAction] = useState(null);
+
+  // Available Castes List (fetched from backend DB castes table with fallback)
+  const [castesList, setCastesList] = useState(DEFAULT_CASTES);
+
+  useEffect(() => {
+    let isMounted = true;
+    if (typeof workerApi?.getCastes === 'function') {
+      workerApi.getCastes()
+        .then((data) => {
+          if (isMounted && Array.isArray(data) && data.length > 0) {
+            setCastesList(data);
+          }
+        })
+        .catch((err) => {
+          console.warn('Could not load castes from API, using default list', err);
+        });
+    }
+    return () => { isMounted = false; };
+  }, []);
 
   const onTotalMatdarChange = (val) => {
     if (typeof handleTotalMatdarChange === 'function') {
@@ -184,6 +232,7 @@ export default function SurveyTab({
               isMarathi ? (
                 <>
                   कुटुंब प्रमुख: <strong>{surveyFormData.pramukh_name}</strong>
+                  {surveyFormData.caste ? <> • जात: <strong style={{ color: '#2563eb' }}>{surveyFormData.caste === 'इतर' && surveyFormData.custom_caste ? surveyFormData.custom_caste : surveyFormData.caste}</strong></> : null}
                   {surveyFormData.phone ? <> • फोन: <strong>{surveyFormData.phone}</strong></> : null}
                   <br />
                   एकूण मतदार संख्या: <strong>{surveyFormData.total_matdar}</strong>
@@ -195,6 +244,7 @@ export default function SurveyTab({
               ) : (
                 <>
                   Family Head: <strong>{surveyFormData.pramukh_name}</strong>
+                  {surveyFormData.caste ? <> • Caste: <strong style={{ color: '#2563eb' }}>{surveyFormData.caste === 'इतर' && surveyFormData.custom_caste ? surveyFormData.custom_caste : surveyFormData.caste}</strong></> : null}
                   {surveyFormData.phone ? <> • Phone: <strong>{surveyFormData.phone}</strong></> : null}
                   <br />
                   Total Voters: <strong>{surveyFormData.total_matdar}</strong>
@@ -409,6 +459,50 @@ export default function SurveyTab({
 
                 <div className="worker-form-field">
                   <label>
+                    <span>🏷️</span> {isMarathi ? 'व्यक्तीची जात / प्रवर्ग' : 'Person Caste / Category'} <span style={{ color: '#ef4444' }}>*</span>
+                  </label>
+                  <select
+                    required
+                    value={surveyFormData.caste || ''}
+                    onChange={(e) => {
+                      const selectedVal = e.target.value;
+                      const matched = castesList.find((c) => (c.caste_name_mr === selectedVal || c.name === selectedVal || c.caste_name_en === selectedVal));
+                      const cat = matched ? (matched.category || 'OPEN') : 'OPEN';
+                      setSurveyFormData((prev) => ({
+                        ...prev,
+                        caste: selectedVal,
+                        caste_category: cat,
+                        members: (prev.members || []).map((m, i) => (i === 0 && !m.caste ? { ...m, caste: selectedVal } : m))
+                      }));
+                    }}
+                  >
+                    <option value="">{isMarathi ? '-- जात निवडा (Select Caste) --' : '-- Select Caste --'}</option>
+                    {castesList.map((c) => {
+                      const val = c.caste_name_mr || c.name;
+                      const label = isMarathi
+                        ? `${c.caste_name_mr || c.mr || val} (${c.category || 'General'})`
+                        : `${c.caste_name_en || c.en || val} (${c.category || 'General'})`;
+                      return (
+                        <option key={c.id || val} value={val}>
+                          {label}
+                        </option>
+                      );
+                    })}
+                  </select>
+                  {surveyFormData.caste === 'इतर' && (
+                    <input
+                      type="text"
+                      required
+                      placeholder={isMarathi ? 'जातीचे नाव येथे टाईप करा...' : 'Type specific caste...'}
+                      value={surveyFormData.custom_caste || ''}
+                      onChange={(e) => setSurveyFormData((prev) => ({ ...prev, custom_caste: e.target.value }))}
+                      style={{ marginTop: '8px' }}
+                    />
+                  )}
+                </div>
+
+                <div className="worker-form-field">
+                  <label>
                     <span>📍</span> {isMarathi ? 'घराचा पत्ता / परिसर' : 'House Address / Area'}
                   </label>
                   <input
@@ -549,6 +643,26 @@ export default function SurveyTab({
                                   {isMarathi ? opt.mr : opt.en}
                                 </option>
                               ))}
+                            </select>
+                          </div>
+
+                          <div className="worker-form-field">
+                            <label>
+                              🏷️ {isMarathi ? 'जात (Caste)' : 'Caste'}
+                            </label>
+                            <select
+                              value={member.caste || surveyFormData.caste || ''}
+                              onChange={(e) => handleWorkerMemberChange(member.id, 'caste', e.target.value)}
+                            >
+                              <option value="">{isMarathi ? '-- जात निवडा --' : '-- Select Caste --'}</option>
+                              {castesList.map((c) => {
+                                const val = c.caste_name_mr || c.name;
+                                return (
+                                  <option key={c.id || val} value={val}>
+                                    {isMarathi ? `${c.caste_name_mr || c.mr || val} (${c.category || 'General'})` : `${c.caste_name_en || c.en || val} (${c.category || 'General'})`}
+                                  </option>
+                                );
+                              })}
                             </select>
                           </div>
 
@@ -1295,6 +1409,7 @@ export default function SurveyTab({
                   <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', color: '#475569', fontWeight: '750' }}>
                     <th style={{ padding: '12px 16px' }}>#</th>
                     <th style={{ padding: '12px 16px' }}>{isMarathi ? 'कुटुंब प्रमुख' : 'Family Head'}</th>
+                    <th style={{ padding: '12px 16px' }}>{isMarathi ? 'जात / प्रवर्ग' : 'Caste / Category'}</th>
                     <th style={{ padding: '12px 16px' }}>{isMarathi ? 'मोबाईल / ओळखपत्र' : 'Contact / Voter ID'}</th>
                     <th style={{ padding: '12px 16px' }}>{isMarathi ? 'एकूण मतदार' : 'Total Voters'}</th>
                     <th style={{ padding: '12px 16px' }}>{isMarathi ? 'पत्ता' : 'Address'}</th>
@@ -1310,6 +1425,26 @@ export default function SurveyTab({
                       </td>
                       <td style={{ padding: '12px 16px', fontWeight: '800', color: '#0f172a' }}>
                         {item.citizen_name || '-'}
+                      </td>
+                      <td style={{ padding: '12px 16px' }}>
+                        {item.caste ? (
+                          <span style={{
+                            background: '#fef3c7',
+                            color: '#92400e',
+                            padding: '3px 9px',
+                            borderRadius: '12px',
+                            fontSize: '11.5px',
+                            fontWeight: 750,
+                            border: '1px solid #fde68a',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px'
+                          }}>
+                            🏷️ {item.caste} {item.caste_category ? `(${item.caste_category})` : ''}
+                          </span>
+                        ) : (
+                          <span style={{ color: '#94a3b8' }}>-</span>
+                        )}
                       </td>
                       <td style={{ padding: '12px 16px' }}>
                         <div style={{ fontWeight: '600', color: '#0284c7' }}>{item.phone || '-'}</div>

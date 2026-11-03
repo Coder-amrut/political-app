@@ -336,12 +336,12 @@ export default function WorkerLogin({ onLoginSuccess, initialMode = 'login' }) {
         {/* ================= APP HEADER ================= */}
         <header className="officer-app-header">
           <div className="officer-brand">
-            <div className="officer-logo-badge">
-              <Briefcase size={22} strokeWidth={2.4} />
+            <div className="officer-logo-badge" style={{ padding: 0, overflow: 'hidden', background: '#0b0f19', border: '1.5px solid #d4af37', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <img src="/logo.png" alt="Mechanism Logo" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
             </div>
             <div className="officer-brand-text">
-              <span className="officer-brand-title">BrainPower</span>
-              <span className="officer-brand-subtitle">{isMr ? 'पदाधिकारी व कार्यकर्ता पोर्टल' : 'Officer Management Portal'}</span>
+              <span className="officer-brand-title">Mechanism</span>
+              <span className="officer-brand-subtitle">{isMr ? 'पदाधिकारी व कार्यकर्ता पोर्टल' : 'Officer & Worker Portal'}</span>
             </div>
           </div>
 

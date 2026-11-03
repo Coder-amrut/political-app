@@ -49,6 +49,7 @@ class MasterDataController extends Controller
                     'district_name',
                     'district_name as name',
                     'district_name as name_en',
+                    'district_name_mr',
                 ])
                 ->orderBy('district_name'),
         );
@@ -124,19 +125,26 @@ class MasterDataController extends Controller
         ]);
 
         $query = DB::table('villages')
+            ->leftJoin('talukas', 'villages.taluka_code', '=', 'talukas.taluka_code')
+            ->leftJoin('districts', 'villages.district_code', '=', 'districts.district_code')
             ->select([
-                'id',
-                'district_code',
-                'taluka_code',
-                'village_code',
-                'village_code as code',
-                'village_name',
-                'village_name as name',
-                'village_name as name_en',
-                'population',
-                'total_voters',
+                'villages.id',
+                'villages.district_code',
+                'villages.taluka_code',
+                'villages.village_code',
+                'villages.village_code as code',
+                'villages.village_name',
+                'villages.village_name as name',
+                'villages.village_name as name_en',
+                'villages.population',
+                'villages.total_voters',
+                'talukas.taluka_name',
+                'talukas.taluka_name as taluka',
+                'districts.district_name',
+                'districts.district_name as district',
+                'districts.district_name_mr as district_mr',
             ])
-            ->orderBy('village_name');
+            ->orderBy('villages.village_name');
 
         // Extract district codes
         $districtCodes = collect();
@@ -162,18 +170,22 @@ class MasterDataController extends Controller
         }
         $talukaCodes = $talukaCodes->map(fn ($c) => trim((string) $c))->filter()->unique()->values();
 
-        if ($talukaCodes->isNotEmpty()) {
-            $query->whereIn('taluka_code', $talukaCodes);
-        }
-        if ($districtCodes->isNotEmpty()) {
-            $query->whereIn('district_code', $districtCodes);
-        }
-
         if (! empty($validated['search'])) {
-            $term = $validated['search'];
-            $query->where(fn ($q) => $q
-                ->where('village_name', 'like', "%{$term}%")
-                ->orWhere('village_code', 'like', "%{$term}%"));
+            $term = trim((string) $validated['search']);
+            $query->where(function ($q) use ($term) {
+                $q->where('villages.village_name', 'like', "%{$term}%")
+                  ->orWhere('villages.village_code', 'like', "%{$term}%")
+                  ->orWhere('talukas.taluka_name', 'like', "%{$term}%")
+                  ->orWhere('districts.district_name', 'like', "%{$term}%")
+                  ->orWhere('districts.district_name_mr', 'like', "%{$term}%");
+            });
+        } else {
+            if ($talukaCodes->isNotEmpty()) {
+                $query->whereIn('villages.taluka_code', $talukaCodes);
+            }
+            if ($districtCodes->isNotEmpty()) {
+                $query->whereIn('villages.district_code', $districtCodes);
+            }
         }
 
         return $this->paginated($request, $query);

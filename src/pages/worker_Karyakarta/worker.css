@@ -2412,6 +2412,165 @@
    COMPREHENSIVE DEVICE RESPONSIVENESS SUITE (Mobile, Tablet, Desktop)
    ========================================================================== */
 
+/* 0. Desktop Sticky Top Header (>= 993px) */
+.worker-desktop-top-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 1010;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 12px 24px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+  width: 100%;
+  box-sizing: border-box;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+@media (max-width: 992px) {
+  .worker-desktop-top-header {
+    display: none !important;
+  }
+}
+
+.desktop-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.desktop-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  font-weight: 750;
+}
+
+.desktop-breadcrumb-portal {
+  color: #64748b;
+}
+
+.desktop-breadcrumb-divider {
+  color: #cbd5e1;
+}
+
+.desktop-breadcrumb-active {
+  color: #0f172a;
+  background: #f1f5f9;
+  padding: 3px 10px;
+  border-radius: 8px;
+  font-weight: 800;
+}
+
+.desktop-sub-badge {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #ea580c;
+  background: #fff7ed;
+  border: 1px solid #ffedd5;
+  padding: 3px 9px;
+  border-radius: 8px;
+}
+
+.desktop-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.desktop-clock-pill {
+  font-size: 12px;
+  font-weight: 700;
+  color: #475569;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 5px 12px;
+  border-radius: 20px;
+}
+
+.desktop-lang-btn {
+  font-size: 12px !important;
+  padding: 6px 12px !important;
+  border-radius: 20px !important;
+  background: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.desktop-lang-btn:hover {
+  background: #f1f5f9 !important;
+  border-color: #94a3b8 !important;
+  transform: translateY(-1px);
+}
+
+.desktop-user-profile-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1.5px solid #e2e8f0;
+  padding: 5px 14px 5px 6px;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: left;
+  font-family: inherit;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.desktop-user-profile-btn:hover {
+  border-color: #ea580c;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.15);
+  transform: translateY(-1px);
+}
+
+.desktop-user-profile-btn.active {
+  border-color: #ea580c;
+  background: #fff7ed;
+  box-shadow: 0 0 0 2px rgba(234, 88, 12, 0.2);
+}
+
+.desktop-user-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FF671F 0%, #ea580c 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 900;
+  box-shadow: 0 2px 6px rgba(234, 88, 12, 0.35);
+  flex-shrink: 0;
+}
+
+.desktop-user-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.desktop-user-name {
+  font-size: 12.5px;
+  font-weight: 850;
+  color: #0f172a;
+  line-height: 1.2;
+}
+
+.desktop-user-role {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #ea580c;
+}
+
 /* 1. Mobile & Tablet Top Sticky Header */
 .worker-mobile-top-header {
   display: none;
@@ -2638,10 +2797,48 @@
     font-size: 18px !important;
   }
 
-  /* Buttons & Touch Targets */
+  /* Buttons & Touch Targets — 100% Responsive on Phone & Laptop */
   .karyakarta-btn {
-    padding: 9px 14px !important;
-    font-size: 12.5px !important;
+    padding: 10px 16px !important;
+    font-size: 13px !important;
+    min-height: 44px !important;
+    box-sizing: border-box !important;
+    touch-action: manipulation;
+  }
+
+  .profile-actions-wrapper,
+  .profile-top-bar .profile-actions-wrapper {
+    width: 100% !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  .profile-actions-wrapper > .karyakarta-btn {
+    flex: 1 1 calc(50% - 8px) !important;
+    width: auto !important;
+    justify-content: center !important;
+    text-align: center !important;
+  }
+
+  /* Survey and Form Action Buttons */
+  .worker-survey-form-actions,
+  .modal-actions,
+  .form-actions-bar {
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 10px !important;
+  }
+
+  .worker-survey-btn-save,
+  .worker-survey-btn-cancel,
+  .worker-survey-btn-outline,
+  .worker-survey-btn-primary {
+    width: 100% !important;
+    min-height: 46px !important;
+    justify-content: center !important;
+    font-size: 14px !important;
+    box-sizing: border-box !important;
   }
 
   /* Punch in / out buttons */
@@ -2706,5 +2903,28 @@
   .mobile-status-pill .status-text {
     display: none !important;
   }
+
+  .profile-actions-wrapper > .karyakarta-btn {
+    flex: 1 1 100% !important;
+    width: 100% !important;
+  }
 }
+
+/* 5. Laptop & Desktop Hover Precision */
+@media (min-width: 993px) {
+  .karyakarta-btn {
+    min-height: 38px;
+    padding: 8px 18px;
+  }
+
+  .karyakarta-btn:hover {
+    transform: translateY(-1.5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  }
+
+  .karyakarta-btn:active {
+    transform: translateY(0);
+  }
+}
+
 

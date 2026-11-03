@@ -244,6 +244,9 @@ export default function WorkerDashboard() {
   const [surveyActiveView, setSurveyActiveView] = useState('forms'); // 'forms' | 'saved_history'
   const [surveyFormData, setSurveyFormData] = useState({
     pramukh_name: '',
+    caste: '',
+    caste_category: '',
+    custom_caste: '',
     total_matdar: 1,
     phone: '',
     address: '',
@@ -255,6 +258,7 @@ export default function WorkerDashboard() {
         age: '',
         has_voter_id: 'YES',
         voter_id_no: '',
+        caste: '',
         relation: 'कुटुंब प्रमुख (Self)',
       },
     ],
@@ -272,7 +276,9 @@ export default function WorkerDashboard() {
 
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [profileData, setProfileData] = useState({
-    fullName: user?.full_name || '',
+    id: user?.id || 3,
+    uuid: user?.uuid || '',
+    fullName: user?.full_name || user?.name || '',
     dob: '',
     phone: user?.phone || '',
     email: user?.email || '',
@@ -283,6 +289,19 @@ export default function WorkerDashboard() {
     epic: '',
     responsibility: '',
     employeeCode: '',
+    caste: '',
+    subCaste: '',
+    category: '',
+    role: user?.role || 'WORKER',
+    status: user?.status || 'ACTIVE',
+    aadharNumber: '',
+    panNumber: '',
+    registeredAt: '',
+    lastLoginAt: '',
+    assembly: '',
+    lokSabha: '',
+    state: 'महाराष्ट्र',
+    district: 'सांगली',
   });
 
   const [contactTab, setContactTab] = useState('contacts');
@@ -438,7 +457,13 @@ export default function WorkerDashboard() {
     try {
       const data = await workerApi.getProfile();
       if (data) {
-        setProfileData(data);
+        setProfileData((prev) => ({
+          ...prev,
+          ...data,
+          fullName: data.fullName || user?.full_name || user?.name || prev.fullName,
+          phone: data.phone || user?.phone || prev.phone,
+          email: data.email || user?.email || prev.email,
+        }));
       }
     } catch (e) {
       console.warn('Profile load issue:', e);
@@ -1230,6 +1255,9 @@ export default function WorkerDashboard() {
     }
     setSurveyFormData({
       pramukh_name: '',
+      caste: '',
+      caste_category: '',
+      custom_caste: '',
       total_matdar: 1,
       phone: '',
       address: '',
@@ -1241,6 +1269,7 @@ export default function WorkerDashboard() {
           age: '',
           has_voter_id: 'YES',
           voter_id_no: '',
+          caste: '',
           relation: 'कुटुंब प्रमुख (Self)',
         },
       ],
@@ -1301,6 +1330,11 @@ export default function WorkerDashboard() {
       }
     }
 
+    // Resolve effective caste
+    const effectiveCaste = surveyFormData.caste === 'इतर' && surveyFormData.custom_caste
+      ? surveyFormData.custom_caste
+      : (surveyFormData.caste || '');
+
     // 1. Direct offline check
     if (!isNetworkOnline()) {
       enqueueOfflineItem({
@@ -1312,6 +1346,8 @@ export default function WorkerDashboard() {
           surveyId: activeSurveyToFill?.id,
           pramukh_name: surveyFormData.pramukh_name,
           citizenName: surveyFormData.pramukh_name,
+          caste: effectiveCaste,
+          caste_category: surveyFormData.caste_category || 'OPEN',
           total_matdar: surveyFormData.total_matdar,
           phone: surveyFormData.phone,
           address: surveyFormData.address,
@@ -1327,6 +1363,9 @@ export default function WorkerDashboard() {
       setActiveSurveyToFill(null);
       setSurveyFormData({
         pramukh_name: '',
+        caste: '',
+        caste_category: '',
+        custom_caste: '',
         total_matdar: 1,
         phone: '',
         address: '',
@@ -1338,6 +1377,7 @@ export default function WorkerDashboard() {
             age: '',
             has_voter_id: 'YES',
             voter_id_no: '',
+            caste: '',
             relation: 'कुटुंब प्रमुख (Self)',
           },
         ],
@@ -1353,6 +1393,8 @@ export default function WorkerDashboard() {
         surveyId: activeSurveyToFill?.id,
         pramukh_name: surveyFormData.pramukh_name,
         citizenName: surveyFormData.pramukh_name,
+        caste: effectiveCaste,
+        caste_category: surveyFormData.caste_category || 'OPEN',
         total_matdar: surveyFormData.total_matdar,
         phone: surveyFormData.phone,
         address: surveyFormData.address,
@@ -1360,10 +1402,13 @@ export default function WorkerDashboard() {
         custom_answers: surveyFormData.custom_answers,
       });
 
-      alert(language === 'mr' ? '✓ मतदार सर्वेक्षण फॉर्म यशस्वीरित्या जमा झाला!' : '✓ Survey submitted successfully!');
+      alert(language === 'mr' ? '✓ मतदार सर्वेक्षण व जातीची नोंद यशस्वीरित्या जमा झाली!' : '✓ Survey & Caste submitted successfully!');
       setActiveSurveyToFill(null);
       setSurveyFormData({
         pramukh_name: '',
+        caste: '',
+        caste_category: '',
+        custom_caste: '',
         total_matdar: 1,
         phone: '',
         address: '',
@@ -1375,6 +1420,7 @@ export default function WorkerDashboard() {
             age: '',
             has_voter_id: 'YES',
             voter_id_no: '',
+            caste: '',
             relation: 'कुटुंब प्रमुख (Self)',
           },
         ],
@@ -1395,6 +1441,8 @@ export default function WorkerDashboard() {
             surveyId: activeSurveyToFill?.id,
             pramukh_name: surveyFormData.pramukh_name,
             citizenName: surveyFormData.pramukh_name,
+            caste: effectiveCaste,
+            caste_category: surveyFormData.caste_category || 'OPEN',
             total_matdar: surveyFormData.total_matdar,
             phone: surveyFormData.phone,
             address: surveyFormData.address,
@@ -1777,41 +1825,24 @@ export default function WorkerDashboard() {
 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: isCollapsed ? 'center' : 'space-between' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '9px', minWidth: 0 }}>
-                {/* Official Indian Flag Emblem with Ashoka Chakra */}
+                {/* Mechanism Golden Crest Logo */}
                 <div
                   style={{
-                    width: '36px',
-                    height: '36px',
-                    borderRadius: '8px',
-                    background: 'linear-gradient(135deg, #0f2b5c 0%, #000080 100%)',
+                    width: '38px',
+                    height: '38px',
+                    borderRadius: '50%',
+                    background: '#0b0f19',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: '#ffffff',
                     flexShrink: 0,
-                    border: '1px solid rgba(255, 103, 31, 0.4)',
-                    boxShadow: '0 2px 8px rgba(0, 0, 128, 0.25)',
+                    border: '1.5px solid #d4af37',
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.4)',
+                    overflow: 'hidden',
                   }}
-                  title={isMr ? 'भारत • अधिकारी व बूथ कक्ष' : 'India • Field Officer HQ'}
+                  title="Mechanism • Field Operations HQ"
                 >
-                  <svg width="22" height="15" viewBox="0 0 36 24" style={{ borderRadius: '2px', boxShadow: '0 1px 3px rgba(0,0,0,0.35)' }}>
-                    <rect width="36" height="8" fill="#FF9933" />
-                    <rect y="8" width="36" height="8" fill="#FFFFFF" />
-                    <rect y="16" width="36" height="8" fill="#138808" />
-                    <circle cx="18" cy="12" r="3.2" fill="none" stroke="#000080" strokeWidth="0.7" />
-                    <circle cx="18" cy="12" r="0.7" fill="#000080" />
-                    {Array.from({ length: 24 }).map((_, i) => (
-                      <line
-                        key={i}
-                        x1="18"
-                        y1="12"
-                        x2={18 + 3.1 * Math.cos((i * 15 * Math.PI) / 180)}
-                        y2={12 + 3.1 * Math.sin((i * 15 * Math.PI) / 180)}
-                        stroke="#000080"
-                        strokeWidth="0.35"
-                      />
-                    ))}
-                  </svg>
+                  <img src="/logo.png" alt="Mechanism Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
 
                 {!isCollapsed && (
@@ -1827,7 +1858,7 @@ export default function WorkerDashboard() {
                         textOverflow: 'ellipsis',
                       }}
                     >
-                      {isMr ? 'अधिकारी व बूथ कक्ष' : 'Field Officer HQ'}
+                      'Mechanism'
                     </div>
                     <div
                       style={{
@@ -2334,6 +2365,68 @@ export default function WorkerDashboard() {
           WebkitOverflowScrolling: 'touch',
         }}
       >
+        {/* DESKTOP TOP HEADER (>= 992px) — Prominently shows Logged-In User Details */}
+        <header className="worker-desktop-top-header">
+          <div className="desktop-header-left">
+            <div className="desktop-breadcrumb">
+              <span className="desktop-breadcrumb-portal">🇮🇳 {isMr ? 'अधिकारी व कार्यक्षेत्र कक्ष' : 'Field Officer HQ'}</span>
+              <span className="desktop-breadcrumb-divider">/</span>
+              <span className="desktop-breadcrumb-active">
+                {currentNav ? (isMr ? currentNav.label_mr : currentNav.label_en) : activeTab}
+              </span>
+            </div>
+            <div className="desktop-sub-badge">
+              📍 {profileData.assignedWard ? `${isMr ? 'प्रभाग:' : 'Ward:'} ${profileData.assignedWard}` : (isMr ? 'सांगली कार्यक्षेत्र' : 'Sangli Territory')}
+            </div>
+          </div>
+
+          <div className="desktop-header-right">
+            {/* Live Clock Component */}
+            <div className="desktop-clock-pill">
+              <LiveClock isMr={isMr} variant="header" />
+            </div>
+
+            {/* Online / Offline Pill */}
+            <span
+              className={`mobile-status-pill ${isOnline ? 'online' : 'offline'}`}
+              title={isOnline ? (isMr ? 'ऑनलाइन डेटा सिंक' : 'Online Sync') : (isMr ? 'ऑफलाइन' : 'Offline')}
+            >
+              <span className="status-dot" />
+              <span className="status-text">{isOnline ? (isMr ? 'ऑनलाइन' : 'Online') : (isMr ? 'ऑफलाइन' : 'Offline')}</span>
+            </span>
+
+            {/* Language Switch Button */}
+            <button
+              type="button"
+              className="karyakarta-btn karyakarta-btn-outline desktop-lang-btn"
+              onClick={() => changeLanguage(language === 'mr' ? 'en' : 'mr')}
+              title={isMr ? 'इंग्रजीत बदला' : 'Switch to Marathi'}
+            >
+              🌐 {language === 'mr' ? 'English' : 'मराठी'}
+            </button>
+
+            {/* Logged-in User Profile Bar & Quick Access Button */}
+            <button
+              type="button"
+              onClick={() => setActiveTab('User Profile')}
+              className={`desktop-user-profile-btn ${activeTab === 'User Profile' ? 'active' : ''}`}
+              title={isMr ? 'माझे संपूर्ण प्रोफाइल पहा' : 'View Full Profile'}
+            >
+              <div className="desktop-user-avatar">
+                {(profileData.fullName || user?.full_name || user?.name || 'A').charAt(0)}
+              </div>
+              <div className="desktop-user-text">
+                <div className="desktop-user-name">
+                  {profileData.fullName || user?.full_name || user?.name || (isMr ? 'अधिकारी' : 'Officer')}
+                </div>
+                <div className="desktop-user-role">
+                  {profileData.role || 'WORKER'} {profileData.caste ? `• ${profileData.caste}` : ''}
+                </div>
+              </div>
+            </button>
+          </div>
+        </header>
+
         {/* RESPONSIVE MOBILE & TABLET TOP HEADER (< 992px) */}
         <header className="worker-mobile-top-header">
           <div className="mobile-header-left">
@@ -2348,7 +2441,7 @@ export default function WorkerDashboard() {
             </button>
             <div className="mobile-brand-info">
               <span className="mobile-brand-title">
-                {isMr ? 'अधिकारी कक्ष' : 'Officer Portal'}
+                {profileData.fullName || user?.full_name || user?.name || (isMr ? 'अधिकारी कक्ष' : 'Officer Portal')}
               </span>
               <span className="mobile-active-tab-badge">
                 {currentNav ? (isMr ? currentNav.label_mr : currentNav.label_en) : activeTab}
@@ -2374,13 +2467,25 @@ export default function WorkerDashboard() {
               {language === 'mr' ? 'EN' : 'मराठी'}
             </button>
 
-            <div
-              className="mobile-user-avatar"
+            <button
+              type="button"
+              className="mobile-user-avatar-btn"
               onClick={() => setActiveTab('User Profile')}
               title={isMr ? 'माझे प्रोफाइल' : 'My Profile'}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                background: 'transparent',
+                border: 'none',
+                padding: 0,
+                cursor: 'pointer'
+              }}
             >
-              {(profileData.fullName || user?.full_name || 'K').charAt(0)}
-            </div>
+              <div className="mobile-user-avatar">
+                {(profileData.fullName || user?.full_name || user?.name || 'A').charAt(0)}
+              </div>
+            </button>
           </div>
         </header>
 

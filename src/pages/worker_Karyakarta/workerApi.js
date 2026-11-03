@@ -7,7 +7,11 @@ export const workerApi = {
     return res.data?.data;
   },
 
-  // 2. Profile
+  // 2. Profile & Castes
+  getCastes: async () => {
+    const res = await apiClient.get('/worker/castes');
+    return res.data?.data || [];
+  },
   getProfile: async () => {
     const res = await apiClient.get('/worker/profile');
     return res.data?.data;

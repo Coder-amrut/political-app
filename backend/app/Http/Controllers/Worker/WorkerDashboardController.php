@@ -108,6 +108,25 @@ class WorkerDashboardController extends Controller
     /**
      * 2. Worker Profile
      */
+    /**
+     * Get Castes Master List
+     */
+    public function getCastes()
+    {
+        $castes = DB::table('castes')
+            ->where('is_active', true)
+            ->orderBy('caste_name_mr', 'asc')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data'    => $castes,
+        ]);
+    }
+
+    /**
+     * 2. User & Worker Profile Management (Full User Profile with Caste)
+     */
     public function getProfile(Request $request)
     {
         $workerId = $this->getWorkerId($request);
@@ -132,13 +151,26 @@ class WorkerDashboardController extends Controller
                 'assigned_ward'  => 'प्रभाग क्र. १ - सांगली',
                 'primary_booths' => 'बूथ क्र. १, बूथ क्र. २',
                 'epic'           => 'MH/44/' . str_pad($user->id, 6, '0', STR_PAD_LEFT),
+                'caste'          => 'मराठा',
+                'caste_category' => 'OPEN',
             ]);
             $profile = DB::table('worker_profiles')->where('user_id', $user->id)->first();
         }
 
+        // Fetch user caste from user_castes table
+        $userCaste = DB::table('user_castes')->where('user_id', $workerId)->latest()->first();
+
+        // Fetch user primary role
+        $roleName = DB::table('user_roles')
+            ->join('roles', 'user_roles.role_id', '=', 'roles.id')
+            ->where('user_roles.user_id', $workerId)
+            ->value('roles.name') ?? 'WORKER';
+
         return response()->json([
             'success' => true,
             'data'    => [
+                'id'             => $user?->id ?? $workerId,
+                'uuid'           => $user?->uuid ?? '',
                 'fullName'       => $user?->full_name ?? '',
                 'dob'            => $profile?->dob ?? '',
                 'phone'          => $user?->phone ?? '',
@@ -150,35 +182,80 @@ class WorkerDashboardController extends Controller
                 'epic'           => $profile?->epic ?? '',
                 'responsibility' => $profile?->responsibility ?? 'बूथ व मतदार संपर्क प्रमुख',
                 'employeeCode'   => $profile?->employee_code ?? ('WRK-' . str_pad($workerId, 4, '0', STR_PAD_LEFT)),
+                'caste'          => $userCaste?->caste_name ?? $user?->caste ?? $profile?->caste ?? 'मराठा',
+                'subCaste'       => $userCaste?->sub_caste ?? $profile?->sub_caste ?? '',
+                'category'       => $userCaste?->category ?? $user?->caste_category ?? $profile?->caste_category ?? 'OPEN',
+                'role'           => $roleName,
+                'status'         => $user?->status ?? 'ACTIVE',
+                'aadharNumber'   => $user?->aadhar_number ?? $profile?->aadhar_number ?? '',
+                'panNumber'      => $user?->pan_number ?? $profile?->pan_number ?? '',
+                'registeredAt'   => $user?->created_at ?? '',
+                'lastLoginAt'    => $user?->last_login_at ?? '',
+                'assembly'       => '२८२ - सांगली',
+                'lokSabha'       => '४४ - सांगली लोकसभा',
+                'state'          => 'महाराष्ट्र',
+                'district'       => 'सांगली',
             ],
         ]);
     }
 
     /**
-     * Update Profile
+     * Update Profile (including user caste stored in user_castes table)
      */
     public function updateProfile(Request $request)
     {
         $workerId = $this->getWorkerId($request);
 
         $data = $request->validate([
-            'fullName'      => 'nullable|string|max:255',
-            'dob'           => 'nullable|string',
-            'phone'         => 'nullable|string',
-            'email'         => 'nullable|email',
-            'address'       => 'nullable|string',
-            'assignedWard'  => 'nullable|string',
-            'primaryBooths' => 'nullable|string',
-            'epic'          => 'nullable|string',
+            'fullName'       => 'nullable|string|max:255',
+            'dob'            => 'nullable|string',
+            'phone'          => 'nullable|string',
+            'email'          => 'nullable|email',
+            'address'        => 'nullable|string',
+            'assignedWard'   => 'nullable|string',
+            'primaryBooths'  => 'nullable|string',
+            'epic'           => 'nullable|string',
+            'responsibility' => 'nullable|string',
+            'employeeCode'   => 'nullable|string',
+            'caste'          => 'nullable|string|max:100',
+            'subCaste'       => 'nullable|string|max:100',
+            'category'       => 'nullable|string|max:50',
+            'aadharNumber'   => 'nullable|string|max:20',
+            'panNumber'      => 'nullable|string|max:20',
         ]);
 
-        if (!empty($data['fullName']) || !empty($data['email']) || !empty($data['phone'])) {
-            DB::table('users')->where('id', $workerId)->update(array_filter([
-                'full_name'  => $data['fullName'] ?? null,
-                'email'      => $data['email'] ?? null,
-                'phone'      => $data['phone'] ?? null,
-                'updated_at' => now(),
-            ]));
+        $userUpdates = array_filter([
+            'full_name'      => $data['fullName'] ?? null,
+            'email'          => $data['email'] ?? null,
+            'phone'          => $data['phone'] ?? null,
+            'caste'          => $data['caste'] ?? null,
+            'caste_category' => $data['category'] ?? null,
+            'aadhar_number'  => $data['aadharNumber'] ?? null,
+            'pan_number'     => $data['panNumber'] ?? null,
+        ]);
+        if (!empty($userUpdates)) {
+            $userUpdates['updated_at'] = now();
+            DB::table('users')->where('id', $workerId)->update($userUpdates);
+        }
+
+        // Save into user_castes table
+        if (!empty($data['caste'])) {
+            $casteMaster = DB::table('castes')
+                ->where('caste_name_mr', $data['caste'])
+                ->orWhere('caste_name_en', $data['caste'])
+                ->first();
+
+            DB::table('user_castes')->updateOrInsert(
+                ['user_id' => $workerId],
+                [
+                    'caste_id'   => $casteMaster?->id,
+                    'caste_name' => $data['caste'],
+                    'sub_caste'  => $data['subCaste'] ?? null,
+                    'category'   => $data['category'] ?? ($casteMaster?->category ?? 'OPEN'),
+                    'updated_at' => now(),
+                    'created_at' => now(),
+                ]
+            );
         }
 
         DB::table('worker_profiles')->updateOrInsert(
@@ -189,14 +266,21 @@ class WorkerDashboardController extends Controller
                 'assigned_ward'  => $data['assignedWard'] ?? null,
                 'primary_booths' => $data['primaryBooths'] ?? null,
                 'epic'           => $data['epic'] ?? null,
+                'responsibility' => $data['responsibility'] ?? null,
+                'employee_code'  => $data['employeeCode'] ?? null,
+                'caste'          => $data['caste'] ?? null,
+                'sub_caste'      => $data['subCaste'] ?? null,
+                'caste_category' => $data['category'] ?? null,
+                'aadhar_number'  => $data['aadharNumber'] ?? null,
+                'pan_number'     => $data['panNumber'] ?? null,
             ]
         );
 
-        $this->logActivity($workerId, 'users', 'कार्यकर्ता प्रोफाइल अद्ययावत केली', '#DCFCE7', '#16A34A');
+        $this->logActivity($workerId, 'users', 'कार्यकर्ता प्रोफाइल व जात अद्ययावत केली', '#DCFCE7', '#16A34A');
 
         return response()->json([
             'success' => true,
-            'message' => 'Profile updated successfully',
+            'message' => 'Profile & caste updated successfully',
         ]);
     }
 
@@ -472,6 +556,8 @@ class WorkerDashboardController extends Controller
                     'id'            => $sub->id,
                     'survey_id'     => $sub->survey_id,
                     'citizen_name'  => $sub->citizen_name,
+                    'caste'         => $sub->caste ?? ($answers['caste'] ?? ''),
+                    'caste_category'=> $sub->caste_category ?? ($answers['caste_category'] ?? ''),
                     'voter_id'      => $sub->voter_id,
                     'phone'         => $sub->phone,
                     'rating'        => $sub->rating,
@@ -501,12 +587,14 @@ class WorkerDashboardController extends Controller
         $publishedFormId = $request->input('published_form_id') ?? $request->input('surveyId');
 
         $validator = Validator::make($request->all(), [
-            'pramukh_name' => 'nullable|string',
-            'citizenName'  => 'nullable|string',
-            'total_matdar' => 'nullable|integer',
-            'phone'        => 'nullable|string',
-            'address'      => 'nullable|string',
-            'members'      => 'nullable|array',
+            'pramukh_name'   => 'nullable|string',
+            'citizenName'    => 'nullable|string',
+            'caste'          => 'nullable|string',
+            'caste_category' => 'nullable|string',
+            'total_matdar'   => 'nullable|integer',
+            'phone'          => 'nullable|string',
+            'address'        => 'nullable|string',
+            'members'        => 'nullable|array',
             'custom_answers' => 'nullable|array',
         ]);
 
@@ -515,6 +603,19 @@ class WorkerDashboardController extends Controller
         }
 
         $citizenName = $request->input('pramukh_name') ?? $request->input('citizenName') ?? 'नागरिक';
+        $caste = $request->input('caste') ?? ($request->input('custom_answers.caste') ?? ($request->input('custom_answers.caste_name') ?? null));
+        $casteCategory = $request->input('caste_category') ?? null;
+
+        // If category not passed, look up from castes master table
+        if ($caste && empty($casteCategory)) {
+            $matchedCaste = DB::table('castes')
+                ->where('caste_name_mr', $caste)
+                ->orWhere('caste_name_en', $caste)
+                ->first();
+            if ($matchedCaste) {
+                $casteCategory = $matchedCaste->category;
+            }
+        }
 
         $formTitle = 'Voter Survey';
         if ($publishedFormId) {
@@ -553,6 +654,8 @@ class WorkerDashboardController extends Controller
             'published_form_id' => $publishedFormId,
             'worker_id'        => $workerId,
             'citizen_name'     => $citizenName,
+            'caste'            => $caste,
+            'caste_category'   => $casteCategory,
             'voter_id'         => $firstVoterId,
             'phone'            => $request->input('phone'),
             'feedback'         => $request->input('feedback') ?? ($customAnswers['feedback'] ?? null),
@@ -560,6 +663,8 @@ class WorkerDashboardController extends Controller
             'sentiment'        => ($request->input('rating', 5) >= 4) ? 'Positive' : (($request->input('rating', 5) == 3) ? 'Neutral' : 'Negative'),
             'response_answers' => json_encode([
                 'pramukh_name'   => $citizenName,
+                'caste'          => $caste,
+                'caste_category' => $casteCategory,
                 'total_matdar'   => $totalMatdar,
                 'address'        => $request->input('address'),
                 'phone'          => $request->input('phone'),
@@ -576,7 +681,7 @@ class WorkerDashboardController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'सर्व्हे फॉर्म यशस्वीरित्या जमा झाला!',
-            'data'    => ['id' => $submissionId],
+            'data'    => ['id' => $submissionId, 'caste' => $caste],
         ]);
     }
 

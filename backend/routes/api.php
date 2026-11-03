@@ -315,6 +315,7 @@ Route::prefix('neta')
 // ---------------------------------------------------------------------------
 Route::prefix('worker')->group(function () {
     Route::get('/overview', [WorkerDashboardController::class, 'overview']);
+    Route::get('/castes', [WorkerDashboardController::class, 'getCastes']);
     Route::get('/profile', [WorkerDashboardController::class, 'getProfile']);
     Route::put('/profile', [WorkerDashboardController::class, 'updateProfile']);
     Route::get('/tasks', [WorkerDashboardController::class, 'getTasks']);

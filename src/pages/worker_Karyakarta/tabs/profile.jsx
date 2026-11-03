@@ -16,7 +16,6 @@ import {
   Landmark,
   Hash,
   Clock,
-  BadgeCheck,
   Smartphone,
   Lock,
   Globe
@@ -570,74 +569,7 @@ export default function ProfileTab({
         </div>
       </div>
 
-      {/* 3. LOGGED-IN USER ACCOUNT & SYSTEM STATUS CARD */}
-      <div
-        style={{
-          background: '#ffffff',
-          borderRadius: '16px',
-          border: '1px solid #e2e8f0',
-          padding: '20px 24px',
-          boxShadow: '0 2px 8px rgba(15, 23, 42, 0.03)',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <BadgeCheck size={20} color="#2563eb" />
-            <h3 style={{ fontSize: '15.5px', fontWeight: '800', color: '#0f172a', margin: 0 }}>
-              {isMr ? 'लॉगिन वापरकर्ता खाते तपशील व सिस्टीम माहिती' : 'Logged-in User Account & System Info'}
-            </h3>
-          </div>
-          <span style={{ fontSize: '11.5px', fontWeight: '750', padding: '3px 10px', borderRadius: '12px', background: '#eff6ff', color: '#1d4ed8' }}>
-            {isMr ? 'डेटाबेस अधिकृत नोंद' : 'Database Verified'}
-          </span>
-        </div>
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))',
-            gap: '16px',
-            fontSize: '13px',
-          }}
-        >
-          <div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: '10px', border: '1px solid #f1f5f9' }}>
-            <span style={{ color: '#64748b', fontSize: '11px', display: 'block' }}>{isMr ? 'वापरकर्त्याचे नाव (User Name)' : 'User Name'}</span>
-            <span style={{ fontWeight: '800', color: '#0f172a', fontSize: '14px' }}>{displayName}</span>
-          </div>
-
-          <div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: '10px', border: '1px solid #f1f5f9' }}>
-            <span style={{ color: '#64748b', fontSize: '11px', display: 'block' }}>{isMr ? 'अधिकारी पद / भूमिका (Role)' : 'Role'}</span>
-            <span style={{ fontWeight: '800', color: '#ea580c' }}>{profileData.role || 'WORKER'}</span>
-          </div>
-
-          <div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: '10px', border: '1px solid #f1f5f9' }}>
-            <span style={{ color: '#64748b', fontSize: '11px', display: 'block' }}>{isMr ? 'खाते स्थिती (Account Status)' : 'Account Status'}</span>
-            <span style={{ fontWeight: '800', color: '#16a34a' }}>● {profileData.status || 'ACTIVE'}</span>
-          </div>
-
-          <div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: '10px', border: '1px solid #f1f5f9' }}>
-            <span style={{ color: '#64748b', fontSize: '11px', display: 'block' }}>{isMr ? 'सिस्टम आयडी (User ID)' : 'User ID'}</span>
-            <span style={{ fontWeight: '800', color: '#0f172a', fontFamily: 'monospace' }}>#{profileData.id || user?.id || 3}</span>
-          </div>
-
-          <div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: '10px', border: '1px solid #f1f5f9' }}>
-            <span style={{ color: '#64748b', fontSize: '11px', display: 'block' }}>{isMr ? 'खाते नोंदणी दिनांक (Registered At)' : 'Registered At'}</span>
-            <span style={{ fontWeight: '700', color: '#334155' }}>{profileData.registeredAt || '2026-10-02 10:24:10'}</span>
-          </div>
-
-          <div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: '10px', border: '1px solid #f1f5f9' }}>
-            <span style={{ color: '#64748b', fontSize: '11px', display: 'block' }}>{isMr ? 'शेवटचे लॉगिन (Last Login)' : 'Last Login'}</span>
-            <span style={{ fontWeight: '700', color: '#334155' }}>{profileData.lastLoginAt || (isMr ? 'आत्ताच (Active now)' : 'Active now')}</span>
-          </div>
-
-          <div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: '10px', border: '1px solid #f1f5f9', gridColumn: 'span 2' }}>
-            <span style={{ color: '#64748b', fontSize: '11px', display: 'block' }}>{isMr ? 'सिस्टम सुरक्षित संदर्भ कोड (UUID)' : 'System Secure UUID'}</span>
-            <span style={{ fontWeight: '700', color: '#475569', fontFamily: 'monospace', wordBreak: 'break-all' }}>
-              {profileData.uuid || '1040ac8d-6bb1-4faa-ba19-4dcaf1be2d7a'}
-            </span>
-          </div>
-        </div>
-      </div>
 
       {/* 4. PERFORMANCE & ACTIVITY METRICS */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px' }}>

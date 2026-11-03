@@ -609,7 +609,7 @@ export default function WorkerLogin({ onLoginSuccess, initialMode = 'login' }) {
               </div>
 
               {/* Bottom Switch Link to Register */}
-              <div className="officer-switch-footer" style={{ padding: '8px 0 16px', textAlign: 'center' }}>
+              <div className="officer-switch-footer" style={{ padding: '8px 0 10px', textAlign: 'center' }}>
                 <span>{isMr ? 'खाते नाही?' : "Don't have an account?"} </span>
                 <button
                   type="button"
@@ -834,7 +834,7 @@ export default function WorkerLogin({ onLoginSuccess, initialMode = 'login' }) {
               </button>
 
               {/* Bottom Switch Link to Login */}
-              <div className="officer-switch-footer" style={{ padding: '8px 0 24px', textAlign: 'center' }}>
+              <div className="officer-switch-footer" style={{ padding: '8px 0 10px', textAlign: 'center' }}>
                 <span>{isMr ? 'आधीच खाते आहे?' : 'Already have an account?'} </span>
                 <button
                   type="button"

@@ -112,6 +112,7 @@ Route::prefix('admin')
         Route::put('/users/{userId}/permissions', [RoleController::class, 'syncUserPermissions'])->whereNumber('userId');
         Route::post('/users/{userId}/permissions/give', [RoleController::class, 'giveUserPermission'])->whereNumber('userId');
         Route::delete('/users/{userId}/permissions/{permissionId}', [RoleController::class, 'removeUserPermission'])->whereNumber('userId')->whereNumber('permissionId');
+        Route::post('/users/{userId}/toggle-ai-access', [RoleController::class, 'toggleAiAccess'])->whereNumber('userId');
         Route::get('/project-geography/districts', [ProjectGeographyLookupController::class, 'districts']);
         Route::get('/project-geography/lok-sabha', [ProjectGeographyLookupController::class, 'lokSabha']);
         Route::get('/project-geography/lok-sabha/{lokSabhaNo}/assemblies', [ProjectGeographyLookupController::class, 'assembliesForLokSabha'])->whereNumber('lokSabhaNo');
@@ -355,6 +356,10 @@ Route::prefix('worker')->group(function () {
         Route::post('/start-election', [KarkartaEvmController::class, 'startElection']);
         Route::post('/end-election', [KarkartaEvmController::class, 'endElection']);
     });
+
+    // AI Database Chatbot Assistant for Application
+    Route::get('/chatbot/suggestions', [AdminChatbotController::class, 'getSuggestions']);
+    Route::post('/chatbot/query', [AdminChatbotController::class, 'handleQuery']);
 });
 
 

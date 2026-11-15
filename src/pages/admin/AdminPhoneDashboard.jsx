@@ -123,6 +123,12 @@ export default function AdminPhoneDashboard() {
   const [approvalFilter, setApprovalFilter] = useState('ALL');
   const [toastMsg, setToastMsg] = useState('');
 
+  // Users & AI Permissions State
+  const [allUsersList, setAllUsersList] = useState([]);
+  const [isLoadingUsers, setIsLoadingUsers] = useState(false);
+  const [userSearchText, setUserSearchText] = useState('');
+  const [togglingUserAiId, setTogglingUserAiId] = useState(null);
+
   // Interactive Modals State
   const [selectedMetricModal, setSelectedMetricModal] = useState(null); // 'voters' | 'booths' | 'approvals' | 'workers' | 'issues' | 'villages'
   const [selectedWorkerForAttendance, setSelectedWorkerForAttendance] = useState(null);
@@ -291,6 +297,47 @@ export default function AdminPhoneDashboard() {
     fetchTalukasAndVillages();
     return () => { isMounted = false; };
   }, [selectedDistrictCode, selectedTalukaCode]);
+
+  // Load All Registered Users for User & AI Permissions Tab
+  const loadAllUsers = useCallback(async () => {
+    setIsLoadingUsers(true);
+    try {
+      const res = await apiClient.get('/admin/users-list');
+      if (res.data?.data) {
+        setAllUsersList(res.data.data);
+      }
+    } catch (err) {
+      console.warn('Failed to fetch users list:', err);
+    } finally {
+      setIsLoadingUsers(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadAllUsers();
+  }, [loadAllUsers]);
+
+  const handleToggleUserAi = async (u) => {
+    setTogglingUserAiId(u.id);
+    const newStatus = !u.can_use_ai;
+    setAllUsersList((prev) =>
+      prev.map((item) => (item.id === u.id ? { ...item, can_use_ai: newStatus } : item))
+    );
+    try {
+      await apiClient.post(`/admin/users/${u.id}/toggle-ai-access`);
+      setToastMsg(newStatus ? `✓ ${u.full_name} यांना AI ॲक्सेस दिला.` : `✓ ${u.full_name} यांचा AI ॲक्सेस काढला.`);
+      setTimeout(() => setToastMsg(''), 3000);
+    } catch (err) {
+      console.error('Toggle failed:', err);
+      setAllUsersList((prev) =>
+        prev.map((item) => (item.id === u.id ? { ...item, can_use_ai: !newStatus } : item))
+      );
+      setToastMsg('त्रुटी आली.');
+      setTimeout(() => setToastMsg(''), 3000);
+    } finally {
+      setTogglingUserAiId(null);
+    }
+  };
 
   // District selection handler
   const handleSelectDistrict = (district) => {
@@ -866,6 +913,17 @@ export default function AdminPhoneDashboard() {
                   <span>📍</span> {isMr ? 'कार्यकर्ते हजेरी ट्रॅकिंग' : 'Worker Attendance'}
                 </span>
                 <span className="admin-badge-count">{attendances.length}</span>
+              </button>
+
+              <button
+                type="button"
+                className={`admin-drawer-item ${activeTab === 'users' ? 'active' : ''}`}
+                onClick={() => { setActiveTab('users'); setIsDrawerOpen(false); }}
+              >
+                <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span>👥</span> {isMr ? 'वापरकर्ते व AI परवानग्या' : 'Users & AI Permissions'}
+                </span>
+                <span className="admin-badge-count">{allUsersList.length}</span>
               </button>
 
               <button
@@ -1939,6 +1997,181 @@ export default function AdminPhoneDashboard() {
                       प्रशासक: <code>{user?.email || 'admin@gmail.com'}</code> • अधिकृत टोकन जोडलेले
                     </div>
                   </div>
+                </div>
+              </div>
+            )}
+
+            {/* ================= TAB 8: USERS & AI CHATBOT PERMISSIONS ================= */}
+            {activeTab === 'users' && (
+              <div className="admin-section-card">
+                <div className="admin-section-header">
+                  <div className="admin-section-title">
+                    <Users size={18} style={{ color: '#2563eb' }} />
+                    <span>{isMr ? 'सर्व वापरकर्ते व AI परवानग्या' : 'Users & AI Permissions'}</span>
+                  </div>
+                  <span className="admin-badge-count">{allUsersList.length} सदस्य</span>
+                </div>
+
+                {/* Search Input for Mobile */}
+                <div style={{ position: 'relative', marginBottom: '14px' }}>
+                  <input
+                    type="text"
+                    placeholder={isMr ? 'नाव, फोन किंवा ईमेलने शोधा...' : 'Search name, phone or email...'}
+                    value={userSearchText}
+                    onChange={(e) => setUserSearchText(e.target.value)}
+                    style={{
+                      width: '100%',
+                      boxSizing: 'border-box',
+                      padding: '9px 12px 9px 34px',
+                      borderRadius: '10px',
+                      border: '1px solid #cbd5e1',
+                      fontSize: '13px',
+                      background: '#f8fafc',
+                      outline: 'none',
+                    }}
+                  />
+                  <span style={{ position: 'absolute', left: '11px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }}>
+                    🔍
+                  </span>
+                  {userSearchText && (
+                    <button
+                      type="button"
+                      onClick={() => setUserSearchText('')}
+                      style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+
+                {/* User Cards List */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {isLoadingUsers ? (
+                    <div style={{ padding: '24px', textAlign: 'center', color: '#64748b', fontSize: '13px', fontWeight: '700' }}>
+                      ⏳ वापरकर्ते लोड होत आहेत...
+                    </div>
+                  ) : allUsersList.length === 0 ? (
+                    <div style={{ padding: '24px', textAlign: 'center', color: '#64748b', fontSize: '13px' }}>
+                      कोणतेही वापरकर्ते आढळले नाहीत.
+                    </div>
+                  ) : (
+                    allUsersList
+                      .filter((u) => {
+                        if (!userSearchText.trim()) return true;
+                        const q = userSearchText.toLowerCase();
+                        return (
+                          (u.full_name || '').toLowerCase().includes(q) ||
+                          (u.phone || '').includes(q) ||
+                          (u.email || '').toLowerCase().includes(q)
+                        );
+                      })
+                      .map((u) => {
+                        const hasAi = Boolean(u.can_use_ai);
+                        const isToggling = togglingUserAiId === u.id;
+                        const roleName = u.roles?.map((r) => r.name).join(', ') || 'WORKER';
+
+                        return (
+                          <div
+                            key={u.id}
+                            style={{
+                              background: '#ffffff',
+                              border: '1px solid #e2e8f0',
+                              borderRadius: '12px',
+                              padding: '12px 14px',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              gap: '8px',
+                              boxShadow: '0 1px 4px rgba(0,0,0,0.03)',
+                            }}
+                          >
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <div
+                                  style={{
+                                    width: '36px',
+                                    height: '36px',
+                                    borderRadius: '10px',
+                                    background: hasAi ? '#eff6ff' : '#f1f5f9',
+                                    color: hasAi ? '#1d4ed8' : '#64748b',
+                                    border: `1.5px solid ${hasAi ? '#bfdbfe' : '#e2e8f0'}`,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontWeight: '800',
+                                    fontSize: '13px',
+                                  }}
+                                >
+                                  {u.full_name ? u.full_name.charAt(0).toUpperCase() : 'U'}
+                                </div>
+                                <div>
+                                  <div style={{ fontWeight: '800', color: '#0f172a', fontSize: '14px' }}>
+                                    {u.full_name}
+                                  </div>
+                                  <div style={{ fontSize: '11px', color: '#64748b' }}>
+                                    📞 {u.phone || '—'} {u.email ? `• ✉️ ${u.email}` : ''}
+                                  </div>
+                                </div>
+                              </div>
+
+                              <span
+                                style={{
+                                  fontSize: '10.5px',
+                                  padding: '2px 8px',
+                                  borderRadius: '6px',
+                                  fontWeight: '800',
+                                  background: roleName.includes('ADMIN') ? '#fef3c7' : roleName.includes('OFFICER') ? '#faf5ff' : '#eff6ff',
+                                  color: roleName.includes('ADMIN') ? '#b45309' : roleName.includes('OFFICER') ? '#7c3aed' : '#1d4ed8',
+                                  border: `1px solid ${roleName.includes('ADMIN') ? '#fde68a' : roleName.includes('OFFICER') ? '#ddd6fe' : '#bfdbfe'}`,
+                                }}
+                              >
+                                {roleName}
+                              </span>
+                            </div>
+
+                            {/* AI Chatbot Status & Toggle Row */}
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #f1f5f9', paddingTop: '8px', marginTop: '2px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <span style={{ fontSize: '11px', color: '#64748b', fontWeight: '700' }}>
+                                  AI Chatbot:
+                                </span>
+                                {hasAi ? (
+                                  <span style={{ fontSize: '11px', fontWeight: '800', color: '#15803d', background: '#dcfce7', padding: '2px 7px', borderRadius: '10px', border: '1px solid #86efac' }}>
+                                    🟢 सुरू (Active)
+                                  </span>
+                                ) : (
+                                  <span style={{ fontSize: '11px', fontWeight: '800', color: '#64748b', background: '#f1f5f9', padding: '2px 7px', borderRadius: '10px', border: '1px solid #cbd5e1' }}>
+                                    🔒 बंद (Disabled)
+                                  </span>
+                                )}
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={() => handleToggleUserAi(u)}
+                                disabled={isToggling}
+                                style={{
+                                  padding: '6px 12px',
+                                  borderRadius: '7px',
+                                  border: 'none',
+                                  fontWeight: '800',
+                                  fontSize: '11.5px',
+                                  cursor: isToggling ? 'not-allowed' : 'pointer',
+                                  background: hasAi
+                                    ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
+                                    : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                                  color: '#ffffff',
+                                  boxShadow: hasAi
+                                    ? '0 2px 4px rgba(220,38,38,0.25)'
+                                    : '0 2px 4px rgba(16,185,129,0.25)',
+                                }}
+                              >
+                                {isToggling ? '...' : hasAi ? (isMr ? '🔒 ॲक्सेस काढा' : 'Revoke AI') : (isMr ? '🤖 AI ॲक्सेस द्या' : 'Grant AI')}
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })
+                  )}
                 </div>
               </div>
             )}

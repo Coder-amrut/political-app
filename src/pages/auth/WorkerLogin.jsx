@@ -304,10 +304,11 @@ export default function WorkerLogin({ onLoginSuccess, initialMode = 'login' }) {
   };
 
   // ===================== LOGIN FORM SUBMIT (EMAIL/PHONE + PASSWORD) =====================
-  const handleLoginSubmit = async (e) => {
-    e.preventDefault();
-    const cleanLogin = identifier.trim().replace('#', '@');
-    if (!cleanLogin || !password) {
+  const handleLoginSubmit = async (e, directEmail, directPassword) => {
+    if (e && e.preventDefault) e.preventDefault();
+    const cleanLogin = (directEmail || identifier).trim().replace('#', '@');
+    const cleanPassword = directPassword || password;
+    if (!cleanLogin || !cleanPassword) {
       setError(isMr ? 'कृपया ईमेल किंवा मोबाईल नंबर आणि पासवर्ड प्रविष्ट करा.' : 'Please enter email/phone and password.');
       return;
     }
@@ -316,17 +317,47 @@ export default function WorkerLogin({ onLoginSuccess, initialMode = 'login' }) {
     setSuccessMsg('');
     setLoading(true);
 
+    const lowerLogin = cleanLogin.toLowerCase();
+    const isDemoAccount = (
+      (lowerLogin === 'appadmin@gmail.com' && cleanPassword === '123456') ||
+      (lowerLogin === 'admin@gmail.com' && cleanPassword === '123456') ||
+      (lowerLogin === 'webadmin@gmail.com' && cleanPassword === '123456')
+    );
+
     try {
-      await login({ login: cleanLogin, password });
+      await login({ login: cleanLogin, password: cleanPassword });
       if (onLoginSuccess) onLoginSuccess();
     } catch (err) {
-      setError(
-        err?.message ||
-        (isMr ? 'लॉगिन अयशस्वी. कृपया योग्य क्रेडेन्शियल्स प्रविष्ट करा.' : 'Login failed. Please enter valid credentials.')
-      );
+      if (isDemoAccount) {
+        // Fallback demo login for presentation
+        const demoUser = {
+          id: 1,
+          full_name: lowerLogin.startsWith('app') ? 'App Administrator' : (lowerLogin.startsWith('web') ? 'Web Administrator' : 'Super Administrator'),
+          name: lowerLogin.startsWith('app') ? 'App Administrator' : (lowerLogin.startsWith('web') ? 'Web Administrator' : 'Super Administrator'),
+          email: cleanLogin,
+          phone: '9876543210',
+          status: 'ACTIVE',
+          roles: ['ADMIN', 'OFFICER'],
+          role: 'ADMIN',
+        };
+        setSession('demo-token-123456-officer', demoUser);
+        setSuccessMsg(isMr ? 'डेमो लॉगिन यशस्वी!' : 'Demo login successful!');
+        if (onLoginSuccess) setTimeout(() => onLoginSuccess(), 400);
+      } else {
+        setError(
+          err?.message ||
+          (isMr ? 'लॉगिन अयशस्वी. कृपया योग्य क्रेडेन्शियल्स प्रविष्ट करा.' : 'Login failed. Please enter valid credentials.')
+        );
+      }
     } finally {
       setLoading(false);
     }
+  };
+
+  const fillDemoCredentials = (email, pass) => {
+    setIdentifier(email);
+    setPassword(pass);
+    handleLoginSubmit(null, email, pass);
   };
 
   return (
@@ -591,6 +622,52 @@ export default function WorkerLogin({ onLoginSuccess, initialMode = 'login' }) {
                     >
                       {isMr ? 'पासवर्ड विसरलात?' : 'Forgot password?'}
                     </a>
+                  </div>
+                  {/* Demo Quick Access Badges for Presentation */}
+                  <div style={{
+                    marginTop: '8px',
+                    padding: '10px 12px',
+                    background: '#f8fafc',
+                    borderRadius: '10px',
+                    border: '1px dashed #cbd5e1'
+                  }}>
+                    <div style={{ fontSize: '11px', fontWeight: '700', color: '#64748b', textTransform: 'uppercase', marginBottom: '6px', letterSpacing: '0.5px' }}>
+                      ⚡ Demo Quick Access (डेमो अ‍ॅक्सेस)
+                    </div>
+                    <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                      <button
+                        type="button"
+                        onClick={() => fillDemoCredentials('appadmin@gmail.com', '123456')}
+                        style={{
+                          fontSize: '11px',
+                          fontWeight: '600',
+                          padding: '4px 8px',
+                          borderRadius: '6px',
+                          background: '#eff6ff',
+                          color: '#1d4ed8',
+                          border: '1px solid #bfdbfe',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        App Admin (123456)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => fillDemoCredentials('admin@gmail.com', '123456')}
+                        style={{
+                          fontSize: '11px',
+                          fontWeight: '600',
+                          padding: '4px 8px',
+                          borderRadius: '6px',
+                          background: '#fef3c7',
+                          color: '#b45309',
+                          border: '1px solid #fde68a',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Admin (123456)
+                      </button>
+                    </div>
                   </div>
                 </div>
 

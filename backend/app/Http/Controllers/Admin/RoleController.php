@@ -247,8 +247,41 @@ class RoleController extends Controller
                     'name' => $r->name,
                     'display_name' => $r->display_name,
                 ]),
+                'direct_permissions' => $u->directPermissions->pluck('name'),
                 'direct_permissions_count' => $u->directPermissions->count(),
+                'can_use_ai' => $u->roles->contains('name', 'ADMIN') || $u->directPermissions->contains('name', 'ai_chatbot'),
             ]),
+        ]);
+    }
+
+    /**
+     * POST /api/admin/users/{userId}/toggle-ai-access
+     * Toggle AI Chatbot access (ai_chatbot permission) for a specific user.
+     */
+    public function toggleAiAccess(Request $request, int|string $userId): JsonResponse
+    {
+        $user = User::findOrFail($userId);
+        $aiPerm = Permission::firstOrCreate(
+            ['name' => 'ai_chatbot'],
+            ['description' => 'Access AI Political Campaign Assistant and speech guidance desk']
+        );
+
+        $hasAi = $user->directPermissions()->where('permissions.id', $aiPerm->id)->exists();
+        if ($hasAi) {
+            $user->directPermissions()->detach($aiPerm->id);
+            $newStatus = false;
+            $msg = "{$user->full_name} यांच्यासाठी AI Chatbot ॲक्सेस बंद करण्यात आला.";
+        } else {
+            $user->directPermissions()->syncWithoutDetaching([$aiPerm->id]);
+            $newStatus = true;
+            $msg = "{$user->full_name} यांना AI Chatbot ॲक्सेस देण्यात आला.";
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => $msg,
+            'user_id' => $user->id,
+            'can_use_ai' => $newStatus,
         ]);
     }
 

@@ -80,9 +80,27 @@ class AdminChatbotController extends Controller
     public function handleQuery(Request $request)
     {
         try {
-            $message = trim((string)($request->input('message') ?? $request->json('message') ?? ''));
             $lang = $request->input('lang', 'mr');
             $isMr = $lang === 'mr';
+
+            // Access Control: Verify Admin permission for AI Chatbot
+            $user = $request->user();
+            if ($user) {
+                $canUse = ($user instanceof \App\Models\Admin)
+                    || (method_exists($user, 'hasRole') && $user->hasRole('ADMIN'))
+                    || (method_exists($user, 'hasPermission') && $user->hasPermission('ai_chatbot'))
+                    || (method_exists($user, 'directPermissions') && $user->directPermissions()->where('name', 'ai_chatbot')->exists());
+                if (!$canUse) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => $isMr
+                            ? '🔒 आपल्याला AI चॅटबॉट वापरण्याची परवानगी अ‍ॅडमिनकडून मिळालेली नाही. कृपया मुख्य अ‍ॅडमिनशी संपर्क साधा.'
+                            : '🔒 Access denied. You do not have permission from the Administrator to use the AI Chatbot.',
+                    ], 403);
+                }
+            }
+
+            $message = trim((string)($request->input('message') ?? $request->json('message') ?? ''));
 
             if (empty($message)) {
                 return response()->json([
@@ -127,7 +145,7 @@ class AdminChatbotController extends Controller
             // 3. Query Gemini:
             // - 1st check on DB: Grounded in verified DB facts.
             // - Then check other side: General campaign strategy, slogans, advice, speeches.
-            $apiKey = env('GEMINI_API_KEY') ?: env('OPENAI_API_KEY');
+            $apiKey = env('GEMINI_API_KEY');
             if (!empty($apiKey)) {
                 $llmResponse = $this->queryGeminiApi($message, $contextData, $isMr, $hasDbMatch);
                 if (!empty($llmResponse)) {
@@ -1095,7 +1113,7 @@ class AdminChatbotController extends Controller
      */
     private function queryGeminiApi(string $userPrompt, array $contextData, bool $isMr, bool $hasDbMatch): ?string
     {
-        $apiKey = env('GEMINI_API_KEY') ?: env('OPENAI_API_KEY');
+        $apiKey = env('GEMINI_API_KEY');
         if (!$apiKey) return null;
 
         try {

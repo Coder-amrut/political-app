@@ -77,6 +77,7 @@ import { translations } from './translations';
 import Webcam from 'react-webcam';
 import { workerApi } from './workerApi';
 import KarkartaEvmVotingSystem from './components/KarkartaEvmVotingSystem';
+import AdminPhoneChatbot from '../admin/AdminPhoneChatbot';
 import {
   isNetworkOnline,
   getOfflineQueue,
@@ -210,6 +211,14 @@ export default function WorkerDashboard() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showFloatingChat, setShowFloatingChat] = useState(false);
+  const [isAiChatbotOpen, setIsAiChatbotOpen] = useState(false);
+  const [aiAccessDeniedNotice, setAiAccessDeniedNotice] = useState(false);
+
+  const canAccessAi = Boolean(
+    user?.can_use_ai ||
+    user?.roles?.includes('ADMIN') ||
+    (user?.permissions && user.permissions.includes('ai_chatbot'))
+  );
 
   // Offline & Auto-Sync State
   const [isOnline, setIsOnline] = useState(() => isNetworkOnline());
@@ -2629,6 +2638,166 @@ export default function WorkerDashboard() {
             <span>{isMr ? 'अधिक' : 'More'}</span>
           </button>
         </nav>
+
+        {/* Floating AI Chatbot Button (Phone Friendly) */}
+        <button
+          type="button"
+          onClick={() => {
+            if (canAccessAi) {
+              setIsAiChatbotOpen(true);
+            } else {
+              setAiAccessDeniedNotice(true);
+            }
+          }}
+          style={{
+            position: 'fixed',
+            bottom: '76px',
+            right: '16px',
+            zIndex: 45,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            background: canAccessAi
+              ? 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)'
+              : 'linear-gradient(135deg, #475569 0%, #64748b 100%)',
+            color: '#ffffff',
+            padding: '10px 16px',
+            borderRadius: '50px',
+            border: '2px solid rgba(255, 255, 255, 0.4)',
+            boxShadow: canAccessAi
+              ? '0 6px 20px rgba(37, 99, 235, 0.45)'
+              : '0 4px 12px rgba(0, 0, 0, 0.25)',
+            cursor: 'pointer',
+            fontWeight: '800',
+            fontSize: '13px',
+            transition: 'transform 0.15s ease',
+          }}
+          title={canAccessAi ? (isMr ? 'AI प्रचार सहाय्यक उघडा' : 'Open AI Assistant') : (isMr ? 'AI ॲक्सेससाठी ॲडमिनची परवानगी आवश्यक' : 'Admin Permission Required')}
+        >
+          <span style={{ fontSize: '18px' }}>{canAccessAi ? '🤖' : '🔒'}</span>
+          <span>{isMr ? 'AI सहाय्यक' : 'AI Assistant'}</span>
+          {canAccessAi && (
+            <span
+              style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                background: '#22c55e',
+                boxShadow: '0 0 6px #22c55e',
+              }}
+            />
+          )}
+        </button>
+
+        {/* Mobile AI Chatbot Modal Bottom Sheet */}
+        {isAiChatbotOpen && (
+          <div
+            style={{
+              position: 'fixed',
+              inset: 0,
+              background: 'rgba(6, 21, 41, 0.72)',
+              backdropFilter: 'blur(5px)',
+              zIndex: 1000,
+              display: 'flex',
+              alignItems: 'flex-end',
+              justifyContent: 'center',
+            }}
+            onClick={() => setIsAiChatbotOpen(false)}
+          >
+            <div
+              style={{
+                width: '100%',
+                maxWidth: '460px',
+                height: '86vh',
+                background: '#ffffff',
+                borderTopLeftRadius: '26px',
+                borderTopRightRadius: '26px',
+                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column',
+                boxShadow: '0 -10px 40px rgba(0, 0, 0, 0.35)',
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <AdminPhoneChatbot lang={language} apiPrefix="/worker" onClose={() => setIsAiChatbotOpen(false)} />
+            </div>
+          </div>
+        )}
+
+        {/* AI Access Denied Informational Modal */}
+        {aiAccessDeniedNotice && (
+          <div
+            style={{
+              position: 'fixed',
+              inset: 0,
+              background: 'rgba(15, 23, 42, 0.7)',
+              backdropFilter: 'blur(4px)',
+              zIndex: 1001,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '20px',
+            }}
+            onClick={() => setAiAccessDeniedNotice(false)}
+          >
+            <div
+              style={{
+                background: '#ffffff',
+                borderRadius: '18px',
+                maxWidth: '380px',
+                width: '100%',
+                padding: '26px 22px',
+                textAlign: 'center',
+                boxShadow: '0 20px 25px -5px rgba(0,0,0,0.3)',
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div
+                style={{
+                  width: '60px',
+                  height: '60px',
+                  borderRadius: '50%',
+                  background: '#fef2f2',
+                  border: '2px solid #fecaca',
+                  color: '#dc2626',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '28px',
+                  margin: '0 auto 16px',
+                }}
+              >
+                🔒
+              </div>
+              <h3 style={{ margin: '0 0 8px', fontSize: '18px', fontWeight: '800', color: '#0f172a' }}>
+                {isMr ? 'AI Chatbot परवानगी आवश्यक' : 'AI Chatbot Permission Required'}
+              </h3>
+              <p style={{ margin: '0 0 20px', fontSize: '13.5px', color: '#64748b', lineHeight: 1.5 }}>
+                {isMr
+                  ? 'आपल्या खात्यासाठी AI चॅटबॉट ॲक्सेस सध्या बंद आहे. मुख्य ॲडमिनने ॲडमिन पॅनेलमधून आपल्या नावापुढे AI ॲक्सेस सुरू केल्यानंतरच आपण हा चॅटबॉट वापरू शकता.'
+                  : 'AI Chatbot access is currently restricted for your account. You will be able to access it once the Administrator enables it for you in the Admin Panel.'}
+              </p>
+              <button
+                type="button"
+                onClick={() => setAiAccessDeniedNotice(false)}
+                style={{
+                  width: '100%',
+                  padding: '11px',
+                  borderRadius: '10px',
+                  background: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)',
+                  color: '#ffffff',
+                  border: 'none',
+                  fontWeight: '800',
+                  fontSize: '14px',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(37,99,235,0.35)',
+                }}
+              >
+                {isMr ? 'समजले (OK)' : 'Understand'}
+              </button>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

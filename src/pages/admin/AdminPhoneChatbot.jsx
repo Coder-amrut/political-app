@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import apiClient from '../../api/axios';
 import { Send, RefreshCw, X, Bot, Sparkles } from 'lucide-react';
 
-export default function AdminPhoneChatbot({ lang = 'mr', onClose = null }) {
+export default function AdminPhoneChatbot({ lang = 'mr', onClose = null, apiPrefix = '/admin' }) {
   const isMr = lang === 'mr';
 
   const [messages, setMessages] = useState([
@@ -10,8 +10,8 @@ export default function AdminPhoneChatbot({ lang = 'mr', onClose = null }) {
       id: 'welcome',
       sender: 'bot',
       text: isMr
-        ? '👋 नमस्कार अ‍ॅडमिन! मी आपला AI निवडणूक व प्रशासकीय सहाय्यक आहे. मी आपल्याला मतदार, बूथ, गावनिहाय लोकसंख्या, कार्यकर्ते आणि नागरी समस्यांची माहिती देऊ शकतो.'
-        : '👋 Hello Admin! I am your AI Campaign & Field Operations Assistant. I can help with voter counts, booths, village demographics, worker attendance, and civic issues.',
+        ? '👋 नमस्कार! मी आपला AI निवडणूक व प्रचार सहाय्यक आहे. मी आपल्याला मतदार, बूथ, गावनिहाय लोकसंख्या, आणि प्रचार योजनांची माहिती देऊ शकतो.'
+        : '👋 Hello! I am your AI Campaign & Field Operations Assistant. I can help with voter counts, booths, village demographics, and field operations.',
       structuredItems: [],
       suggestedActions: [
         { label: isMr ? '🏘️ गावनिहाय लोकसंख्या व मतदार' : '🏘️ Village Population & Voters', query: isMr ? 'गावानुसार एकूण लोकसंख्या आणि मतदार संख्या दाखवा' : 'Show village population and total voters summary' },
@@ -33,16 +33,25 @@ export default function AdminPhoneChatbot({ lang = 'mr', onClose = null }) {
   useEffect(() => {
     const fetchSuggestions = async () => {
       try {
-        const res = await apiClient.get('/admin/chatbot/suggestions', { params: { lang } });
+        const res = await apiClient.get(`${apiPrefix}/chatbot/suggestions`, { params: { lang } });
         if (res.data?.success && res.data?.suggestions) {
           setSuggestions(res.data.suggestions);
         }
       } catch (err) {
-        console.error('Failed to load chatbot suggestions:', err);
+        // Fallback to /worker/chatbot/suggestions or /admin/chatbot/suggestions if prefix mismatch
+        try {
+          const fallbackPrefix = apiPrefix === '/admin' ? '/worker' : '/admin';
+          const fbRes = await apiClient.get(`${fallbackPrefix}/chatbot/suggestions`, { params: { lang } });
+          if (fbRes.data?.success && fbRes.data?.suggestions) {
+            setSuggestions(fbRes.data.suggestions);
+          }
+        } catch {
+          console.error('Failed to load chatbot suggestions:', err);
+        }
       }
     };
     fetchSuggestions();
-  }, [lang]);
+  }, [lang, apiPrefix]);
 
   // Auto-scroll to latest message
   useEffect(() => {
@@ -65,10 +74,20 @@ export default function AdminPhoneChatbot({ lang = 'mr', onClose = null }) {
     setLoading(true);
 
     try {
-      const res = await apiClient.post('/admin/chatbot/query', {
-        message: textToSend,
-        lang,
-      });
+      let res;
+      try {
+        res = await apiClient.post(`${apiPrefix}/chatbot/query`, {
+          message: textToSend,
+          lang,
+        });
+      } catch (firstErr) {
+        // Try fallback prefix
+        const fallbackPrefix = apiPrefix === '/admin' ? '/worker' : '/admin';
+        res = await apiClient.post(`${fallbackPrefix}/chatbot/query`, {
+          message: textToSend,
+          lang,
+        });
+      }
 
       if (res.data?.success) {
         setMessages((prev) => [
@@ -87,14 +106,15 @@ export default function AdminPhoneChatbot({ lang = 'mr', onClose = null }) {
       }
     } catch (err) {
       console.error('Chatbot error:', err);
+      const serverMsg = err.response?.data?.message || err.message;
       setMessages((prev) => [
         ...prev,
         {
           id: `bot_err_${Date.now()}`,
           sender: 'bot',
-          text: isMr
+          text: serverMsg || (isMr
             ? '⚠️ क्षमस्व, विनंतीवर प्रक्रिया करताना त्रुटी आली. कृपया इंटरनेट तपासून पुन्हा प्रयत्न करा.'
-            : '⚠️ Sorry, an error occurred while processing your query. Please try again.',
+            : '⚠️ Sorry, an error occurred while processing your query. Please try again.'),
           timestamp: new Date().toLocaleTimeString(isMr ? 'mr-IN' : 'en-IN', { hour: '2-digit', minute: '2-digit' }),
         },
       ]);

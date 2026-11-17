@@ -300,19 +300,16 @@ export default function AdminPhoneChatbot({ lang = 'mr', onClose = null, apiPref
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, flex: 1 }}>
             <div
               style={{
-                width: '34px',
-                height: '34px',
-                borderRadius: '10px',
-                background: 'linear-gradient(135deg, #ff7e2a 0%, #ff5200 100%)',
+                width: '38px',
+                height: '38px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '18px',
                 flexShrink: 0,
-                boxShadow: '0 4px 12px rgba(255, 82, 0, 0.35)',
+                filter: 'drop-shadow(0 3px 8px rgba(0, 0, 0, 0.3))',
               }}
             >
-              🤖
+              <img src="/logo.png" alt="MaKanisms Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
             </div>
             <div style={{ minWidth: 0, flex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0 }}>

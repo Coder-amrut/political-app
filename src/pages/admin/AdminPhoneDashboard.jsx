@@ -761,11 +761,11 @@ export default function AdminPhoneDashboard() {
           </button>
           <div className="admin-brand-info">
             <div className="admin-brand-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{ width: '28px', height: '28px', borderRadius: '50%', overflow: 'hidden', border: '1.2px solid #d4af37', background: '#0b0f19', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <img src="/logo.png" alt="Mechanism Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <div style={{ width: '34px', height: '34px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.3))' }}>
+                <img src="/logo.png" alt="MaKanisms Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
               </div>
               <span className="admin-brand-name">
-                <span className="highlight-orange" style={{ letterSpacing: '0.3px' }}>Mechanism</span>
+                <span className="highlight-orange" style={{ letterSpacing: '0.3px' }}>MaKanisms</span>
               </span>
             </div>
             <div className="admin-brand-sub">

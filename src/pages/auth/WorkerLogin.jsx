@@ -368,11 +368,11 @@ export default function WorkerLogin({ onLoginSuccess, initialMode = 'login' }) {
           {/* ================= APP HEADER ================= */}
           <header className="officer-app-header">
             <div className="officer-brand">
-              <div className="officer-logo-badge" style={{ padding: 0, overflow: 'hidden', background: '#0b0f19', border: '1.5px solid #d4af37', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <img src="/logo.png" alt="Mechanism Logo" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+              <div style={{ width: '46px', height: '46px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, filter: 'drop-shadow(0 3px 10px rgba(0,0,0,0.35))' }}>
+                <img src="/logo.png" alt="MaKanisms Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
               </div>
               <div className="officer-brand-text">
-                <span className="officer-brand-title">Mechanism</span>
+                <span className="officer-brand-title">MaKanisms</span>
                 <span className="officer-brand-subtitle">{isMr ? 'पदाधिकारी पोर्टल' : 'Officer Portal'}</span>
               </div>
             </div>
@@ -465,13 +465,17 @@ export default function WorkerLogin({ onLoginSuccess, initialMode = 'login' }) {
                   )}
                 </p>
               </div>
-              <div className="officer-hero-graphic">
-                <div className="officer-avatar-ring">
-                  <User size={46} className="officer-avatar-silhouette" />
-                  <div className="officer-badge-lock">
-                    <Lock size={15} strokeWidth={2.6} />
-                  </div>
-                </div>
+              <div className="officer-hero-graphic" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <img
+                  src="/logo.png"
+                  alt="MaKanisms Emblem"
+                  style={{
+                    width: '94px',
+                    height: '94px',
+                    objectFit: 'contain',
+                    filter: 'drop-shadow(0 8px 24px rgba(212, 175, 55, 0.4)) drop-shadow(0 4px 12px rgba(0,0,0,0.5))',
+                  }}
+                />
               </div>
             </section>
           )}

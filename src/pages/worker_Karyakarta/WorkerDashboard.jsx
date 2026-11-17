@@ -1834,24 +1834,20 @@ export default function WorkerDashboard() {
 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: isCollapsed ? 'center' : 'space-between' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '9px', minWidth: 0 }}>
-                {/* Mechanism Golden Crest Logo */}
+                {/* MaKanisms Golden Crest Logo */}
                 <div
                   style={{
-                    width: '38px',
-                    height: '38px',
-                    borderRadius: '50%',
-                    background: '#0b0f19',
+                    width: '42px',
+                    height: '42px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     flexShrink: 0,
-                    border: '1.5px solid #d4af37',
-                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.4)',
-                    overflow: 'hidden',
+                    filter: 'drop-shadow(0 2px 8px rgba(0, 0, 0, 0.35))',
                   }}
-                  title="Mechanism • Field Operations HQ"
+                  title="MaKanisms • Field Operations HQ"
                 >
-                  <img src="/logo.png" alt="Mechanism Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <img src="/logo.png" alt="MaKanisms Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                 </div>
 
                 {!isCollapsed && (
@@ -2378,7 +2374,10 @@ export default function WorkerDashboard() {
         <header className="worker-desktop-top-header">
           <div className="desktop-header-left">
             <div className="desktop-breadcrumb">
-              <span className="desktop-breadcrumb-portal">🇮🇳 {isMr ? 'अधिकारी व कार्यक्षेत्र कक्ष' : 'Field Officer HQ'}</span>
+              <span className="desktop-breadcrumb-portal" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                <img src="/logo.png" alt="Logo" style={{ width: '22px', height: '22px', objectFit: 'contain' }} />
+                <span>🇮🇳 {isMr ? 'अधिकारी व कार्यक्षेत्र कक्ष' : 'Field Officer HQ'}</span>
+              </span>
               <span className="desktop-breadcrumb-divider">/</span>
               <span className="desktop-breadcrumb-active">
                 {currentNav ? (isMr ? currentNav.label_mr : currentNav.label_en) : activeTab}
@@ -2449,8 +2448,9 @@ export default function WorkerDashboard() {
               <Menu size={22} />
             </button>
             <div className="mobile-brand-info">
-              <span className="mobile-brand-title">
-                {profileData.fullName || user?.full_name || user?.name || (isMr ? 'अधिकारी कक्ष' : 'Officer Portal')}
+              <span className="mobile-brand-title" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <img src="/logo.png" alt="Logo" style={{ width: '22px', height: '22px', objectFit: 'contain', flexShrink: 0 }} />
+                <span>{profileData.fullName || user?.full_name || user?.name || (isMr ? 'अधिकारी कक्ष' : 'Officer Portal')}</span>
               </span>
               <span className="mobile-active-tab-badge">
                 {currentNav ? (isMr ? currentNav.label_mr : currentNav.label_en) : activeTab}

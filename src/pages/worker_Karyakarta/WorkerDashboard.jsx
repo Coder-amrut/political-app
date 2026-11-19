@@ -1863,7 +1863,7 @@ export default function WorkerDashboard() {
                         textOverflow: 'ellipsis',
                       }}
                     >
-                      'Mechanism'
+                      MaKanisms
                     </div>
                     <div
                       style={{

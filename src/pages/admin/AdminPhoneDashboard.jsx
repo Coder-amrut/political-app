@@ -339,6 +339,61 @@ export default function AdminPhoneDashboard() {
     }
   };
 
+  const [actingUserId, setActingUserId] = useState(null);
+
+  const handleToggleUserStatus = async (u) => {
+    const isSuspended = u.status === 'SUSPENDED';
+    const targetStatus = isSuspended ? 'ACTIVE' : 'SUSPENDED';
+    const actionWord = isSuspended ? (isMr ? 'अनब्लॉक' : 'unblock') : (isMr ? 'ब्लॉक' : 'block');
+
+    if (!window.confirm(isMr ? `तुम्हाला नक्की '${u.full_name}' यांना ${actionWord} करायचे आहे का?` : `Are you sure you want to ${actionWord} '${u.full_name}'?`)) {
+      return;
+    }
+
+    setActingUserId(u.id);
+    const prevStatus = u.status;
+    setAllUsersList((prev) =>
+      prev.map((item) => (item.id === u.id ? { ...item, status: targetStatus } : item))
+    );
+
+    try {
+      const res = await apiClient.put(`/admin/users/${u.id}/status`, { status: targetStatus });
+      setToastMsg(res.data?.message || (targetStatus === 'SUSPENDED' ? `✓ ${u.full_name} यांना ब्लॉक केले.` : `✓ ${u.full_name} यांना अनब्लॉक केले.`));
+      setTimeout(() => setToastMsg(''), 3000);
+    } catch (err) {
+      console.error('Status toggle failed:', err);
+      setAllUsersList((prev) =>
+        prev.map((item) => (item.id === u.id ? { ...item, status: prevStatus } : item))
+      );
+      setToastMsg('स्थिती बदलताना त्रुटी आली.');
+      setTimeout(() => setToastMsg(''), 3000);
+    } finally {
+      setActingUserId(null);
+    }
+  };
+
+  const handleDeleteUser = async (u) => {
+    if (!window.confirm(isMr 
+      ? `⚠️ सावधान: तुम्ही खरोखर '${u.full_name}' (ID: #${u.id}) चे खाते कायमचे हटवू (Delete) इच्छिता का? हा डेटा परत मिळणार नाही.` 
+      : `⚠️ Warning: Are you sure you want to permanently delete user '${u.full_name}' (ID: #${u.id})? This cannot be undone.`)) {
+      return;
+    }
+
+    setActingUserId(u.id);
+    try {
+      const res = await apiClient.delete(`/admin/users/${u.id}`);
+      setAllUsersList((prev) => prev.filter((item) => item.id !== u.id));
+      setToastMsg(res.data?.message || `✓ '${u.full_name}' चे खाते हटवले.`);
+      setTimeout(() => setToastMsg(''), 3000);
+    } catch (err) {
+      console.error('Delete user failed:', err);
+      setToastMsg('वापरकर्ता हटवताना त्रुटी आली.');
+      setTimeout(() => setToastMsg(''), 3000);
+    } finally {
+      setActingUserId(null);
+    }
+  };
+
   // District selection handler
   const handleSelectDistrict = (district) => {
     setSelectedDistrictCode(String(district.code));
@@ -2113,19 +2168,34 @@ export default function AdminPhoneDashboard() {
                                 </div>
                               </div>
 
-                              <span
-                                style={{
-                                  fontSize: '10.5px',
-                                  padding: '2px 8px',
-                                  borderRadius: '6px',
-                                  fontWeight: '800',
-                                  background: roleName.includes('ADMIN') ? '#fef3c7' : roleName.includes('OFFICER') ? '#faf5ff' : '#eff6ff',
-                                  color: roleName.includes('ADMIN') ? '#b45309' : roleName.includes('OFFICER') ? '#7c3aed' : '#1d4ed8',
-                                  border: `1px solid ${roleName.includes('ADMIN') ? '#fde68a' : roleName.includes('OFFICER') ? '#ddd6fe' : '#bfdbfe'}`,
-                                }}
-                              >
-                                {roleName}
-                              </span>
+                              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+                                <span
+                                  style={{
+                                    fontSize: '10.5px',
+                                    padding: '2px 8px',
+                                    borderRadius: '6px',
+                                    fontWeight: '800',
+                                    background: roleName.includes('ADMIN') ? '#fef3c7' : roleName.includes('OFFICER') ? '#faf5ff' : '#eff6ff',
+                                    color: roleName.includes('ADMIN') ? '#b45309' : roleName.includes('OFFICER') ? '#7c3aed' : '#1d4ed8',
+                                    border: `1px solid ${roleName.includes('ADMIN') ? '#fde68a' : roleName.includes('OFFICER') ? '#ddd6fe' : '#bfdbfe'}`,
+                                  }}
+                                >
+                                  {roleName}
+                                </span>
+                                <span
+                                  style={{
+                                    fontSize: '10px',
+                                    padding: '2px 7px',
+                                    borderRadius: '5px',
+                                    fontWeight: '800',
+                                    background: u.status === 'SUSPENDED' ? '#fee2e2' : (u.status === 'ACTIVE' || u.status === 'active' ? '#dcfce7' : '#fef3c7'),
+                                    color: u.status === 'SUSPENDED' ? '#b91c1c' : (u.status === 'ACTIVE' || u.status === 'active' ? '#15803d' : '#b45309'),
+                                    border: `1px solid ${u.status === 'SUSPENDED' ? '#fca5a5' : (u.status === 'ACTIVE' || u.status === 'active' ? '#86efac' : '#fde68a')}`,
+                                  }}
+                                >
+                                  {u.status === 'SUSPENDED' ? '🚫 ब्लॉक' : (u.status === 'ACTIVE' || u.status === 'active' ? '🟢 सक्रिय' : `⏳ ${u.status || 'प्रलंबित'}`)}
+                                </span>
+                              </div>
                             </div>
 
                             {/* AI Chatbot Status & Toggle Row */}
@@ -2150,11 +2220,11 @@ export default function AdminPhoneDashboard() {
                                 onClick={() => handleToggleUserAi(u)}
                                 disabled={isToggling}
                                 style={{
-                                  padding: '6px 12px',
+                                  padding: '5px 10px',
                                   borderRadius: '7px',
                                   border: 'none',
                                   fontWeight: '800',
-                                  fontSize: '11.5px',
+                                  fontSize: '11px',
                                   cursor: isToggling ? 'not-allowed' : 'pointer',
                                   background: hasAi
                                     ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
@@ -2166,6 +2236,58 @@ export default function AdminPhoneDashboard() {
                                 }}
                               >
                                 {isToggling ? '...' : hasAi ? (isMr ? '🔒 ॲक्सेस काढा' : 'Revoke AI') : (isMr ? '🤖 AI ॲक्सेस द्या' : 'Grant AI')}
+                              </button>
+                            </div>
+
+                            {/* Account Action Row: Block/Unblock & Delete */}
+                            <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '8px', borderTop: '1px dashed #e2e8f0', paddingTop: '8px' }}>
+                              <button
+                                type="button"
+                                onClick={() => handleToggleUserStatus(u)}
+                                disabled={actingUserId === u.id}
+                                style={{
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '4px',
+                                  padding: '5px 10px',
+                                  borderRadius: '6px',
+                                  border: u.status === 'SUSPENDED' ? '1px solid #86efac' : '1px solid #fca5a5',
+                                  cursor: actingUserId === u.id ? 'not-allowed' : 'pointer',
+                                  fontWeight: '750',
+                                  fontSize: '11px',
+                                  background: u.status === 'SUSPENDED' ? '#dcfce7' : '#fee2e2',
+                                  color: u.status === 'SUSPENDED' ? '#15803d' : '#b91c1c',
+                                }}
+                              >
+                                {actingUserId === u.id ? (
+                                  '...'
+                                ) : u.status === 'SUSPENDED' ? (
+                                  <><span>🟢</span><span>{isMr ? 'अनब्लॉक करा' : 'Unblock'}</span></>
+                                ) : (
+                                  <><span>🚫</span><span>{isMr ? 'ब्लॉक करा' : 'Block User'}</span></>
+                                )}
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteUser(u)}
+                                disabled={actingUserId === u.id}
+                                style={{
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '4px',
+                                  padding: '5px 10px',
+                                  borderRadius: '6px',
+                                  border: '1px solid #e2e8f0',
+                                  cursor: actingUserId === u.id ? 'not-allowed' : 'pointer',
+                                  fontWeight: '750',
+                                  fontSize: '11px',
+                                  background: '#ffffff',
+                                  color: '#dc2626',
+                                }}
+                              >
+                                <span>🗑️</span>
+                                <span>{isMr ? 'खाते हटवा' : 'Delete'}</span>
                               </button>
                             </div>
                           </div>

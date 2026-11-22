@@ -45,6 +45,11 @@ Route::prefix('auth')->group(function () {
     Route::post('/send-otp', [AuthController::class, 'sendOtp']);
     Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
 
+    // Forgot Password Flow via Registered Phone & SMS OTP
+    Route::post('/forgot-password/send-otp', [AuthController::class, 'forgotPasswordSendOtp']);
+    Route::post('/forgot-password/verify-otp', [AuthController::class, 'forgotPasswordVerifyOtp']);
+    Route::post('/forgot-password/reset', [AuthController::class, 'forgotPasswordReset']);
+
     // Authenticated-only auth endpoints
     Route::middleware('auth:sanctum')->group(function () {
 
@@ -162,6 +167,13 @@ Route::prefix('admin')
 
         // POST /api/admin/users  (admin-created Worker/Officer)
         Route::post('/users', [AdminUserController::class, 'store']);
+
+        // User Management endpoints (Hub, Role, Status/Block, Reset Password, Delete)
+        Route::get('/users', [AdminUserController::class, 'index']);
+        Route::put('/users/{id}/role', [AdminUserController::class, 'updateRole'])->whereNumber('id');
+        Route::put('/users/{id}/status', [AdminUserController::class, 'updateStatus'])->whereNumber('id');
+        Route::post('/users/{id}/reset-password', [AdminUserController::class, 'resetPassword'])->whereNumber('id');
+        Route::delete('/users/{id}', [AdminUserController::class, 'destroy'])->whereNumber('id');
 
         // ---------------------------------------------------------------------------
         // Project Management — Phase 2

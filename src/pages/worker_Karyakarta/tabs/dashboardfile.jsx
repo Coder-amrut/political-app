@@ -171,7 +171,7 @@ export default function DashboardTab({
     },
   ];
 
-  const officerName = profileData.fullName || user?.full_name || 'Rahul Patil';
+  const officerName = profileData.fullName || user?.full_name || (isMr ? 'कार्यकर्ता' : 'Officer');
   const officerInitials = officerName
     .split(' ')
     .filter(Boolean)
@@ -181,11 +181,66 @@ export default function DashboardTab({
     .toUpperCase() || 'IN';
 
   const wardDisplay = profileData.assignedWard
-    ? (isMr ? `प्रभाग क्र. ${profileData.assignedWard} - गावभाग व माधवनगर • बूथ क्र. १ ते १४ थेट संचलन कक्ष` : `Ward No. ${profileData.assignedWard} - Area & Madhavnagar • Booths 1-14 Field Command`)
-    : (isMr ? 'प्रभाग क्र. ४ - गावभाग व माधवनगर • बूथ क्र. १ ते १४ थेट संचलन कक्ष' : 'Ward No. 4 - Area & Madhavnagar • Booths 1-14 Field Command');
+    ? (isMr ? `प्रभाग: ${profileData.assignedWard}` : `Ward: ${profileData.assignedWard}`)
+    : (isMr ? 'अद्याप कार्यक्षेत्र नियुक्त नाही (Pending Allocation)' : 'No Territory Assigned Yet');
+
+  const isProfileIncomplete = !profileData.dob || !profileData.address || !profileData.caste;
 
   return (
     <div className="module-container" style={{ display: 'flex', flexDirection: 'column', gap: '22px', width: '100%', maxWidth: '1400px', margin: '0 auto', paddingBottom: '3rem' }}>
+
+      {/* Profile Incomplete Notification Banner */}
+      {isProfileIncomplete && (
+        <div
+          onClick={() => setActiveTab && setActiveTab('User Profile')}
+          style={{
+            background: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)',
+            border: '1.5px solid #f59e0b',
+            borderRadius: '12px',
+            padding: '12px 18px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '12px',
+            cursor: 'pointer',
+            boxShadow: '0 2px 8px rgba(245, 158, 11, 0.12)'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span style={{ fontSize: '22px' }}>📢</span>
+            <div>
+              <div style={{ fontSize: '14px', fontWeight: '800', color: '#92400e', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span>{isMr ? 'आपली प्रोफाइल अपूर्ण आहे!' : 'Your profile is incomplete!'}</span>
+                <span style={{ fontSize: '10.5px', background: '#dc2626', color: '#ffffff', padding: '1px 7px', borderRadius: '8px' }}>
+                  {isMr ? 'कृती आवश्यक' : 'Required'}
+                </span>
+              </div>
+              <div style={{ fontSize: '12px', color: '#b45309', marginTop: '2px' }}>
+                {isMr
+                  ? 'अधिकृत डिजिटल ओळखपत्र (ID Card) मिळवण्यासाठी कृपया जन्म तारीख, जात व पत्ता त्वरित पूर्ण करा.'
+                  : 'Please complete your personal details to generate your official ID card.'}
+              </div>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); setActiveTab && setActiveTab('User Profile'); }}
+            style={{
+              background: '#ea580c',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: '8px',
+              padding: '7px 14px',
+              fontSize: '12px',
+              fontWeight: '800',
+              cursor: 'pointer'
+            }}
+          >
+            {isMr ? 'प्रोफाइल पूर्ण करा →' : 'Complete Profile →'}
+          </button>
+        </div>
+      )}
 
       {/* 1. TOP HEADER (matching mockup: 3D cube app icon in blue rounded box, title, subtitle & bell button) */}
       <div

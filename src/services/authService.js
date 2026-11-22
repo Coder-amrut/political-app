@@ -41,3 +41,18 @@ export const verifyOtp = async (phone, otp) => {
   return response.data;
 };
 
+export const forgotPasswordSendOtp = async (phone) => {
+  const response = await apiClient.post('/auth/forgot-password/send-otp', { phone });
+  return response.data;
+};
+
+export const forgotPasswordVerifyOtp = async (phone, otp) => {
+  const response = await apiClient.post('/auth/forgot-password/verify-otp', { phone, otp });
+  return response.data;
+};
+
+export const forgotPasswordReset = async (payload) => {
+  const response = await apiClient.post('/auth/forgot-password/reset', payload);
+  return response.data;
+};
+

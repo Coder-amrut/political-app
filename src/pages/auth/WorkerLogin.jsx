@@ -60,6 +60,23 @@ export default function WorkerLogin({ onLoginSuccess, initialMode = 'login' }) {
   const [isSendingOtp, setIsSendingOtp] = useState(false);
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
 
+  // ===================== FORGOT PASSWORD MODAL STATE =====================
+  const [isForgotModalOpen, setIsForgotModalOpen] = useState(false);
+  const [forgotStep, setForgotStep] = useState(1); // 1: Enter Phone, 2: Enter OTP, 3: Set New Password
+  const [forgotPhone, setForgotPhone] = useState('');
+  const [forgotOtpDigits, setForgotOtpDigits] = useState(['', '', '', '', '', '']);
+  const forgotOtpRefs = useRef([]);
+  const [forgotTimer, setForgotTimer] = useState(120);
+  const [canResendForgotOtp, setCanResendForgotOtp] = useState(false);
+  const [forgotResetToken, setForgotResetToken] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotError, setForgotError] = useState('');
+  const [forgotSuccess, setForgotSuccess] = useState('');
+
   // Feedback states
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -140,6 +157,159 @@ export default function WorkerLogin({ onLoginSuccess, initialMode = 'login' }) {
       setOtpDigits(newDigits);
       const nextFocus = Math.min(pasted.length, 5);
       otpRefs.current[nextFocus]?.focus();
+    }
+  };
+
+  // Countdown timer for Forgot Password OTP
+  useEffect(() => {
+    let interval = null;
+    if (isForgotModalOpen && forgotStep === 2 && forgotTimer > 0) {
+      interval = setInterval(() => {
+        setForgotTimer((prev) => {
+          if (prev <= 1) {
+            setCanResendForgotOtp(true);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isForgotModalOpen, forgotStep, forgotTimer]);
+
+  const openForgotPasswordModal = () => {
+    setIsForgotModalOpen(true);
+    setForgotStep(1);
+    const cleanId = identifier.replace(/\D/g, '').slice(-10);
+    setForgotPhone(cleanId.length === 10 ? cleanId : '');
+    setForgotOtpDigits(['', '', '', '', '', '']);
+    setForgotTimer(120);
+    setCanResendForgotOtp(false);
+    setForgotResetToken('');
+    setNewPassword('');
+    setConfirmNewPassword('');
+    setForgotError('');
+    setForgotSuccess('');
+  };
+
+  const handleForgotOtpChange = (index, value) => {
+    const val = value.replace(/\D/g, '');
+    const newDigits = [...forgotOtpDigits];
+    if (!val) {
+      newDigits[index] = '';
+      setForgotOtpDigits(newDigits);
+      return;
+    }
+    newDigits[index] = val.slice(-1);
+    setForgotOtpDigits(newDigits);
+    if (index < 5 && val) {
+      forgotOtpRefs.current[index + 1]?.focus();
+    }
+  };
+
+  const handleForgotOtpKeyDown = (index, e) => {
+    if (e.key === 'Backspace' && !forgotOtpDigits[index] && index > 0) {
+      forgotOtpRefs.current[index - 1]?.focus();
+    }
+  };
+
+  const handleForgotOtpPaste = (e) => {
+    e.preventDefault();
+    const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+    if (!pasted) return;
+    const newDigits = ['', '', '', '', '', ''];
+    pasted.split('').forEach((char, idx) => {
+      newDigits[idx] = char;
+    });
+    setForgotOtpDigits(newDigits);
+    const nextIdx = Math.min(pasted.length, 5);
+    forgotOtpRefs.current[nextIdx]?.focus();
+  };
+
+  const handleSendForgotOtp = async (e) => {
+    e?.preventDefault();
+    const clean = forgotPhone.replace(/\D/g, '').slice(-10);
+    if (clean.length !== 10) {
+      setForgotError(isMr ? 'कृपया योग्य १०-अंकी नोंदणीकृत मोबाईल नंबर प्रविष्ट करा.' : 'Please enter a valid 10-digit mobile number.');
+      return;
+    }
+
+    setForgotLoading(true);
+    setForgotError('');
+    setForgotSuccess('');
+
+    try {
+      const res = await authService.forgotPasswordSendOtp(clean);
+      setForgotSuccess(res?.message || (isMr ? 'नोंदणीकृत क्रमांकावर OTP पाठवला आहे!' : 'OTP sent to registered phone!'));
+      setForgotStep(2);
+      setForgotTimer(120);
+      setCanResendForgotOtp(false);
+      setForgotOtpDigits(['', '', '', '', '', '']);
+    } catch (err) {
+      setForgotError(err?.message || (isMr ? 'हा मोबाईल नंबर सापडला नाही किंवा त्रुटी आली.' : 'Failed to send OTP. Mobile number not registered.'));
+    } finally {
+      setForgotLoading(false);
+    }
+  };
+
+  const handleVerifyForgotOtp = async (e) => {
+    e?.preventDefault();
+    const code = forgotOtpDigits.join('');
+    if (code.length < 6) {
+      setForgotError(isMr ? 'कृपया संपूर्ण ६-अंकी OTP प्रविष्ट करा.' : 'Please enter the complete 6-digit OTP.');
+      return;
+    }
+
+    const clean = forgotPhone.replace(/\D/g, '').slice(-10);
+    setForgotLoading(true);
+    setForgotError('');
+
+    try {
+      const res = await authService.forgotPasswordVerifyOtp(clean, code);
+      if (res?.verified && res?.reset_token) {
+        setForgotResetToken(res.reset_token);
+        setForgotStep(3);
+        setForgotSuccess(isMr ? '✓ OTP पडताळणी यशस्वी! आता नवीन पासवर्ड सेट करा.' : '✓ OTP verified! Please set your new password.');
+      } else {
+        setForgotError(res?.message || (isMr ? 'अवैध OTP कोड.' : 'Invalid OTP.'));
+      }
+    } catch (err) {
+      setForgotError(err?.message || (isMr ? 'अवैध OTP कोड. कृपया पुन्हा प्रयत्न करा.' : 'Invalid OTP. Please try again.'));
+    } finally {
+      setForgotLoading(false);
+    }
+  };
+
+  const handleResetPasswordSubmit = async (e) => {
+    e?.preventDefault();
+    if (!newPassword || newPassword.length < 6) {
+      setForgotError(isMr ? 'पासवर्ड किमान ६ अक्षरांचा असावा.' : 'Password must be at least 6 characters.');
+      return;
+    }
+    if (newPassword !== confirmNewPassword) {
+      setForgotError(isMr ? 'पासवर्ड आणि कन्फर्म पासवर्ड जुळत नाहीत.' : 'Passwords do not match.');
+      return;
+    }
+
+    const clean = forgotPhone.replace(/\D/g, '').slice(-10);
+    setForgotLoading(true);
+    setForgotError('');
+
+    try {
+      const res = await authService.forgotPasswordReset({
+        phone: clean,
+        reset_token: forgotResetToken,
+        password: newPassword,
+      });
+
+      setIsForgotModalOpen(false);
+      setIdentifier(clean);
+      setPassword('');
+      setSuccessMsg(res?.message || (isMr ? '✓ पासवर्ड यशस्वीरीत्या बदलला आहे! आता नवीन पासवर्डने लॉगिन करा.' : '✓ Password updated successfully! Please sign in.'));
+    } catch (err) {
+      setForgotError(err?.message || (isMr ? 'पासवर्ड बदलताना त्रुटी आली.' : 'Failed to update password.'));
+    } finally {
+      setForgotLoading(false);
     }
   };
 
@@ -225,7 +395,10 @@ export default function WorkerLogin({ onLoginSuccess, initialMode = 'login' }) {
         setError(res?.message || (isMr ? 'अवैध OTP कोड. कृपया पुन्हा प्रयत्न करा.' : 'Invalid OTP.'));
       }
     } catch (err) {
-      setError(err?.message || (isMr ? 'अवैध OTP कोड. कृपया पुन्हा प्रयत्न करा.' : 'Invalid OTP. Please try again.'));
+      const errMsg = err?.message && err.message !== 'Server Error'
+        ? err.message
+        : (isMr ? 'अवैध किंवा कालबाह्य OTP कोड. कृपया पुन्हा प्रयत्न करा.' : 'Invalid OTP. Please try again.');
+      setError(errMsg);
     } finally {
       setIsVerifyingOtp(false);
     }
@@ -621,7 +794,7 @@ export default function WorkerLogin({ onLoginSuccess, initialMode = 'login' }) {
                       className="officer-forgot-link"
                       onClick={(e) => {
                         e.preventDefault();
-                        alert(isMr ? 'पासवर्ड रीसेटसाठी कृपया आपल्या अ‍ॅडमिनशी संपर्क साधा.' : 'Please contact admin for password reset.');
+                        openForgotPasswordModal();
                       }}
                     >
                       {isMr ? 'पासवर्ड विसरलात?' : 'Forgot password?'}
@@ -1070,6 +1243,245 @@ export default function WorkerLogin({ onLoginSuccess, initialMode = 'login' }) {
                 </div>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* ================= POPUP: FORGOT PASSWORD MODAL ================= */}
+      {isForgotModalOpen && (
+        <div className="officer-modal-overlay" onClick={() => setIsForgotModalOpen(false)}>
+          <div className="officer-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="officer-modal-header">
+              <div className="officer-modal-title-group">
+                <div className="officer-modal-title">
+                  <span>🔑</span>
+                  <span>{isMr ? 'पासवर्ड विसरलात?' : 'Forgot Password'}</span>
+                </div>
+                <div className="officer-modal-subtitle">
+                  {forgotStep === 1 && (isMr ? 'आपला नोंदणीकृत मोबाईल नंबर प्रविष्ट करा.' : 'Enter your registered mobile number.')}
+                  {forgotStep === 2 && (
+                    isMr ? (
+                      <><strong>+91 {forgotPhone}</strong> वर पाठवलेला ६-अंकी पडताळणी OTP टाका.</>
+                    ) : (
+                      <>Enter 6-digit OTP sent to <strong>+91 {forgotPhone}</strong>.</>
+                    )
+                  )}
+                  {forgotStep === 3 && (isMr ? 'आपला नवीन सुरक्षित पासवर्ड सेट करा.' : 'Set your new password.')}
+                </div>
+              </div>
+              <button
+                type="button"
+                className="officer-modal-close-btn"
+                onClick={() => setIsForgotModalOpen(false)}
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            {forgotError && (
+              <div className="officer-alert-banner officer-alert-error" style={{ marginBottom: '12px' }}>
+                <AlertCircle size={16} />
+                <span>{forgotError}</span>
+              </div>
+            )}
+
+            {forgotSuccess && (
+              <div className="officer-alert-banner officer-alert-success" style={{ marginBottom: '12px', background: '#ecfdf5', color: '#047857', border: '1px solid #a7f3d0' }}>
+                <CheckCircle2 size={16} />
+                <span>{forgotSuccess}</span>
+              </div>
+            )}
+
+            {/* STEP 1: ENTER REGISTERED PHONE NUMBER */}
+            {forgotStep === 1 && (
+              <form onSubmit={handleSendForgotOtp}>
+                <div className="officer-form-group">
+                  <label className="officer-label">
+                    {isMr ? 'नोंदणीकृत मोबाईल नंबर *' : 'Registered Mobile Number *'}
+                  </label>
+                  <div className="officer-input-wrap">
+                    <span className="officer-input-icon">
+                      <Phone size={18} />
+                    </span>
+                    <input
+                      type="tel"
+                      inputMode="numeric"
+                      maxLength={10}
+                      className="officer-input"
+                      placeholder={isMr ? '१०-अंकी मोबाईल नंबर' : '10-digit mobile number'}
+                      value={forgotPhone}
+                      onChange={(e) => setForgotPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                      autoFocus
+                      required
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  className="officer-submit-btn"
+                  disabled={forgotLoading || forgotPhone.length !== 10}
+                  style={{ marginTop: '16px' }}
+                >
+                  {forgotLoading ? (
+                    <>
+                      <Loader2 size={16} className="admin-spin" />
+                      <span>{isMr ? 'OTP पाठवत आहे...' : 'Sending OTP...'}</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>{isMr ? 'OTP पाठवा' : 'Send Verification OTP'}</span>
+                      <ArrowRight size={18} />
+                    </>
+                  )}
+                </button>
+              </form>
+            )}
+
+            {/* STEP 2: VERIFY OTP */}
+            {forgotStep === 2 && (
+              <form onSubmit={handleVerifyForgotOtp}>
+                <div className="officer-form-group">
+                  <div className="officer-otp-boxes-grid" onPaste={handleForgotOtpPaste}>
+                    {forgotOtpDigits.map((digit, index) => (
+                      <input
+                        key={index}
+                        ref={(el) => (forgotOtpRefs.current[index] = el)}
+                        type="text"
+                        inputMode="numeric"
+                        maxLength={1}
+                        className="officer-otp-box"
+                        value={digit}
+                        onChange={(e) => handleForgotOtpChange(index, e.target.value)}
+                        onKeyDown={(e) => handleForgotOtpKeyDown(index, e)}
+                        autoFocus={index === 0}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  className="officer-submit-btn"
+                  disabled={forgotLoading || forgotOtpDigits.join('').length !== 6}
+                  style={{ marginTop: '14px' }}
+                >
+                  {forgotLoading ? (
+                    <>
+                      <Loader2 size={16} className="admin-spin" />
+                      <span>{isMr ? 'पडताळणी होत आहे...' : 'Verifying...'}</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>{isMr ? 'OTP पडताळणी करा' : 'Verify & Proceed'}</span>
+                      <ArrowRight size={18} />
+                    </>
+                  )}
+                </button>
+
+                {/* Resend Timer Card */}
+                <div className="officer-resend-card" style={{ marginTop: '14px' }}>
+                  <Clock size={16} className="officer-resend-icon" />
+                  <div className="officer-resend-content">
+                    <div>
+                      <span>{isMr ? 'SMS आला नाही?' : "Didn't receive SMS?"} </span>
+                      <button
+                        type="button"
+                        className="officer-resend-action-btn"
+                        onClick={handleSendForgotOtp}
+                        disabled={!canResendForgotOtp || forgotLoading}
+                      >
+                        {isMr ? 'पुन्हा पाठवा' : 'Resend OTP'}
+                      </button>
+                    </div>
+                    <div className="officer-resend-timer-txt">
+                      {canResendForgotOtp
+                        ? (isMr ? 'तुम्ही आता पुन्हा OTP पाठवू शकता.' : 'You can resend OTP now.')
+                        : (isMr
+                          ? `${Math.floor(forgotTimer / 60)}:${forgotTimer % 60 < 10 ? '0' : ''}${forgotTimer % 60} मध्ये पुन्हा पाठवू शकता.`
+                          : `Resend available in ${Math.floor(forgotTimer / 60)}:${forgotTimer % 60 < 10 ? '0' : ''}${forgotTimer % 60}`)}
+                    </div>
+                  </div>
+                </div>
+              </form>
+            )}
+
+            {/* STEP 3: SET NEW PASSWORD */}
+            {forgotStep === 3 && (
+              <form onSubmit={handleResetPasswordSubmit}>
+                <div className="officer-form-group">
+                  <label className="officer-label">
+                    {isMr ? 'नवीन पासवर्ड *' : 'New Password *'}
+                  </label>
+                  <div className="officer-input-wrap">
+                    <span className="officer-input-icon">
+                      <Lock size={18} />
+                    </span>
+                    <input
+                      type={showNewPassword ? 'text' : 'password'}
+                      className="officer-input"
+                      placeholder={isMr ? 'किमान ६ अक्षरे' : 'At least 6 characters'}
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      required
+                      autoFocus
+                    />
+                    <button
+                      type="button"
+                      className="officer-input-eye-btn"
+                      onClick={() => setShowNewPassword(!showNewPassword)}
+                    >
+                      {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="officer-form-group" style={{ marginTop: '12px' }}>
+                  <label className="officer-label">
+                    {isMr ? 'पासवर्डची खात्री करा (Confirm Password) *' : 'Confirm Password *'}
+                  </label>
+                  <div className="officer-input-wrap">
+                    <span className="officer-input-icon">
+                      <Lock size={18} />
+                    </span>
+                    <input
+                      type={showConfirmNewPassword ? 'text' : 'password'}
+                      className="officer-input"
+                      placeholder={isMr ? 'तोच पासवर्ड पुन्हा टाका' : 'Re-enter password'}
+                      value={confirmNewPassword}
+                      onChange={(e) => setConfirmNewPassword(e.target.value)}
+                      required
+                    />
+                    <button
+                      type="button"
+                      className="officer-input-eye-btn"
+                      onClick={() => setShowConfirmNewPassword(!showConfirmNewPassword)}
+                    >
+                      {showConfirmNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  className="officer-submit-btn"
+                  disabled={forgotLoading || !newPassword || newPassword.length < 6 || newPassword !== confirmNewPassword}
+                  style={{ marginTop: '18px' }}
+                >
+                  {forgotLoading ? (
+                    <>
+                      <Loader2 size={16} className="admin-spin" />
+                      <span>{isMr ? 'पासवर्ड सेव्ह होत आहे...' : 'Saving...'}</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>{isMr ? 'पासवर्ड बदला व सेव्ह करा' : 'Update & Save Password'}</span>
+                      <ArrowRight size={18} />
+                    </>
+                  )}
+                </button>
+              </form>
+            )}
           </div>
         </div>
       )}

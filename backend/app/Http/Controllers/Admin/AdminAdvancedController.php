@@ -810,33 +810,50 @@ class AdminAdvancedController extends Controller
 
     public function forgotPasswordRequestOtp(Request $request)
     {
-        $request->validate([
-            'email' => 'required|string',
-        ]);
+        $input = trim($request->input('phone') ?: ($request->input('email') ?: ''));
+        if (empty($input)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'कृपया नोंदणीकृत मोबाईल नंबर प्रविष्ट करा.'
+            ], 422);
+        }
 
-        $email = trim(strtolower($request->email));
+        $digits = preg_replace('/[^0-9]/', '', $input);
+
+        // Find user by phone number (or email fallback) in users table
         $user = DB::table('users')
-            ->where(DB::raw('LOWER(email)'), $email)
-            ->orWhere('phone', $email)
+            ->where(function ($q) use ($input, $digits) {
+                if (!empty($digits)) {
+                    $q->where('phone', 'like', "%{$digits}%")
+                      ->orWhere(DB::raw('REPLACE(REPLACE(phone, "-", ""), " ", "")'), 'like', "%{$digits}%");
+                }
+                $q->orWhere(DB::raw('LOWER(email)'), strtolower($input));
+            })
             ->first();
 
         if (!$user) {
             return response()->json([
                 'success' => false,
-                'message' => 'या ईमेल आयडीशी संलग्न प्रशासक खाते सापडले नाही.'
+                'message' => 'या मोबाईल नंबरशी संलग्न डेटाबेसमध्ये कोणतेही नोंदणीकृत खाते सापडले नाही.'
             ], 404);
         }
 
         $otp = (string) rand(100000, 999999);
-        Cache::put('admin_pwd_reset_otp_' . $user->id, $otp, now()->addMinutes(15));
+        Cache::put('pwd_reset_otp_' . $user->id, $otp, now()->addMinutes(15));
+        if ($user->phone) {
+            Cache::put('pwd_reset_otp_' . $user->phone, $otp, now()->addMinutes(15));
+        }
 
-        $phone = $user->phone ?: '9822011221';
-        $maskedPhone = substr($phone, 0, 2) . '******' . substr($phone, -2);
+        $actualPhone = $user->phone ?: $input;
+        $maskedPhone = (strlen($actualPhone) >= 10)
+            ? substr($actualPhone, 0, 2) . '******' . substr($actualPhone, -2)
+            : $actualPhone;
 
         return response()->json([
             'success' => true,
-            'message' => "डेटाबेसमध्ये नोंदणीकृत मोबाईल नंबर {$maskedPhone} वर पडताळणी OTP पाठवला आहे.",
+            'message' => "डेटाबेस नोंदणीकृत मोबाईल नंबर {$maskedPhone} वर पडताळणी OTP पाठवला आहे.",
             'masked_phone' => $maskedPhone,
+            'phone' => $actualPhone,
             'user_id' => $user->id,
             'otp' => $otp,
         ]);
@@ -845,12 +862,34 @@ class AdminAdvancedController extends Controller
     public function forgotPasswordVerifyOtp(Request $request)
     {
         $request->validate([
-            'user_id' => 'required',
             'otp' => 'required|string',
             'new_password' => 'required|string|min:6',
         ]);
 
-        $cachedOtp = Cache::get('admin_pwd_reset_otp_' . $request->user_id);
+        $userId = $request->input('user_id');
+        $phone = $request->input('phone');
+
+        $user = null;
+        if ($userId) {
+            $user = DB::table('users')->where('id', $userId)->first();
+        } elseif ($phone) {
+            $digits = preg_replace('/[^0-9]/', '', $phone);
+            $user = DB::table('users')
+                ->where('phone', 'like', "%{$digits}%")
+                ->orWhere(DB::raw('REPLACE(REPLACE(phone, "-", ""), " ", "")'), 'like', "%{$digits}%")
+                ->first();
+        }
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'वापरकर्ता खाते सापडले नाही.'
+            ], 404);
+        }
+
+        $cachedOtp = Cache::get('pwd_reset_otp_' . $user->id)
+            ?: ($user->phone ? Cache::get('pwd_reset_otp_' . $user->phone) : null)
+            ?: Cache::get('admin_pwd_reset_otp_' . $user->id);
 
         if (!$cachedOtp || trim($cachedOtp) !== trim($request->otp)) {
             if (trim($request->otp) !== '123456') {
@@ -861,16 +900,21 @@ class AdminAdvancedController extends Controller
             }
         }
 
-        DB::table('users')->where('id', $request->user_id)->update([
+        // Direct DB update for password_hash
+        DB::table('users')->where('id', $user->id)->update([
             'password_hash' => Hash::make($request->new_password),
             'updated_at' => now(),
         ]);
 
-        Cache::forget('admin_pwd_reset_otp_' . $request->user_id);
+        Cache::forget('pwd_reset_otp_' . $user->id);
+        if ($user->phone) {
+            Cache::forget('pwd_reset_otp_' . $user->phone);
+        }
+        Cache::forget('admin_pwd_reset_otp_' . $user->id);
 
         return response()->json([
             'success' => true,
-            'message' => 'नवीन पासवर्ड यशस्वीरीत्या सेट करण्यात आला आहे. आता आपण नवीन पासवर्डने लॉगिन करू शकता.'
+            'message' => 'नवीन पासवर्ड डेटाबेसमध्ये यशस्वीरीत्या सेट करण्यात आला आहे. आता आपण नवीन पासवर्डने लॉगिन करू शकता.'
         ]);
     }
 }

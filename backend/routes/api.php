@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\ProjectGeographyLookupController;
 use App\Http\Controllers\Admin\SurveyFormController;
 use App\Http\Controllers\Admin\PublishedFormController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Admin\ElectionAnalysisController;
 use App\Http\Controllers\Admin\AdminAdvancedController;
 use App\Http\Controllers\Admin\AdminChatbotController;
 use App\Http\Controllers\Admin\AdminAttendanceController;
@@ -279,7 +280,32 @@ Route::prefix('admin')
         Route::put('/users/{userId}/permissions', [RoleController::class, 'syncUserPermissions']);
         Route::post('/users/{userId}/permissions/give', [RoleController::class, 'giveUserPermission']);
         Route::delete('/users/{userId}/permissions/{permissionId}', [RoleController::class, 'revokeUserPermission']);
+
+        // 10. Election Analysis Desk
+        Route::get('/election-analyses', [ElectionAnalysisController::class, 'index']);
+        Route::post('/election-analyses', [ElectionAnalysisController::class, 'store']);
+        Route::get('/election-analyses/{idOrUuid}', [ElectionAnalysisController::class, 'show']);
+        Route::put('/election-analyses/{idOrUuid}', [ElectionAnalysisController::class, 'update']);
+        Route::delete('/election-analyses/{idOrUuid}', [ElectionAnalysisController::class, 'destroy']);
     });
+
+// Direct/Fallback Election Analysis endpoints (accessible for desk and admin panel)
+Route::prefix('election-analyses')->group(function () {
+    Route::get('/', [ElectionAnalysisController::class, 'index']);
+    Route::post('/', [ElectionAnalysisController::class, 'store']);
+    Route::get('/{idOrUuid}', [ElectionAnalysisController::class, 'show']);
+    Route::put('/{idOrUuid}', [ElectionAnalysisController::class, 'update']);
+    Route::delete('/{idOrUuid}', [ElectionAnalysisController::class, 'destroy']);
+});
+
+// Direct & Dynamic Voter List, Booths and Election Prabhari Routes
+Route::get('/voters-list', [NetaDashboardController::class, 'votersList']);
+Route::post('/voters-list', [NetaDashboardController::class, 'storeVoter']);
+Route::post('/voters-list/upload', [NetaDashboardController::class, 'uploadVoters']);
+Route::get('/voter-list/village-statistics', [NetaDashboardController::class, 'getVillageStatistics']);
+Route::post('/voter-list/village', [NetaDashboardController::class, 'storeVillage']);
+Route::post('/voter-list/upload-village-pdf', [NetaDashboardController::class, 'uploadVillagePdf']);
+Route::get('/voter-list/booths-directory', [NetaDashboardController::class, 'getBoothsDirectory']);
 
 // Public admin forgot password routes
 Route::post('/admin/forgot-password/request-otp', [AdminAdvancedController::class, 'forgotPasswordRequestOtp']);
@@ -373,5 +399,23 @@ Route::prefix('worker')->group(function () {
     Route::get('/chatbot/suggestions', [AdminChatbotController::class, 'getSuggestions']);
     Route::post('/chatbot/query', [AdminChatbotController::class, 'handleQuery']);
 });
+
+// Direct & Dynamic Voter List, Booths and Election Prabhari Routes
+Route::get('/voters-list', [NetaDashboardController::class, 'votersList']);
+Route::post('/voters-list', [NetaDashboardController::class, 'storeVoter']);
+Route::post('/voters-list/upload', [NetaDashboardController::class, 'uploadVoters']);
+Route::get('/voter-list/village-statistics', [NetaDashboardController::class, 'getVillageStatistics']);
+Route::post('/voter-list/village', [NetaDashboardController::class, 'storeVillage']);
+Route::post('/voter-list/upload-village-pdf', [NetaDashboardController::class, 'uploadVillagePdf']);
+Route::get('/voter-list/booths-directory', [NetaDashboardController::class, 'getBoothsDirectory']);
+Route::get('/geography-filters', [NetaDashboardController::class, 'geographyFilters']);
+Route::get('/booths', [NetaDashboardController::class, 'booths']);
+Route::get('/election-prabharis', [NetaDashboardController::class, 'getElectionPrabharis']);
+Route::post('/election-prabharis', [NetaDashboardController::class, 'storeElectionPrabhari']);
+Route::put('/election-prabharis/{id}', [NetaDashboardController::class, 'updateElectionPrabhari'])->whereNumber('id');
+Route::delete('/election-prabharis/{id}', [NetaDashboardController::class, 'deleteElectionPrabhari'])->whereNumber('id');
+Route::get('/elections-list', [NetaDashboardController::class, 'getElectionsList']);
+Route::get('/app-registered-users', [NetaDashboardController::class, 'getRegisteredUsers']);
+
 
 

@@ -3,6 +3,22 @@ import { useAuth } from '../../hooks/useAuth';
 import apiClient from '../../api/axios';
 import './AdminPhoneDashboard.css';
 import AdminPhoneChatbot from './AdminPhoneChatbot';
+import UserManagementHub from './UserManagementHub';
+import UsersAiPermissionManager from './UsersAiPermissionManager';
+import RolePermissionManager from './RolePermissionManager';
+import AdminChatbotDesk from './AdminChatbotDesk';
+import AdminEvmVotingSystem from './AdminEvmVotingSystem';
+import ElectionAnalysisWorkbench from './ElectionAnalysisWorkbench';
+import ElectionPrabhariManager from './ElectionPrabhariManager';
+import DataApprovalWorkbench from './DataApprovalWorkbench';
+import DuplicateDetectionWorkbench from './DuplicateDetectionWorkbench';
+import DocumentMediaManager from './DocumentMediaManager';
+import UserAttendanceManager from './UserAttendanceManager';
+import LocationMasterExplorer from './LocationMasterExplorer';
+import HouseholdSurveyForm from './HouseholdSurveyForm';
+import BackupRestoreEngine from './BackupRestoreEngine';
+import AuditLogViewer from './AuditLogViewer';
+import MatdanYadiManager from '../../components/MatdanYadiManager';
 import {
   Menu,
   Shield,
@@ -128,6 +144,38 @@ export default function AdminPhoneDashboard() {
   const [isLoadingUsers, setIsLoadingUsers] = useState(false);
   const [userSearchText, setUserSearchText] = useState('');
   const [togglingUserAiId, setTogglingUserAiId] = useState(null);
+
+  // Advanced Workbench & Sub-view Toggles
+  const [attendanceView, setAttendanceView] = useState('list'); // 'list' | 'hq'
+  const [approvalDeskView, setApprovalDeskView] = useState('mobile'); // 'mobile' | 'desk'
+  const [masterDataView, setMasterDataView] = useState('demographics'); // 'demographics' | 'explorer'
+  const [systemView, setSystemView] = useState('mobile'); // 'mobile' | 'backup_engine'
+  const [usersView, setUsersView] = useState('mobile'); // 'mobile' | 'ai_manager'
+  const [auditLogs, setAuditLogs] = useState([]);
+  const [roles, setRoles] = useState([]);
+
+  const loadLogs = useCallback(async () => {
+    try {
+      const { data } = await apiClient.get('/admin/audit-logs?per_page=100');
+      setAuditLogs(data.data || []);
+    } catch (e) {
+      console.warn('Could not load audit logs:', e);
+    }
+  }, []);
+
+  const loadRoles = useCallback(async () => {
+    try {
+      const { data } = await apiClient.get('/admin/roles');
+      setRoles(data.data || []);
+    } catch (e) {
+      console.warn('Could not load roles:', e);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (activeTab === 'audit') loadLogs();
+    if (activeTab === 'roles') loadRoles();
+  }, [activeTab, loadLogs, loadRoles]);
 
   // Interactive Modals State
   const [selectedMetricModal, setSelectedMetricModal] = useState(null); // 'voters' | 'booths' | 'approvals' | 'workers' | 'issues' | 'villages'
@@ -937,37 +985,31 @@ export default function AdminPhoneDashboard() {
             </div>
 
             <div className="admin-drawer-nav">
+              {/* Category 1: मुख्य नियंत्रण / CORE COMMAND */}
+              <div className="admin-drawer-section-title">
+                <span>🎯 {isMr ? 'मुख्य नियंत्रण' : 'CORE COMMAND'}</span>
+              </div>
+
               <button
                 type="button"
                 className={`admin-drawer-item ${activeTab === 'dashboard' ? 'active' : ''}`}
                 onClick={() => { setActiveTab('dashboard'); setIsDrawerOpen(false); }}
               >
                 <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span>📊</span> {isMr ? 'मुख्य डॅशबोर्ड' : 'Dashboard'}
+                  <span>📊</span> {isMr ? 'डॅशबोर्ड सारांश' : 'Dashboard'}
                 </span>
                 <ChevronRight size={16} />
               </button>
 
               <button
                 type="button"
-                className={`admin-drawer-item ${activeTab === 'projects' ? 'active' : ''}`}
-                onClick={() => { setActiveTab('projects'); setIsDrawerOpen(false); }}
+                className={`admin-drawer-item ${activeTab === 'users_hub' ? 'active' : ''}`}
+                onClick={() => { setActiveTab('users_hub'); setIsDrawerOpen(false); }}
               >
                 <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span>📁</span> {isMr ? 'प्रकल्प व मतदार यादी' : 'Projects & Voters'}
+                  <span>👥</span> {isMr ? 'User (वापरकर्ते वर्गीकरण)' : 'User Management'}
                 </span>
-                <span className="admin-badge-count">{projects.length}</span>
-              </button>
-
-              <button
-                type="button"
-                className={`admin-drawer-item ${activeTab === 'attendance' ? 'active' : ''}`}
-                onClick={() => { setActiveTab('attendance'); setIsDrawerOpen(false); }}
-              >
-                <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span>📍</span> {isMr ? 'कार्यकर्ते हजेरी ट्रॅकिंग' : 'Worker Attendance'}
-                </span>
-                <span className="admin-badge-count">{attendances.length}</span>
+                <span className="admin-badge-count" style={{ background: '#eff6ff', color: '#1d4ed8' }}>NEW</span>
               </button>
 
               <button
@@ -976,9 +1018,91 @@ export default function AdminPhoneDashboard() {
                 onClick={() => { setActiveTab('users'); setIsDrawerOpen(false); }}
               >
                 <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span>👥</span> {isMr ? 'वापरकर्ते व AI परवानग्या' : 'Users & AI Permissions'}
+                  <span>👤</span> {isMr ? 'वापरकर्ते व मंजुरी' : 'Users & Approvals'}
                 </span>
                 <span className="admin-badge-count">{allUsersList.length}</span>
+              </button>
+
+              <button
+                type="button"
+                className={`admin-drawer-item ${activeTab === 'roles' ? 'active' : ''}`}
+                onClick={() => { setActiveTab('roles'); setIsDrawerOpen(false); }}
+              >
+                <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span>🛡️</span> {isMr ? 'भूमिका व परवानग्या' : 'Roles & Permissions'}
+                </span>
+                <ChevronRight size={16} />
+              </button>
+
+              <button
+                type="button"
+                className={`admin-drawer-item ${activeTab === 'attendance' ? 'active' : ''}`}
+                onClick={() => { setActiveTab('attendance'); setIsDrawerOpen(false); }}
+              >
+                <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span>📍</span> {isMr ? 'कर्मचारी उपस्थिती HQ' : 'User Attendance HQ'}
+                </span>
+                <span className="admin-badge-count">{attendances.length}</span>
+              </button>
+
+              <button
+                type="button"
+                className={`admin-drawer-item ${activeTab === 'chatbot' ? 'active' : ''}`}
+                onClick={() => { setActiveTab('chatbot'); setIsDrawerOpen(false); }}
+              >
+                <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span>🤖</span> {isMr ? 'AI डेटाबेस सहाय्यक' : 'AI Database Assistant'}
+                </span>
+                <span className="admin-badge-count" style={{ background: '#f0fdfa', color: '#0f766e' }}>LIVE AI</span>
+              </button>
+
+              {/* Category 2: फील्ड ऑपरेशन्स व डेटा / FIELD OPERATIONS & DATA */}
+              <div className="admin-drawer-section-title">
+                <span>🗳️ {isMr ? 'फील्ड डेटा व तपासणी' : 'FIELD OPERATIONS & DATA'}</span>
+              </div>
+
+              <button
+                type="button"
+                className={`admin-drawer-item ${activeTab === 'evm' ? 'active' : ''}`}
+                onClick={() => { setActiveTab('evm'); setIsDrawerOpen(false); }}
+              >
+                <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span>🗳️</span> {isMr ? 'निवडणूक नियंत्रण (EVM)' : 'Election Station (EVM)'}
+                </span>
+                <ChevronRight size={16} />
+              </button>
+
+              <button
+                type="button"
+                className={`admin-drawer-item ${activeTab === 'election_analysis' ? 'active' : ''}`}
+                onClick={() => { setActiveTab('election_analysis'); setIsDrawerOpen(false); }}
+              >
+                <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span>📈</span> {isMr ? 'निवडणूक विश्लेषण' : 'Election Analysis'}
+                </span>
+                <span className="admin-badge-count" style={{ background: '#eff6ff', color: '#1d4ed8' }}>NEW</span>
+              </button>
+
+              <button
+                type="button"
+                className={`admin-drawer-item ${activeTab === 'voter_list' ? 'active' : ''}`}
+                onClick={() => { setActiveTab('voter_list'); setIsDrawerOpen(false); }}
+              >
+                <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span>📋</span> {isMr ? 'मतदान यादी (Voter List)' : 'Voter List (मतदान यादी)'}
+                </span>
+                <span className="admin-badge-count" style={{ background: '#ecfdf5', color: '#047857' }}>NEW</span>
+              </button>
+
+              <button
+                type="button"
+                className={`admin-drawer-item ${activeTab === 'election_prabhari' ? 'active' : ''}`}
+                onClick={() => { setActiveTab('election_prabhari'); setIsDrawerOpen(false); }}
+              >
+                <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span>🏛️</span> {isMr ? 'निवडणूक प्रभारी' : 'Election Prabhari'}
+                </span>
+                <span className="admin-badge-count" style={{ background: '#fffbeb', color: '#b45309' }}>NEW</span>
               </button>
 
               <button
@@ -987,13 +1111,35 @@ export default function AdminPhoneDashboard() {
                 onClick={() => { setActiveTab('approvals'); setIsDrawerOpen(false); }}
               >
                 <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span>📝</span> {isMr ? 'सर्व्हे मंजुऱ्या' : 'Survey Approvals'}
+                  <span>📝</span> {isMr ? 'फील्ड डेटा मंजुरी डेस्क' : 'Data Approval Desk'}
                 </span>
                 {pendingApprovalsCount > 0 && (
                   <span style={{ background: '#ef4444', color: '#fff', fontSize: '10px', padding: '2px 6px', borderRadius: '10px', fontWeight: '800' }}>
                     {pendingApprovalsCount}
                   </span>
                 )}
+              </button>
+
+              <button
+                type="button"
+                className={`admin-drawer-item ${activeTab === 'duplicates' ? 'active' : ''}`}
+                onClick={() => { setActiveTab('duplicates'); setIsDrawerOpen(false); }}
+              >
+                <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span>👥</span> {isMr ? 'ड्युप्लिकेट मतदार शोध' : 'Duplicate Detection'}
+                </span>
+                <ChevronRight size={16} />
+              </button>
+
+              <button
+                type="button"
+                className={`admin-drawer-item ${activeTab === 'media' ? 'active' : ''}`}
+                onClick={() => { setActiveTab('media'); setIsDrawerOpen(false); }}
+              >
+                <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span>📁</span> {isMr ? 'कागदपत्र व्यवस्थापक' : 'Document Manager'}
+                </span>
+                <ChevronRight size={16} />
               </button>
 
               <button
@@ -1007,16 +1153,48 @@ export default function AdminPhoneDashboard() {
                 <span className="admin-badge-count">{issues.length}</span>
               </button>
 
+              {/* Category 3: प्रकल्प व मतदारसंघ / PROJECTS & GEOGRAPHY */}
+              <div className="admin-drawer-section-title">
+                <span>📁 {isMr ? 'प्रकल्प व मतदारसंघ' : 'PROJECTS & GEOGRAPHY'}</span>
+              </div>
+
+              <button
+                type="button"
+                className={`admin-drawer-item ${activeTab === 'projects' ? 'active' : ''}`}
+                onClick={() => { setActiveTab('projects'); setIsDrawerOpen(false); }}
+              >
+                <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span>📁</span> {isMr ? 'प्रकल्प व्यवस्थापन' : 'Project Management'}
+                </span>
+                <span className="admin-badge-count">{projects.length}</span>
+              </button>
+
               <button
                 type="button"
                 className={`admin-drawer-item ${activeTab === 'master_data' ? 'active' : ''}`}
                 onClick={() => { setActiveTab('master_data'); setIsDrawerOpen(false); }}
               >
                 <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span>🏘️</span> {isMr ? 'गावनिहाय लोकसंख्या व मतदार' : 'Village Demographics'}
+                  <span>🌐</span> {isMr ? 'स्थान मास्टर डेटा' : 'Location Master Data'}
                 </span>
-                <span className="admin-badge-count">{villagesList.length}</span>
+                <ChevronRight size={16} />
               </button>
+
+              <button
+                type="button"
+                className={`admin-drawer-item ${activeTab === 'forms' ? 'active' : ''}`}
+                onClick={() => { setActiveTab('forms'); setIsDrawerOpen(false); }}
+              >
+                <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span>📋</span> {isMr ? 'सर्व्हे फॉर्म बिल्डर' : 'Form Builder'}
+                </span>
+                <ChevronRight size={16} />
+              </button>
+
+              {/* Category 4: सुरक्षा व प्रणाली / SECURITY & SYSTEM */}
+              <div className="admin-drawer-section-title">
+                <span>🛡️ {isMr ? 'सुरक्षा व प्रणाली' : 'SECURITY & SYSTEM'}</span>
+              </div>
 
               <button
                 type="button"
@@ -1024,7 +1202,18 @@ export default function AdminPhoneDashboard() {
                 onClick={() => { setActiveTab('system'); setIsDrawerOpen(false); }}
               >
                 <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span>🛡️</span> {isMr ? 'डेटाबेस सुरक्षा व बॅकअप' : 'System & Backup'}
+                  <span>💾</span> {isMr ? 'डेटाबेस बॅकअप व रिस्टोअर' : 'Backup & Restore'}
+                </span>
+                <ChevronRight size={16} />
+              </button>
+
+              <button
+                type="button"
+                className={`admin-drawer-item ${activeTab === 'audit' ? 'active' : ''}`}
+                onClick={() => { setActiveTab('audit'); setIsDrawerOpen(false); }}
+              >
+                <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span>🔒</span> {isMr ? 'ऑडिट व सुरक्षा नोंदी' : 'Audit & Security'}
                 </span>
                 <ChevronRight size={16} />
               </button>
@@ -1405,15 +1594,58 @@ export default function AdminPhoneDashboard() {
 
             {/* ================= TAB 3: ATTENDANCE ================= */}
             {activeTab === 'attendance' && (
-              <>
-                <div className="admin-section-card">
-                  <div className="admin-section-header">
-                    <div className="admin-section-title">
-                      <UserCheck size={18} style={{ color: '#10b981' }} />
-                      <span>{isMr ? 'उपस्थिती सारांश (थेट DB)' : 'Live DB Attendance'}</span>
-                    </div>
-                    <span className="admin-badge-count">{attendances.length} नोंदी</span>
-                  </div>
+              <div className="admin-responsive-tab-pane">
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '14px', background: '#f1f5f9', padding: '4px', borderRadius: '10px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setAttendanceView('list')}
+                    style={{
+                      flex: 1,
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      border: 'none',
+                      background: attendanceView === 'list' ? '#ffffff' : 'transparent',
+                      color: attendanceView === 'list' ? '#0f172a' : '#64748b',
+                      fontWeight: '800',
+                      fontSize: '12px',
+                      cursor: 'pointer',
+                      boxShadow: attendanceView === 'list' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'
+                    }}
+                  >
+                    📱 {isMr ? 'उपस्थिती यादी' : 'Attendance List'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAttendanceView('hq')}
+                    style={{
+                      flex: 1,
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      border: 'none',
+                      background: attendanceView === 'hq' ? '#ffffff' : 'transparent',
+                      color: attendanceView === 'hq' ? '#0f172a' : '#64748b',
+                      fontWeight: '800',
+                      fontSize: '12px',
+                      cursor: 'pointer',
+                      boxShadow: attendanceView === 'hq' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'
+                    }}
+                  >
+                    🏢 {isMr ? 'उपस्थिती HQ' : 'Attendance HQ'}
+                  </button>
+                </div>
+
+                {attendanceView === 'hq' ? (
+                  <UserAttendanceManager language={lang} />
+                ) : (
+                  <>
+                    <div className="admin-section-card">
+                      <div className="admin-section-header">
+                        <div className="admin-section-title">
+                          <UserCheck size={18} style={{ color: '#10b981' }} />
+                          <span>{isMr ? 'उपस्थिती सारांश (थेट DB)' : 'Live DB Attendance'}</span>
+                        </div>
+                        <span className="admin-badge-count">{attendances.length} नोंदी</span>
+                      </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', textAlign: 'center' }}>
                     <div style={{ background: '#f0fdf4', padding: '8px', borderRadius: '8px' }}>
@@ -1567,17 +1799,62 @@ export default function AdminPhoneDashboard() {
                 </div>
               </>
             )}
+          </div>
+        )}
 
             {/* ================= TAB 4: APPROVALS ================= */}
             {activeTab === 'approvals' && (
-              <div className="admin-section-card">
-                <div className="admin-section-header">
-                  <div className="admin-section-title">
-                    <ClipboardCheck size={18} style={{ color: '#e11d48' }} />
-                    <span>{isMr ? 'सर्व्हे मंजुऱ्या कक्ष (थेट DB)' : 'Survey Approvals (DB)'}</span>
-                  </div>
-                  <span className="admin-badge-count">{filteredApprovals.length} नोंदी</span>
+              <div className="admin-responsive-tab-pane">
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '14px', background: '#f1f5f9', padding: '4px', borderRadius: '10px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setApprovalDeskView('mobile')}
+                    style={{
+                      flex: 1,
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      border: 'none',
+                      background: approvalDeskView === 'mobile' ? '#ffffff' : 'transparent',
+                      color: approvalDeskView === 'mobile' ? '#0f172a' : '#64748b',
+                      fontWeight: '800',
+                      fontSize: '12px',
+                      cursor: 'pointer',
+                      boxShadow: approvalDeskView === 'mobile' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'
+                    }}
+                  >
+                    📱 {isMr ? 'जलद मंजुरी' : 'Quick Approvals'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setApprovalDeskView('desk')}
+                    style={{
+                      flex: 1,
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      border: 'none',
+                      background: approvalDeskView === 'desk' ? '#ffffff' : 'transparent',
+                      color: approvalDeskView === 'desk' ? '#0f172a' : '#64748b',
+                      fontWeight: '800',
+                      fontSize: '12px',
+                      cursor: 'pointer',
+                      boxShadow: approvalDeskView === 'desk' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'
+                    }}
+                  >
+                    📑 {isMr ? 'डेटा मंजुरी डेस्क' : 'Full Approval Desk'}
+                  </button>
                 </div>
+
+                {approvalDeskView === 'desk' ? (
+                  <DataApprovalWorkbench lang={lang} />
+                ) : (
+                  <div className="admin-section-card">
+                    <div className="admin-section-header">
+                      <div className="admin-section-title">
+                        <ClipboardCheck size={18} style={{ color: '#e11d48' }} />
+                        <span>{isMr ? 'सर्व्हे मंजुऱ्या कक्ष (थेट DB)' : 'Survey Approvals (DB)'}</span>
+                      </div>
+                      <span className="admin-badge-count">{filteredApprovals.length} नोंदी</span>
+                    </div>
 
                 {/* Filter Pills */}
                 <div style={{ display: 'flex', gap: '6px', marginBottom: '12px', overflowX: 'auto', paddingBottom: '4px' }}>
@@ -1684,6 +1961,8 @@ export default function AdminPhoneDashboard() {
                 )}
               </div>
             )}
+          </div>
+        )}
 
             {/* ================= TAB 5: CIVIC ISSUES & COMPLAINTS ================= */}
             {activeTab === 'issues' && (
@@ -1807,9 +2086,52 @@ export default function AdminPhoneDashboard() {
 
             {/* ================= TAB 6: MASTER DATA & VILLAGES (WITH ALL 36 DB DISTRICTS & DYNAMIC TALUKAS) ================= */}
             {activeTab === 'master_data' && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                {/* 1. Interactive Selector Box with In-App Popups & Direct Search */}
-                <div className="admin-village-picker-box">
+              <div className="admin-responsive-tab-pane">
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '14px', background: '#f1f5f9', padding: '4px', borderRadius: '10px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setMasterDataView('demographics')}
+                    style={{
+                      flex: 1,
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      border: 'none',
+                      background: masterDataView === 'demographics' ? '#ffffff' : 'transparent',
+                      color: masterDataView === 'demographics' ? '#0f172a' : '#64748b',
+                      fontWeight: '800',
+                      fontSize: '12px',
+                      cursor: 'pointer',
+                      boxShadow: masterDataView === 'demographics' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'
+                    }}
+                  >
+                    🏘️ {isMr ? 'गावनिहाय आकडेवारी' : 'Village Demographics'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setMasterDataView('explorer')}
+                    style={{
+                      flex: 1,
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      border: 'none',
+                      background: masterDataView === 'explorer' ? '#ffffff' : 'transparent',
+                      color: masterDataView === 'explorer' ? '#0f172a' : '#64748b',
+                      fontWeight: '800',
+                      fontSize: '12px',
+                      cursor: 'pointer',
+                      boxShadow: masterDataView === 'explorer' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'
+                    }}
+                  >
+                    🌐 {isMr ? 'मास्टर डेटा एक्सप्लोरर' : 'Location Explorer'}
+                  </button>
+                </div>
+
+                {masterDataView === 'explorer' ? (
+                  <LocationMasterExplorer language={lang} />
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                    {/* 1. Interactive Selector Box with In-App Popups & Direct Search */}
+                    <div className="admin-village-picker-box">
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '8px' }}>
                     <div style={{ fontSize: '13px', fontWeight: '850', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <span>📍</span> {isMr ? 'गावनिहाय लोकसंख्या व मतदार शोध कक्ष' : 'Village Population & Voter Explorer'}
@@ -1975,10 +2297,55 @@ export default function AdminPhoneDashboard() {
                 </div>
               </div>
             )}
+          </div>
+        )}
 
             {/* ================= TAB 7: SYSTEM & BACKUP ================= */}
             {activeTab === 'system' && (
-              <div className="admin-section-card">
+              <div className="admin-responsive-tab-pane">
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '14px', background: '#f1f5f9', padding: '4px', borderRadius: '10px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setSystemView('mobile')}
+                    style={{
+                      flex: 1,
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      border: 'none',
+                      background: systemView === 'mobile' ? '#ffffff' : 'transparent',
+                      color: systemView === 'mobile' ? '#0f172a' : '#64748b',
+                      fontWeight: '800',
+                      fontSize: '12px',
+                      cursor: 'pointer',
+                      boxShadow: systemView === 'mobile' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'
+                    }}
+                  >
+                    📱 {isMr ? 'सिस्टिम सुरक्षा' : 'System Security'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSystemView('backup_engine')}
+                    style={{
+                      flex: 1,
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      border: 'none',
+                      background: systemView === 'backup_engine' ? '#ffffff' : 'transparent',
+                      color: systemView === 'backup_engine' ? '#0f172a' : '#64748b',
+                      fontWeight: '800',
+                      fontSize: '12px',
+                      cursor: 'pointer',
+                      boxShadow: systemView === 'backup_engine' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'
+                    }}
+                  >
+                    💾 {isMr ? 'बॅकअप इंजिन' : 'Backup Engine'}
+                  </button>
+                </div>
+
+                {systemView === 'backup_engine' ? (
+                  <BackupRestoreEngine lang={lang} />
+                ) : (
+                  <div className="admin-section-card">
                 <div className="admin-section-header">
                   <div className="admin-section-title">
                     <Database size={18} style={{ color: '#7c3aed' }} />
@@ -2055,10 +2422,59 @@ export default function AdminPhoneDashboard() {
                 </div>
               </div>
             )}
+          </div>
+        )}
 
             {/* ================= TAB 8: USERS & AI CHATBOT PERMISSIONS ================= */}
             {activeTab === 'users' && (
-              <div className="admin-section-card">
+              <div className="admin-responsive-tab-pane">
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '14px', background: '#f1f5f9', padding: '4px', borderRadius: '10px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setUsersView('mobile')}
+                    style={{
+                      flex: 1,
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      border: 'none',
+                      background: usersView === 'mobile' ? '#ffffff' : 'transparent',
+                      color: usersView === 'mobile' ? '#0f172a' : '#64748b',
+                      fontWeight: '800',
+                      fontSize: '12px',
+                      cursor: 'pointer',
+                      boxShadow: usersView === 'mobile' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'
+                    }}
+                  >
+                    📱 {isMr ? 'जलद यादी व कृती' : 'Quick User List'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setUsersView('ai_manager')}
+                    style={{
+                      flex: 1,
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      border: 'none',
+                      background: usersView === 'ai_manager' ? '#ffffff' : 'transparent',
+                      color: usersView === 'ai_manager' ? '#0f172a' : '#64748b',
+                      fontWeight: '800',
+                      fontSize: '12px',
+                      cursor: 'pointer',
+                      boxShadow: usersView === 'ai_manager' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'
+                    }}
+                  >
+                    🛡️ {isMr ? 'वापरकर्ते व AI परवानग्या डेस्क' : 'Users & AI Permissions Desk'}
+                  </button>
+                </div>
+
+                {usersView === 'ai_manager' ? (
+                  <UsersAiPermissionManager
+                    language={lang}
+                    onNotice={(m) => showToast(m)}
+                    onError={(e) => showToast(e)}
+                  />
+                ) : (
+                  <div className="admin-section-card">
                 <div className="admin-section-header">
                   <div className="admin-section-title">
                     <Users size={18} style={{ color: '#2563eb' }} />
@@ -2295,6 +2711,81 @@ export default function AdminPhoneDashboard() {
                       })
                   )}
                 </div>
+              </div>
+            )}
+          </div>
+        )}
+
+            {/* ================= NEW WEB ADMIN MODULES WIRE-UP ================= */}
+            {activeTab === 'users_hub' && (
+              <div className="admin-responsive-tab-pane">
+                <UserManagementHub isMr={isMr} onNavigateToCreate={() => setActiveTab('users')} />
+              </div>
+            )}
+
+            {activeTab === 'roles' && (
+              <div className="admin-responsive-tab-pane">
+                <RolePermissionManager
+                  roles={roles}
+                  language={lang}
+                  onRefreshRoles={loadRoles}
+                  onNotice={(m) => showToast(m)}
+                  onError={(e) => showToast(e)}
+                />
+              </div>
+            )}
+
+            {activeTab === 'chatbot' && (
+              <div className="admin-responsive-tab-pane">
+                <AdminChatbotDesk lang={lang} onNavigateDesk={(t) => setActiveTab(t)} />
+              </div>
+            )}
+
+            {activeTab === 'evm' && (
+              <div className="admin-responsive-tab-pane">
+                <AdminEvmVotingSystem user={user} isMr={isMr} isAdmin={true} />
+              </div>
+            )}
+
+            {activeTab === 'election_analysis' && (
+              <div className="admin-responsive-tab-pane">
+                <ElectionAnalysisWorkbench isMr={isMr} language={lang} />
+              </div>
+            )}
+
+            {activeTab === 'voter_list' && (
+              <div className="admin-responsive-tab-pane">
+                <MatdanYadiManager lang={lang} />
+              </div>
+            )}
+
+            {activeTab === 'election_prabhari' && (
+              <div className="admin-responsive-tab-pane">
+                <ElectionPrabhariManager isMr={isMr} lang={lang} />
+              </div>
+            )}
+
+            {activeTab === 'duplicates' && (
+              <div className="admin-responsive-tab-pane">
+                <DuplicateDetectionWorkbench lang={lang} />
+              </div>
+            )}
+
+            {activeTab === 'media' && (
+              <div className="admin-responsive-tab-pane">
+                <DocumentMediaManager lang={lang} />
+              </div>
+            )}
+
+            {activeTab === 'forms' && (
+              <div className="admin-responsive-tab-pane">
+                <HouseholdSurveyForm user={user} language={lang} />
+              </div>
+            )}
+
+            {activeTab === 'audit' && (
+              <div className="admin-responsive-tab-pane">
+                <AuditLogViewer logs={auditLogs} currentUser={user} language={lang} onRefresh={loadLogs} />
               </div>
             )}
           </>

@@ -1362,14 +1362,13 @@ export default function UserAttendanceManager({ language = 'mr' }) {
                     <div style={{ fontSize: '13px', color: '#64748b', marginTop: '6px', maxWidth: '420px', margin: '6px auto 16px' }}>
                       {isMr ? 'निवडलेल्या तारीख किंवा निकषांनुसार डेटा उपलब्ध नाही.' : 'Try changing date or filters.'}
                     </div>
-                    {(roleFilter !== 'all' || complianceFilter !== 'all' || searchQuery.trim() !== '' || selectedDateFilter !== 'all') && (
+                    {(roleFilter !== 'all' || complianceFilter !== 'all' || searchQuery.trim() !== '') && (
                       <button
                         type="button"
                         onClick={() => {
                           setRoleFilter('all');
                           setComplianceFilter('all');
                           setSearchQuery('');
-                          setSelectedDateFilter('all');
                         }}
                         className="tab-btn-3d-blue"
                         style={{ padding: '8px 18px', fontSize: '13px', borderRadius: '10px' }}

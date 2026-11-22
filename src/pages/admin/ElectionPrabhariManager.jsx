@@ -432,15 +432,18 @@ export default function ElectionPrabhariManager({ isMr = true, lang = 'mr' }) {
           <div ref={menuRef} style={{ position: 'relative' }}>
             <button
               type="button"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsMenuOpen((prev) => !prev);
+              }}
               title={isMr ? 'पद स्तर निवडा (3-Dot Menu)' : 'Choose Hierarchy Level'}
               style={{
-                width: '40px',
-                height: '40px',
+                width: '42px',
+                height: '42px',
                 borderRadius: '10px',
-                border: '1.5px solid #cbd5e1',
+                border: isMenuOpen ? '2px solid #2563eb' : '1.5px solid #cbd5e1',
                 background: isMenuOpen ? '#eff6ff' : '#ffffff',
-                color: '#1e293b',
+                color: isMenuOpen ? '#2563eb' : '#1e293b',
                 cursor: 'pointer',
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -448,21 +451,42 @@ export default function ElectionPrabhariManager({ isMr = true, lang = 'mr' }) {
                 fontSize: '22px',
                 fontWeight: '900',
                 lineHeight: 1,
-                boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+                boxShadow: isMenuOpen ? '0 0 0 3px rgba(37,99,235,0.2)' : '0 1px 3px rgba(0,0,0,0.06)',
                 transition: 'all 0.15s ease',
               }}
             >
               ⋮
             </button>
 
+            {/* Mobile Touch Backdrop to safely close on tap outside */}
+            {isMenuOpen && (
+              <div
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsMenuOpen(false);
+                }}
+                style={{
+                  position: 'fixed',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  zIndex: 9998,
+                  background: 'transparent',
+                }}
+              />
+            )}
+
             {/* 3-Dot Dropdown Popover */}
             {isMenuOpen && (
               <div
+                onClick={(e) => e.stopPropagation()}
                 style={{
                   position: 'absolute',
                   right: 0,
                   top: 'calc(100% + 8px)',
                   width: '270px',
+                  maxWidth: 'calc(100vw - 32px)',
                   background: '#ffffff',
                   borderRadius: '14px',
                   border: '1px solid #cbd5e1',

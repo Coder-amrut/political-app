@@ -1145,8 +1145,10 @@ function HouseholdSurveyForm({ user, language: appLang = 'en' }) {
             background: '#ffffff',
             borderRadius: '14px',
             border: '1px solid #e2e8f0',
-            padding: '24px',
+            padding: '16px',
             boxShadow: '0 2px 4px rgba(0,0,0,0.02)',
+            maxWidth: '100%',
+            boxSizing: 'border-box',
           }}
         >
           {/* Header Bar */}
@@ -1160,7 +1162,7 @@ function HouseholdSurveyForm({ user, language: appLang = 'en' }) {
               gap: '14px',
             }}
           >
-            <div>
+            <div style={{ flex: '1 1 280px', minWidth: 0 }}>
               <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '850', color: '#0f172a' }}>
                 🚀 {isMr ? 'प्रकाशित फॉर्म व वापरकर्ते अधिकार यादी' : 'Published Forms & Assigned Users'}
               </h2>
@@ -1171,9 +1173,9 @@ function HouseholdSurveyForm({ user, language: appLang = 'en' }) {
               </p>
             </div>
 
-            {/* Search Input & Refresh Button */}
-            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-              <div style={{ position: 'relative', width: '280px' }}>
+            {/* Search Input & Action Buttons Toolbar (Mobile Responsive) */}
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap', width: '100%', maxWidth: '100%' }}>
+              <div style={{ position: 'relative', flex: '1 1 200px', minWidth: '160px' }}>
                 <input
                   type="text"
                   placeholder={isMr ? 'प्रकाशित फॉर्म शोधा...' : 'Search published form...'}
@@ -1191,33 +1193,38 @@ function HouseholdSurveyForm({ user, language: appLang = 'en' }) {
                 <span style={{ position: 'absolute', left: 10, top: 9, color: '#94a3b8', fontSize: '13px' }}>🔍</span>
               </div>
 
-              <button
-                type="button"
-                onClick={fetchPublishedForms}
-                className="fb-btn-3d-secondary"
-                style={{
-                  padding: '7px 14px',
-                  fontSize: '13px',
-                }}
-              >
-                🔄 {isMr ? 'रिफ्रेश' : 'Refresh'}
-              </button>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  onClick={fetchPublishedForms}
+                  className="fb-btn-3d-secondary"
+                  style={{
+                    padding: '7px 14px',
+                    fontSize: '13px',
+                    flex: '1 1 auto',
+                  }}
+                >
+                  🔄 {isMr ? 'रिफ्रेश' : 'Refresh'}
+                </button>
 
-              <button
-                type="button"
-                onClick={handleCreateNewForm}
-                className="fb-btn-3d-primary"
-                style={{
-                  padding: '8px 18px',
-                  fontSize: '13px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                }}
-              >
-                <span>➕</span>
-                <span>{isMr ? 'नवीन फॉर्म तयार करा' : 'Create New Form'}</span>
-              </button>
+                <button
+                  type="button"
+                  onClick={handleCreateNewForm}
+                  className="fb-btn-3d-primary"
+                  style={{
+                    padding: '8px 18px',
+                    fontSize: '13px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    flex: '1 1 auto',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  <span>➕</span>
+                  <span>{isMr ? 'नवीन फॉर्म तयार करा' : 'Create New Form'}</span>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -3024,7 +3031,7 @@ function HouseholdSurveyForm({ user, language: appLang = 'en' }) {
               </p>
             </div>
 
-            <div style={{ position: 'relative', width: '280px' }}>
+            <div style={{ position: 'relative', width: '280px', maxWidth: '100%' }}>
               <input
                 type="text"
                 placeholder={isMr ? 'प्रकल्प शोधा...' : 'Search project...'}

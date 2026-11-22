@@ -1040,7 +1040,7 @@ export default function AdminPhoneDashboard() {
                 onClick={() => { setActiveTab('attendance'); setIsDrawerOpen(false); }}
               >
                 <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span>📍</span> {isMr ? 'कर्मचारी उपस्थिती HQ' : 'User Attendance HQ'}
+                  <span>📍</span> {isMr ? 'कर्मचारी उपस्थिती' : 'User Attendance'}
                 </span>
                 <span className="admin-badge-count">{attendances.length}</span>
               </button>
@@ -1630,7 +1630,7 @@ export default function AdminPhoneDashboard() {
                       boxShadow: attendanceView === 'hq' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'
                     }}
                   >
-                    🏢 {isMr ? 'उपस्थिती HQ' : 'Attendance HQ'}
+                    🏢 {isMr ? 'सविस्तर उपस्थिती' : 'User Attendance'}
                   </button>
                 </div>
 

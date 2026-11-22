@@ -494,20 +494,23 @@ ${groundObservations || 'नोंद नाही'}
   };
 
   return (
-    <div style={{ padding: '20px 24px 80px', maxWidth: '1350px', margin: '0 auto', fontFamily: "'Inter', 'Noto Sans Devanagari', sans-serif" }}>
+    <div style={{ padding: 'clamp(12px, 2.5vw, 20px) clamp(10px, 2.5vw, 24px) 80px', maxWidth: '1350px', width: '100%', boxSizing: 'border-box', overflowX: 'hidden', margin: '0 auto', fontFamily: "'Inter', 'Noto Sans Devanagari', sans-serif" }}>
       {/* ================= HEADER BAR ================= */}
       <div style={{
         background: 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #1d4ed8 100%)',
         borderRadius: '16px',
-        padding: '24px 28px',
+        padding: 'clamp(14px, 3vw, 24px)',
         color: '#ffffff',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         flexWrap: 'wrap',
-        gap: '16px',
+        gap: '14px',
         boxShadow: '0 10px 30px rgba(15, 23, 42, 0.25)',
-        marginBottom: '20px'
+        marginBottom: '20px',
+        boxSizing: 'border-box',
+        width: '100%',
+        maxWidth: '100%'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <div style={{
@@ -767,10 +770,10 @@ ${groundObservations || 'नोंद नाही'}
 
       {/* ================= TAB 1: INPUT FORM ================= */}
       {activeTab === 'input' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '18px', width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
           {/* 1. Election Type Grid */}
-          <div style={{ background: '#ffffff', borderRadius: '16px', border: '1.5px solid #e2e8f0', padding: '22px', boxShadow: '0 2px 10px rgba(0,0,0,0.03)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+          <div style={{ background: '#ffffff', borderRadius: '16px', border: '1.5px solid #e2e8f0', padding: 'clamp(12px, 3vw, 20px)', boxShadow: '0 2px 10px rgba(0,0,0,0.03)', width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
               <div>
                 <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '850', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <span>🏛️</span>
@@ -785,7 +788,7 @@ ${groundObservations || 'नोंद नाही'}
               </span>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '10px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))', gap: '10px', width: '100%', boxSizing: 'border-box' }}>
               {ELECTION_TYPES.map((etype) => {
                 const isSelected = selectedElectionType === etype.id;
                 return (
@@ -802,7 +805,9 @@ ${groundObservations || 'नोंद नाही'}
                       alignItems: 'center',
                       gap: '12px',
                       transition: 'all 0.18s ease',
-                      boxShadow: isSelected ? '0 4px 14px rgba(37, 99, 235, 0.16)' : 'none'
+                      boxShadow: isSelected ? '0 4px 14px rgba(37, 99, 235, 0.16)' : 'none',
+                      width: '100%',
+                      boxSizing: 'border-box',
                     }}
                   >
                     <div style={{ fontSize: '24px' }}>{etype.icon}</div>
@@ -839,13 +844,13 @@ ${groundObservations || 'नोंद नाही'}
           </div>
 
           {/* 2. Dynamic Election Details Form */}
-          <div style={{ background: '#ffffff', borderRadius: '16px', border: '1.5px solid #e2e8f0', padding: '22px', boxShadow: '0 2px 10px rgba(0,0,0,0.03)' }}>
+          <div style={{ background: '#ffffff', borderRadius: '16px', border: '1.5px solid #e2e8f0', padding: 'clamp(12px, 3vw, 20px)', boxShadow: '0 2px 10px rgba(0,0,0,0.03)', width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
             <h3 style={{ margin: '0 0 16px', fontSize: '16px', fontWeight: '850', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <span>📝</span>
               <span>{isMr ? 'निवडणुकीचा सविस्तर तपशील (Election Demographics & Geography)' : 'Election Demographics & Geography'}</span>
             </h3>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '14px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))', gap: '14px', width: '100%', boxSizing: 'border-box' }}>
               <div>
                 <label style={{ display: 'block', fontSize: '12px', fontWeight: '750', color: '#334155', marginBottom: '5px' }}>
                   {isMr ? 'निवडणुकीचे नाव' : 'Election Title'} <span style={{ color: '#ef4444' }}>*</span>
@@ -1056,7 +1061,7 @@ ${groundObservations || 'नोंद नाही'}
             </div>
 
             {/* Previous Election Results & Date */}
-            <div style={{ marginTop: '16px', display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '14px' }}>
+            <div style={{ marginTop: '16px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap: '14px', width: '100%', boxSizing: 'border-box' }}>
               <div>
                 <label style={{ display: 'block', fontSize: '12px', fontWeight: '750', color: '#334155', marginBottom: '5px' }}>
                   {isMr ? 'मागील निवडणुकीची तारीख' : 'Previous Election Date'}
@@ -1328,20 +1333,20 @@ ${groundObservations || 'नोंद नाही'}
                   </button>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
                   {developmentIssues.map((item, idx) => (
-                    <div key={idx} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 2fr auto', gap: '8px', alignItems: 'center' }}>
+                    <div key={idx} style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center', background: '#f8fafc', padding: '10px', borderRadius: '8px', border: '1px solid #e2e8f0', width: '100%', boxSizing: 'border-box' }}>
                       <input
                         type="text"
                         value={item.issue}
                         onChange={(e) => handleUpdateIssue(idx, 'issue', e.target.value)}
                         placeholder={isMr ? 'उदा. पाणीपुरवठा, पूर संरक्षण' : 'Issue Name'}
-                        style={{ padding: '7px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '12px' }}
+                        style={{ flex: '2 1 180px', minWidth: '130px', padding: '7px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '12px', boxSizing: 'border-box' }}
                       />
                       <select
                         value={item.priority}
                         onChange={(e) => handleUpdateIssue(idx, 'priority', e.target.value)}
-                        style={{ padding: '7px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '12px', background: '#fff' }}
+                        style={{ flex: '1 1 120px', minWidth: '100px', padding: '7px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '12px', background: '#fff', boxSizing: 'border-box' }}
                       >
                         <option value="Critical">Critical (अति-तातडीचे)</option>
                         <option value="High">High (महत्त्वाचे)</option>
@@ -1353,12 +1358,12 @@ ${groundObservations || 'नोंद नाही'}
                         value={item.impact}
                         onChange={(e) => handleUpdateIssue(idx, 'impact', e.target.value)}
                         placeholder={isMr ? 'संभाव्य राजकीय प्रभाव' : 'Electoral Impact'}
-                        style={{ padding: '7px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '12px' }}
+                        style={{ flex: '2 1 160px', minWidth: '130px', padding: '7px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '12px', boxSizing: 'border-box' }}
                       />
                       <button
                         type="button"
                         onClick={() => handleRemoveIssue(idx)}
-                        style={{ background: '#fee2e2', border: 'none', color: '#dc2626', padding: '6px', borderRadius: '6px', cursor: 'pointer' }}
+                        style={{ background: '#fee2e2', border: 'none', color: '#dc2626', padding: '6px 10px', borderRadius: '6px', cursor: 'pointer', fontWeight: '800' }}
                       >
                         ✕
                       </button>

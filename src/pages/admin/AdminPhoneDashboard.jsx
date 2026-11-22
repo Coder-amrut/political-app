@@ -879,6 +879,42 @@ export default function AdminPhoneDashboard() {
         </div>
 
         <div className="admin-phone-header-right">
+          {/* Quick Switch to User Page Button */}
+          <button
+            type="button"
+            onClick={() => {
+              localStorage.setItem('officer_portal_user', JSON.stringify({
+                id: 99,
+                full_name: 'Amrutkiran (फील्ड कार्यकर्ता)',
+                name: 'Amrutkiran',
+                email: 'user@gmail.com',
+                phone: '9284966665',
+                status: 'ACTIVE',
+                roles: ['WORKER'],
+                role: 'WORKER'
+              }));
+              window.location.href = '/';
+            }}
+            style={{
+              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: '999px',
+              padding: '4px 9px',
+              fontSize: '11px',
+              fontWeight: '850',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px',
+              boxShadow: '0 2px 8px rgba(16, 185, 129, 0.4)'
+            }}
+            title={isMr ? 'वापरकर्ता पोर्टल पहा (User App)' : 'View User Portal'}
+          >
+            <span>👤</span>
+            <span>{isMr ? 'युजर पेज' : 'User App'}</span>
+          </button>
+
           <button
             type="button"
             className="admin-lang-btn"

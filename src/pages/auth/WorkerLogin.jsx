@@ -494,7 +494,10 @@ export default function WorkerLogin({ onLoginSuccess, initialMode = 'login' }) {
     const isDemoAccount = (
       (lowerLogin === 'appadmin@gmail.com' && cleanPassword === '123456') ||
       (lowerLogin === 'admin@gmail.com' && cleanPassword === '123456') ||
-      (lowerLogin === 'webadmin@gmail.com' && cleanPassword === '123456')
+      (lowerLogin === 'webadmin@gmail.com' && cleanPassword === '123456') ||
+      (lowerLogin === 'user@gmail.com' && cleanPassword === '123456') ||
+      (lowerLogin === 'worker@gmail.com' && cleanPassword === '123456') ||
+      (lowerLogin === 'karyakarta@gmail.com' && cleanPassword === '123456')
     );
 
     try {
@@ -503,15 +506,16 @@ export default function WorkerLogin({ onLoginSuccess, initialMode = 'login' }) {
     } catch (err) {
       if (isDemoAccount) {
         // Fallback demo login for presentation
+        const isWorkerRole = lowerLogin.includes('user') || lowerLogin.includes('worker') || lowerLogin.includes('karyakarta');
         const demoUser = {
-          id: 1,
-          full_name: lowerLogin.startsWith('app') ? 'App Administrator' : (lowerLogin.startsWith('web') ? 'Web Administrator' : 'Super Administrator'),
-          name: lowerLogin.startsWith('app') ? 'App Administrator' : (lowerLogin.startsWith('web') ? 'Web Administrator' : 'Super Administrator'),
+          id: isWorkerRole ? 99 : 1,
+          full_name: isWorkerRole ? 'Amrutkiran (फील्ड कार्यकर्ता)' : (lowerLogin.startsWith('app') ? 'App Administrator' : (lowerLogin.startsWith('web') ? 'Web Administrator' : 'Super Administrator')),
+          name: isWorkerRole ? 'Amrutkiran' : 'Admin',
           email: cleanLogin,
-          phone: '9876543210',
+          phone: isWorkerRole ? '9284966665' : '9876543210',
           status: 'ACTIVE',
-          roles: ['ADMIN', 'OFFICER'],
-          role: 'ADMIN',
+          roles: isWorkerRole ? ['WORKER', 'OFFICER'] : ['ADMIN', 'OFFICER'],
+          role: isWorkerRole ? 'WORKER' : 'ADMIN',
         };
         setSession('demo-token-123456-officer', demoUser);
         setSuccessMsg(isMr ? 'डेमो लॉगिन यशस्वी!' : 'Demo login successful!');
@@ -814,11 +818,32 @@ export default function WorkerLogin({ onLoginSuccess, initialMode = 'login' }) {
                     <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                       <button
                         type="button"
+                        onClick={() => fillDemoCredentials('user@gmail.com', '123456')}
+                        style={{
+                          fontSize: '11px',
+                          fontWeight: '800',
+                          padding: '5px 10px',
+                          borderRadius: '6px',
+                          background: '#ecfdf5',
+                          color: '#059669',
+                          border: '1px solid #6ee7b7',
+                          cursor: 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          boxShadow: '0 1px 3px rgba(5,150,105,0.1)'
+                        }}
+                        title={isMr ? 'वापरकर्ता / कार्यकर्ता लॉगिन' : 'User / Field Worker Login'}
+                      >
+                        <span>👤</span> User / Worker (123456)
+                      </button>
+                      <button
+                        type="button"
                         onClick={() => fillDemoCredentials('appadmin@gmail.com', '123456')}
                         style={{
                           fontSize: '11px',
-                          fontWeight: '600',
-                          padding: '4px 8px',
+                          fontWeight: '700',
+                          padding: '5px 8px',
                           borderRadius: '6px',
                           background: '#eff6ff',
                           color: '#1d4ed8',
@@ -833,8 +858,8 @@ export default function WorkerLogin({ onLoginSuccess, initialMode = 'login' }) {
                         onClick={() => fillDemoCredentials('admin@gmail.com', '123456')}
                         style={{
                           fontSize: '11px',
-                          fontWeight: '600',
-                          padding: '4px 8px',
+                          fontWeight: '700',
+                          padding: '5px 8px',
                           borderRadius: '6px',
                           background: '#fef3c7',
                           color: '#b45309',

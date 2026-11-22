@@ -309,27 +309,33 @@ export default function DashboardTab({
         </div>
       </div>
 
-      {/* 2. OFFICER HERO CARD (White Card with dark blue IN avatar, name, green status pill, and full-width blue action button) */}
+      {/* 2. OFFICER HERO CARD (Colorful Midnight Navy & Saffron Glow theme, matching Admin Command Desk) */}
       <div
         style={{
-          background: '#ffffff',
-          borderRadius: '26px',
-          padding: '24px 26px',
-          border: '1.5px solid #e2e8f0',
-          boxShadow: '0 4px 20px rgba(15, 23, 42, 0.04)',
+          background: 'linear-gradient(135deg, #071e3b 0%, #0c2b54 50%, #173b70 100%)',
+          borderRadius: '24px',
+          padding: '24px 24px',
+          border: '1.5px solid rgba(255, 255, 255, 0.15)',
+          boxShadow: '0 10px 30px rgba(7, 30, 59, 0.28)',
           display: 'flex',
           flexDirection: 'column',
-          gap: '16px'
+          gap: '16px',
+          color: '#ffffff',
+          position: 'relative',
+          overflow: 'hidden',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-          {/* Avatar with Initials */}
+        {/* Subtle decorative radiant aura */}
+        <div style={{ position: 'absolute', top: -30, right: -30, width: '130px', height: '130px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(255, 126, 42, 0.25) 0%, transparent 70%)', pointerEvents: 'none' }} />
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap', position: 'relative', zIndex: 1 }}>
+          {/* Avatar with Initials & Saffron Flame Gradient */}
           <div
             style={{
               width: '64px',
               height: '64px',
               borderRadius: '20px',
-              background: '#2b39b0',
+              background: 'linear-gradient(135deg, #ff7e2a 0%, #ff5200 100%)',
               color: '#ffffff',
               display: 'flex',
               alignItems: 'center',
@@ -337,7 +343,8 @@ export default function DashboardTab({
               fontSize: '22px',
               fontWeight: '900',
               letterSpacing: '1px',
-              boxShadow: '0 6px 16px rgba(43, 57, 176, 0.28)',
+              boxShadow: '0 6px 18px rgba(255, 82, 0, 0.45)',
+              border: '2px solid rgba(255, 255, 255, 0.35)',
               flexShrink: 0
             }}
           >
@@ -346,7 +353,7 @@ export default function DashboardTab({
 
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-              <h2 style={{ margin: 0, fontSize: '21px', fontWeight: '900', color: '#0f172a', letterSpacing: '-0.3px' }}>
+              <h2 style={{ margin: 0, fontSize: '21px', fontWeight: '900', color: '#ffffff', letterSpacing: '-0.3px' }}>
                 {isMr ? `नमस्कार, ${officerName}!` : `Welcome, ${officerName}!`}
               </h2>
               <span
@@ -355,35 +362,35 @@ export default function DashboardTab({
                   fontWeight: '750',
                   padding: '3px 12px',
                   borderRadius: '16px',
-                  background: '#ecfdf5',
-                  border: '1px solid #a7f3d0',
-                  color: '#059669',
+                  background: 'rgba(16, 185, 129, 0.22)',
+                  border: '1px solid rgba(52, 211, 153, 0.45)',
+                  color: '#34d399',
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '6px'
                 }}
               >
-                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#059669', boxShadow: '0 0 6px #059669' }} />
+                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#34d399', boxShadow: '0 0 6px #34d399' }} />
                 {isMr ? 'सक्रिय संचालन' : 'Active Duty'}
               </span>
             </div>
 
-            <div style={{ fontSize: '13px', color: '#475569', marginTop: '8px', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', fontWeight: '600' }}>
-              <span style={{ color: '#ef4444' }}>📍</span>
+            <div style={{ fontSize: '13px', color: 'rgba(255, 255, 255, 0.85)', marginTop: '8px', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', fontWeight: '600' }}>
+              <span>📍</span>
               <span>{wardDisplay}</span>
             </div>
           </div>
         </div>
 
-        {/* Full-width Royal Blue Clickable Action Button */}
+        {/* Full-width Saffron Flame Clickable Action Button */}
         <button
           type="button"
           onClick={() => setActiveTab('Survey')}
           style={{
-            background: '#2b39b0',
+            background: 'linear-gradient(135deg, #ff7e2a 0%, #ff5200 100%)',
             color: '#ffffff',
             border: 'none',
-            borderRadius: '18px',
+            borderRadius: '16px',
             padding: '14px 20px',
             fontSize: '15px',
             fontWeight: '850',
@@ -392,46 +399,49 @@ export default function DashboardTab({
             alignItems: 'center',
             justifyContent: 'center',
             gap: '8px',
-            boxShadow: '0 6px 18px rgba(43, 57, 176, 0.28)',
+            boxShadow: '0 6px 20px rgba(255, 82, 0, 0.45)',
             transition: 'all 0.2s ease',
             width: '100%',
-            letterSpacing: '0.2px'
+            letterSpacing: '0.2px',
+            position: 'relative',
+            zIndex: 1
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = 'translateY(-2px)';
-            e.currentTarget.style.boxShadow = '0 10px 24px rgba(43, 57, 176, 0.38)';
+            e.currentTarget.style.boxShadow = '0 10px 24px rgba(255, 82, 0, 0.6)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.boxShadow = '0 6px 18px rgba(43, 57, 176, 0.28)';
+            e.currentTarget.style.boxShadow = '0 6px 20px rgba(255, 82, 0, 0.45)';
           }}
         >
-          <span style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(255, 255, 255, 0.2)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: '900' }}>+</span>
+          <span style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'rgba(255, 255, 255, 0.25)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: '900' }}>+</span>
           <span>{isMr ? '+ नवीन सर्वेक्षण नोंद' : '+ New Survey Entry'}</span>
         </button>
       </div>
 
-      {/* 3. FOUR METRIC CARDS (Exact match to theme screenshot: light cards, colored borders, circular icons, bold numbers & dot sublabels) */}
+      {/* 3. FOUR METRIC CARDS (Rich Vibrant Gradients matching Admin Dashboard Theme) */}
       <div className="dashboard-theme-grid">
 
-        {/* CARD 1: BLUE THEME (एकूण मतदार / Total Voters -> navigates to Contact & Meetings) */}
+        {/* CARD 1: BLUE GRADIENT (एकूण मतदार / Total Voters -> navigates to Contact & Meetings) */}
         <div
           className="dashboard-theme-card"
           onClick={() => setActiveTab('Contact & Meetings')}
           style={{
-            background: '#e0f2ff',
-            border: '1.5px solid #3b82f6',
-            boxShadow: '0 4px 16px rgba(37, 99, 235, 0.05)',
+            background: 'linear-gradient(135deg, #1d4ed8 0%, #0284c7 100%)',
+            border: '1px solid rgba(255, 255, 255, 0.25)',
+            boxShadow: '0 8px 22px rgba(29, 78, 216, 0.28)',
+            color: '#ffffff',
+            position: 'relative',
+            overflow: 'hidden',
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = 'translateY(-4px)';
-            e.currentTarget.style.boxShadow = '0 12px 28px rgba(37, 99, 235, 0.15)';
-            e.currentTarget.style.borderColor = '#60a5fa';
+            e.currentTarget.style.boxShadow = '0 12px 28px rgba(29, 78, 216, 0.4)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.boxShadow = '0 4px 16px rgba(37, 99, 235, 0.05)';
-            e.currentTarget.style.borderColor = '#bfdbfe';
+            e.currentTarget.style.boxShadow = '0 8px 22px rgba(29, 78, 216, 0.28)';
           }}
           title={isMr ? 'मतदार यादी उघडण्यासाठी क्लिक करा' : 'Click to open voter directory'}
         >
@@ -442,12 +452,12 @@ export default function DashboardTab({
                   width: '46px',
                   height: '46px',
                   borderRadius: '50%',
-                  background: '#2563eb',
+                  background: 'rgba(255, 255, 255, 0.22)',
                   color: '#ffffff',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)',
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
                   flexShrink: 0
                 }}
               >
@@ -456,55 +466,56 @@ export default function DashboardTab({
 
               <span
                 style={{
-                  background: '#eff6ff',
-                  border: '1px solid #dbeafe',
+                  background: 'rgba(255, 255, 255, 0.22)',
+                  border: '1px solid rgba(255, 255, 255, 0.35)',
                   borderRadius: '16px',
                   padding: '5px 14px',
                   fontSize: '12px',
                   fontWeight: '800',
-                  color: '#1d4ed8'
+                  color: '#ffffff'
                 }}
               >
                 {isMr ? 'नियुक्त' : 'Assigned'}
               </span>
             </div>
 
-            <div style={{ fontSize: '13.5px', fontWeight: '750', color: '#64748b', marginTop: '16px' }}>
+            <div style={{ fontSize: '13.5px', fontWeight: '750', color: 'rgba(255, 255, 255, 0.92)', marginTop: '16px' }}>
               {isMr ? 'एकूण मतदार' : 'Total Voters'}
             </div>
 
-            <div className="card-number">
+            <div className="card-number" style={{ color: '#ffffff', textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
               {dashboardStats.totalAssigned?.toLocaleString() || 8}
             </div>
           </div>
 
           <div>
-            <div style={{ borderTop: '1px solid #e2e8f0', margin: '14px 0 10px 0' }} />
-            <div style={{ fontSize: '13px', fontWeight: '800', color: '#2563eb', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#2563eb' }} />
+            <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.22)', margin: '14px 0 10px 0' }} />
+            <div style={{ fontSize: '13px', fontWeight: '800', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#ffffff', boxShadow: '0 0 6px #ffffff' }} />
               <span>{dashboardStats.contactRate ? `${dashboardStats.contactRate}% ${isMr ? 'संपर्क दर' : 'Contact Rate'}` : (isMr ? '७५% संपर्क दर' : '75% Contact Rate')}</span>
             </div>
           </div>
         </div>
 
-        {/* CARD 2: GREEN THEME (थेट संपर्क / Contacted Voters -> navigates to Contact & Meetings) */}
+        {/* CARD 2: EMERALD GREEN GRADIENT (थेट संपर्क / Contacted Voters -> navigates to Contact & Meetings) */}
         <div
           className="dashboard-theme-card"
           onClick={() => setActiveTab('Contact & Meetings')}
           style={{
-            background: '#e6ffed',
-            border: '1.5px solid #10b981',
-            boxShadow: '0 4px 16px rgba(5, 150, 105, 0.05)',
+            background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
+            border: '1px solid rgba(255, 255, 255, 0.25)',
+            boxShadow: '0 8px 22px rgba(5, 150, 105, 0.28)',
+            color: '#ffffff',
+            position: 'relative',
+            overflow: 'hidden',
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = 'translateY(-4px)';
-            e.currentTarget.style.boxShadow = '0 12px 28px rgba(5, 150, 105, 0.15)';
-            e.currentTarget.style.borderColor = '#4ade80';
+            e.currentTarget.style.boxShadow = '0 12px 28px rgba(5, 150, 105, 0.4)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.boxShadow = '0 4px 16px rgba(5, 150, 105, 0.05)';
-            e.currentTarget.style.borderColor = '#bbf7d0';
+            e.currentTarget.style.boxShadow = '0 8px 22px rgba(5, 150, 105, 0.28)';
           }}
           title={isMr ? 'थेट संपर्क यादी उघडण्यासाठी क्लिक करा' : 'Click to open contacted voters'}
         >
@@ -515,12 +526,12 @@ export default function DashboardTab({
                   width: '46px',
                   height: '46px',
                   borderRadius: '50%',
-                  background: '#059669',
+                  background: 'rgba(255, 255, 255, 0.22)',
                   color: '#ffffff',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  boxShadow: '0 4px 12px rgba(5, 150, 105, 0.3)',
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
                   flexShrink: 0
                 }}
               >
@@ -529,55 +540,56 @@ export default function DashboardTab({
 
               <span
                 style={{
-                  background: '#ecfdf5',
-                  border: '1px solid #d1fae5',
+                  background: 'rgba(255, 255, 255, 0.22)',
+                  border: '1px solid rgba(255, 255, 255, 0.35)',
                   borderRadius: '16px',
                   padding: '5px 14px',
                   fontSize: '12px',
                   fontWeight: '800',
-                  color: '#059669'
+                  color: '#ffffff'
                 }}
               >
                 {isMr ? 'संपर्कित' : 'Reached'}
               </span>
             </div>
 
-            <div style={{ fontSize: '13.5px', fontWeight: '750', color: '#64748b', marginTop: '16px' }}>
+            <div style={{ fontSize: '13.5px', fontWeight: '750', color: 'rgba(255, 255, 255, 0.92)', marginTop: '16px' }}>
               {isMr ? 'थेट संपर्क' : 'Direct Contacts'}
             </div>
 
-            <div className="card-number">
+            <div className="card-number" style={{ color: '#ffffff', textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
               {dashboardStats.contacted?.toLocaleString() || 6}
             </div>
           </div>
 
           <div>
-            <div style={{ borderTop: '1px solid #e2e8f0', margin: '14px 0 10px 0' }} />
-            <div style={{ fontSize: '13px', fontWeight: '800', color: '#059669', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#059669' }} />
+            <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.22)', margin: '14px 0 10px 0' }} />
+            <div style={{ fontSize: '13px', fontWeight: '800', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#ffffff', boxShadow: '0 0 6px #ffffff' }} />
               <span>{dashboardStats.supportiveRate ? `${dashboardStats.supportiveRate}% ${isMr ? 'अनुकूल कल' : 'Positive'}` : (isMr ? '५०% अनुकूल कल' : '50% Positive')}</span>
             </div>
           </div>
         </div>
 
-        {/* CARD 3: AMBER THEME (कुटुंब सर्वेक्षण / Household Survey -> navigates to Survey) */}
+        {/* CARD 3: AMBER/GOLD GRADIENT (कुटुंब सर्वेक्षण / Household Survey -> navigates to Survey) */}
         <div
           className="dashboard-theme-card"
           onClick={() => setActiveTab('Survey')}
           style={{
-            background: '#fffbeb',
-            border: '1.5px solid #f59e0b',
-            boxShadow: '0 4px 16px rgba(245, 158, 11, 0.05)',
+            background: 'linear-gradient(135deg, #d97706 0%, #f59e0b 100%)',
+            border: '1px solid rgba(255, 255, 255, 0.25)',
+            boxShadow: '0 8px 22px rgba(217, 119, 6, 0.28)',
+            color: '#ffffff',
+            position: 'relative',
+            overflow: 'hidden',
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = 'translateY(-4px)';
-            e.currentTarget.style.boxShadow = '0 12px 28px rgba(245, 158, 11, 0.15)';
-            e.currentTarget.style.borderColor = '#f59e0b';
+            e.currentTarget.style.boxShadow = '0 12px 28px rgba(217, 119, 6, 0.4)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.boxShadow = '0 4px 16px rgba(245, 158, 11, 0.05)';
-            e.currentTarget.style.borderColor = '#fde68a';
+            e.currentTarget.style.boxShadow = '0 8px 22px rgba(217, 119, 6, 0.28)';
           }}
           title={isMr ? 'कुटुंब सर्वेक्षण कक्ष उघडण्यासाठी क्लिक करा' : 'Click to open survey desk'}
         >
@@ -588,12 +600,12 @@ export default function DashboardTab({
                   width: '46px',
                   height: '46px',
                   borderRadius: '50%',
-                  background: '#f59e0b',
+                  background: 'rgba(255, 255, 255, 0.22)',
                   color: '#ffffff',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  boxShadow: '0 4px 12px rgba(245, 158, 11, 0.3)',
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
                   flexShrink: 0
                 }}
               >
@@ -602,55 +614,56 @@ export default function DashboardTab({
 
               <span
                 style={{
-                  background: '#fef3c7',
-                  border: '1px solid #fde68a',
+                  background: 'rgba(255, 255, 255, 0.22)',
+                  border: '1px solid rgba(255, 255, 255, 0.35)',
                   borderRadius: '16px',
                   padding: '5px 14px',
                   fontSize: '12px',
                   fontWeight: '800',
-                  color: '#b45309'
+                  color: '#ffffff'
                 }}
               >
                 {isMr ? 'सक्रिय' : 'Active'}
               </span>
             </div>
 
-            <div style={{ fontSize: '13.5px', fontWeight: '750', color: '#64748b', marginTop: '16px' }}>
+            <div style={{ fontSize: '13.5px', fontWeight: '750', color: 'rgba(255, 255, 255, 0.92)', marginTop: '16px' }}>
               {isMr ? 'कुटुंब सर्वेक्षण' : 'Household Surveys'}
             </div>
 
-            <div className="card-number">
+            <div className="card-number" style={{ color: '#ffffff', textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
               {dashboardStats.surveysCompleted?.toLocaleString() || 0}
             </div>
           </div>
 
           <div>
-            <div style={{ borderTop: '1px solid #e2e8f0', margin: '14px 0 10px 0' }} />
-            <div style={{ fontSize: '13px', fontWeight: '800', color: '#d97706', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#d97706' }} />
+            <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.22)', margin: '14px 0 10px 0' }} />
+            <div style={{ fontSize: '13px', fontWeight: '800', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#ffffff', boxShadow: '0 0 6px #ffffff' }} />
               <span>{isMr ? 'सक्रिय नोंदणी' : 'Active Campaign'}</span>
             </div>
           </div>
         </div>
 
-        {/* CARD 4: PURPLE THEME (प्रलंबित समस्या / Pending Issues -> navigates to Complaints) */}
+        {/* CARD 4: ROYAL PURPLE GRADIENT (प्रलंबित समस्या / Pending Issues -> navigates to Complaints) */}
         <div
           className="dashboard-theme-card"
           onClick={() => setActiveTab('Complaints')}
           style={{
-            background: '#f5e8ff',
-            border: '1.5px solid #d8b4fe',
-            boxShadow: '0 4px 16px rgba(124, 58, 237, 0.05)',
+            background: 'linear-gradient(135deg, #7c3aed 0%, #9333ea 100%)',
+            border: '1px solid rgba(255, 255, 255, 0.25)',
+            boxShadow: '0 8px 22px rgba(124, 58, 237, 0.28)',
+            color: '#ffffff',
+            position: 'relative',
+            overflow: 'hidden',
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = 'translateY(-4px)';
-            e.currentTarget.style.boxShadow = '0 12px 28px rgba(124, 58, 237, 0.15)';
-            e.currentTarget.style.borderColor = '#c084fc';
+            e.currentTarget.style.boxShadow = '0 12px 28px rgba(124, 58, 237, 0.4)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.boxShadow = '0 4px 16px rgba(124, 58, 237, 0.05)';
-            e.currentTarget.style.borderColor = '#e9d5ff';
+            e.currentTarget.style.boxShadow = '0 8px 22px rgba(124, 58, 237, 0.28)';
           }}
           title={isMr ? 'नागरिक तक्रारी कक्ष उघडण्यासाठी क्लिक करा' : 'Click to open grievances'}
         >
@@ -661,12 +674,12 @@ export default function DashboardTab({
                   width: '46px',
                   height: '46px',
                   borderRadius: '50%',
-                  background: '#8b5cf6',
+                  background: 'rgba(255, 255, 255, 0.22)',
                   color: '#ffffff',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  boxShadow: '0 4px 12px rgba(124, 58, 237, 0.3)',
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
                   flexShrink: 0
                 }}
               >
@@ -675,32 +688,32 @@ export default function DashboardTab({
 
               <span
                 style={{
-                  background: '#f3e8ff',
-                  border: '1px solid #e9d5ff',
+                  background: 'rgba(255, 255, 255, 0.22)',
+                  border: '1px solid rgba(255, 255, 255, 0.35)',
                   borderRadius: '16px',
                   padding: '5px 14px',
                   fontSize: '12px',
                   fontWeight: '800',
-                  color: '#7c3aed'
+                  color: '#ffffff'
                 }}
               >
                 {isMr ? 'प्रलंबित' : 'Pending'}
               </span>
             </div>
 
-            <div style={{ fontSize: '13.5px', fontWeight: '750', color: '#64748b', marginTop: '16px' }}>
+            <div style={{ fontSize: '13.5px', fontWeight: '750', color: 'rgba(255, 255, 255, 0.92)', marginTop: '16px' }}>
               {isMr ? 'प्रलंबित समस्या' : 'Pending Grievances'}
             </div>
 
-            <div className="card-number">
+            <div className="card-number" style={{ color: '#ffffff', textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
               {pendingComplaintsCount > 0 ? pendingComplaintsCount : 3}
             </div>
           </div>
 
           <div>
-            <div style={{ borderTop: '1px solid #e2e8f0', margin: '14px 0 10px 0' }} />
-            <div style={{ fontSize: '13px', fontWeight: '800', color: '#7c3aed', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#7c3aed' }} />
+            <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.22)', margin: '14px 0 10px 0' }} />
+            <div style={{ fontSize: '13px', fontWeight: '800', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#ffffff', boxShadow: '0 0 6px #ffffff' }} />
               <span>{isMr ? 'तात्काळ लक्ष' : 'Needs Action'}</span>
             </div>
           </div>
@@ -708,7 +721,7 @@ export default function DashboardTab({
 
       </div>
 
-      {/* 4. OPERATIONAL COMMAND CARDS (All Clickable to their particular panels) */}
+      {/* 4. OPERATIONAL COMMAND CARDS (Colorful Accents matching Admin Portal) */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px' }}>
 
         {/* Grievance Desk -> Complaints */}
@@ -716,7 +729,7 @@ export default function DashboardTab({
           onClick={() => setActiveTab('Complaints')}
           style={{
             cursor: 'pointer',
-            background: '#ffffff',
+            background: 'linear-gradient(135deg, #fffaf5 0%, #ffedd5 100%)',
             border: '1.5px solid #fed7aa',
             borderRadius: '20px',
             padding: '18px 20px',
@@ -724,28 +737,28 @@ export default function DashboardTab({
             alignItems: 'center',
             justifyContent: 'space-between',
             transition: 'all 0.2s ease',
-            boxShadow: '0 2px 10px rgba(234, 88, 12, 0.04)',
+            boxShadow: '0 4px 14px rgba(234, 88, 12, 0.08)',
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.borderColor = '#ea580c';
             e.currentTarget.style.transform = 'translateY(-3px)';
-            e.currentTarget.style.boxShadow = '0 8px 20px rgba(234, 88, 12, 0.12)';
+            e.currentTarget.style.boxShadow = '0 8px 20px rgba(234, 88, 12, 0.16)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.borderColor = '#fed7aa';
             e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.boxShadow = '0 2px 10px rgba(234, 88, 12, 0.04)';
+            e.currentTarget.style.boxShadow = '0 4px 14px rgba(234, 88, 12, 0.08)';
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-            <div style={{ width: '44px', height: '44px', borderRadius: '14px', background: '#fff7ed', color: '#ea580c', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: 'linear-gradient(135deg, #ff7e2a 0%, #ea580c 100%)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 4px 12px rgba(234, 88, 12, 0.3)' }}>
               <AlertCircle size={22} />
             </div>
             <div>
               <div style={{ fontSize: '15px', fontWeight: '850', color: '#0f172a' }}>
                 {isMr ? 'नागरिकांच्या समस्या' : 'Citizen Grievances'}
               </div>
-              <div style={{ fontSize: '12px', color: '#c2410c', fontWeight: '600', marginTop: '2px' }}>
+              <div style={{ fontSize: '12px', color: '#c2410c', fontWeight: '700', marginTop: '2px' }}>
                 {pendingComplaintsCount > 0 ? `${pendingComplaintsCount} ${isMr ? 'तक्रारी प्रलंबित' : 'Pending Resolution'}` : (isMr ? 'सर्व तक्रारी निकाली' : 'All Grievances Resolved')}
               </div>
             </div>
@@ -758,36 +771,36 @@ export default function DashboardTab({
           onClick={() => setActiveTab('Contact & Meetings')}
           style={{
             cursor: 'pointer',
-            background: '#ffffff',
-            border: '1.5px solid #10b981',
+            background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
+            border: '1.5px solid #a7f3d0',
             borderRadius: '20px',
             padding: '18px 20px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             transition: 'all 0.2s ease',
-            boxShadow: '0 2px 10px rgba(22, 163, 74, 0.04)',
+            boxShadow: '0 4px 14px rgba(22, 163, 74, 0.08)',
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.borderColor = '#16a34a';
             e.currentTarget.style.transform = 'translateY(-3px)';
-            e.currentTarget.style.boxShadow = '0 8px 20px rgba(22, 163, 74, 0.12)';
+            e.currentTarget.style.boxShadow = '0 8px 20px rgba(22, 163, 74, 0.16)';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.borderColor = '#bbf7d0';
+            e.currentTarget.style.borderColor = '#a7f3d0';
             e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.boxShadow = '0 2px 10px rgba(22, 163, 74, 0.04)';
+            e.currentTarget.style.boxShadow = '0 4px 14px rgba(22, 163, 74, 0.08)';
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-            <div style={{ width: '44px', height: '44px', borderRadius: '14px', background: '#f0fdf4', color: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)' }}>
               <Users size={22} />
             </div>
             <div>
               <div style={{ fontSize: '15px', fontWeight: '850', color: '#0f172a' }}>
                 {isMr ? 'नागरिक संपर्क यादी' : 'Citizen Directory'}
               </div>
-              <div style={{ fontSize: '12px', color: '#15803d', fontWeight: '600', marginTop: '2px' }}>
+              <div style={{ fontSize: '12px', color: '#15803d', fontWeight: '700', marginTop: '2px' }}>
                 {votersList.length || 8} {isMr ? 'मतदार नोंद उपलब्ध' : 'Voters in Directory'}
               </div>
             </div>
@@ -800,36 +813,36 @@ export default function DashboardTab({
           onClick={() => setActiveTab('Tasks')}
           style={{
             cursor: 'pointer',
-            background: '#ffffff',
-            border: '1.5px solid #3b82f6',
+            background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)',
+            border: '1.5px solid #bfdbfe',
             borderRadius: '20px',
             padding: '18px 20px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             transition: 'all 0.2s ease',
-            boxShadow: '0 2px 10px rgba(37, 99, 235, 0.04)',
+            boxShadow: '0 4px 14px rgba(37, 99, 235, 0.08)',
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.borderColor = '#2563eb';
             e.currentTarget.style.transform = 'translateY(-3px)';
-            e.currentTarget.style.boxShadow = '0 8px 20px rgba(37, 99, 235, 0.12)';
+            e.currentTarget.style.boxShadow = '0 8px 20px rgba(37, 99, 235, 0.16)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.borderColor = '#bfdbfe';
             e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.boxShadow = '0 2px 10px rgba(37, 99, 235, 0.04)';
+            e.currentTarget.style.boxShadow = '0 4px 14px rgba(37, 99, 235, 0.08)';
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-            <div style={{ width: '44px', height: '44px', borderRadius: '14px', background: '#eff6ff', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)' }}>
               <CheckSquare size={22} />
             </div>
             <div>
               <div style={{ fontSize: '15px', fontWeight: '850', color: '#0f172a' }}>
                 {isMr ? 'नेमलेली कार्ये' : 'Field Tasks'}
               </div>
-              <div style={{ fontSize: '12px', color: '#1d4ed8', fontWeight: '600', marginTop: '2px' }}>
+              <div style={{ fontSize: '12px', color: '#1d4ed8', fontWeight: '700', marginTop: '2px' }}>
                 {pendingTasksCount} {isMr ? 'कार्ये बाकी' : 'Tasks Pending'}
               </div>
             </div>
@@ -842,36 +855,36 @@ export default function DashboardTab({
           onClick={() => setActiveTab('Attendance')}
           style={{
             cursor: 'pointer',
-            background: '#ffffff',
-            border: '1.5px solid #d8b4fe',
+            background: 'linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%)',
+            border: '1.5px solid #e9d5ff',
             borderRadius: '20px',
             padding: '18px 20px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             transition: 'all 0.2s ease',
-            boxShadow: '0 2px 10px rgba(124, 58, 237, 0.04)',
+            boxShadow: '0 4px 14px rgba(124, 58, 237, 0.08)',
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.borderColor = '#7c3aed';
             e.currentTarget.style.transform = 'translateY(-3px)';
-            e.currentTarget.style.boxShadow = '0 8px 20px rgba(124, 58, 237, 0.12)';
+            e.currentTarget.style.boxShadow = '0 8px 20px rgba(124, 58, 237, 0.16)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.borderColor = '#e9d5ff';
             e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.boxShadow = '0 2px 10px rgba(124, 58, 237, 0.04)';
+            e.currentTarget.style.boxShadow = '0 4px 14px rgba(124, 58, 237, 0.08)';
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-            <div style={{ width: '44px', height: '44px', borderRadius: '14px', background: '#f3e8ff', color: '#7c3aed', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <div style={{ width: '46px', height: '46px', borderRadius: '14px', background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 4px 12px rgba(124, 58, 237, 0.3)' }}>
               <CalendarCheck size={22} />
             </div>
             <div>
               <div style={{ fontSize: '15px', fontWeight: '850', color: '#0f172a' }}>
                 {isMr ? 'दैनिक डिजिटल उपस्थिती' : 'Geo Attendance'}
               </div>
-              <div style={{ fontSize: '12px', color: '#6d28d9', fontWeight: '600', marginTop: '2px' }}>
+              <div style={{ fontSize: '12px', color: '#6d28d9', fontWeight: '700', marginTop: '2px' }}>
                 {attendanceState === 'Punched In' ? (isMr ? '🟢 ड्युटी सुरू (हजर)' : '🟢 Punched In') : (isMr ? 'हजेरी नोंद आवश्यक' : 'Punch-In Required')}
               </div>
             </div>

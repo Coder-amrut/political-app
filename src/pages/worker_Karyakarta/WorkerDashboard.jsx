@@ -2459,6 +2459,42 @@ export default function WorkerDashboard() {
           </div>
 
           <div className="mobile-header-right">
+            {/* Quick Switch to Admin Portal Button for testing & client demos */}
+            <button
+              type="button"
+              onClick={() => {
+                localStorage.setItem('officer_portal_user', JSON.stringify({
+                  id: 1,
+                  full_name: 'App Administrator (मुख्य ॲडमिन)',
+                  name: 'Admin',
+                  email: 'appadmin@gmail.com',
+                  phone: '9876543210',
+                  status: 'ACTIVE',
+                  roles: ['ADMIN', 'SUPER_ADMIN'],
+                  role: 'ADMIN'
+                }));
+                window.location.href = '/admin';
+              }}
+              style={{
+                background: 'linear-gradient(135deg, #ff7e2a 0%, #ff5200 100%)',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '999px',
+                padding: '4px 9px',
+                fontSize: '11px',
+                fontWeight: '850',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px',
+                boxShadow: '0 2px 8px rgba(255, 82, 0, 0.4)'
+              }}
+              title={isMr ? 'ॲडमिन डॅशबोर्ड पहा (Switch to Admin)' : 'Switch to Admin Dashboard'}
+            >
+              <span>👑</span>
+              <span>{isMr ? 'ॲडमिन' : 'Admin'}</span>
+            </button>
+
             <span
               className={`mobile-status-pill ${isOnline ? 'online' : 'offline'}`}
               title={isOnline ? (isMr ? 'ऑनलाइन' : 'Online') : (isMr ? 'ऑफलाइन' : 'Offline')}

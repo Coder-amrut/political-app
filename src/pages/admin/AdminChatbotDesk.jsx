@@ -9,16 +9,10 @@ export default function AdminChatbotDesk({ lang = 'mr', isFloating = false, onCl
       id: 'welcome',
       sender: 'bot',
       text: isMr
-        ? '👋 नमस्कार! मी आपला निवडणूक व प्रचार सहाय्यक आहे.'
-        : '👋 Hello! I am your Campaign & Field Operations Assistant.',
+        ? 'मी तुमची काय मदत करू शकतो?'
+        : 'How can I help you?',
       structuredItems: [],
-      suggestedActions: [
-        { label: isMr ? '🏘️ गाव लोकसंख्या व मतदार' : '🏘️ Village Population & Voters', query: isMr ? 'गावानुसार एकूण लोकसंख्या आणि मतदार संख्या दाखवा' : 'Show village population and total voters summary' },
-        { label: isMr ? '📊 एकूण मतदार सारांश' : '📊 Total Voters Summary', query: isMr ? 'एकूण मतदार संख्या आणि राजकीय कल दाखवा' : 'Show total voters and sentiment' },
-        { label: isMr ? '🗳️ बूथनिहाय प्रगती' : '🗳️ Booth Progress', query: isMr ? 'बूथनिहाय प्रगती आणि आघाडीवरील बूथ दाखवा' : 'Show booth progress' },
-        { label: isMr ? '⚠️ प्रलंबित समस्या' : '⚠️ Pending Issues', query: isMr ? 'सध्याच्या प्रलंबित नागरी समस्या कोणत्या आहेत?' : 'What are pending civic issues?' },
-        { label: isMr ? '👥 सक्रिय कार्यकर्ते' : '👥 Active Workers', query: isMr ? 'सक्रिय कार्यकर्ते आणि त्यांची कामगिरी दाखवा' : 'Show active karyakartas' },
-      ],
+      suggestedActions: [],
       timestamp: new Date().toLocaleTimeString(isMr ? 'mr-IN' : 'en-IN', { hour: '2-digit', minute: '2-digit' }),
     },
   ]);
@@ -119,13 +113,10 @@ export default function AdminChatbotDesk({ lang = 'mr', isFloating = false, onCl
         id: 'welcome_reset',
         sender: 'bot',
         text: isMr
-          ? '👋 संभाषण रीसेट केले.'
-          : '👋 Conversation reset.',
+          ? 'मी तुमची काय मदत करू शकतो?'
+          : 'How can I help you?',
         structuredItems: [],
-        suggestedActions: [
-          { label: isMr ? '📊 एकूण मतदार सारांश' : '📊 Voters Summary', query: isMr ? 'एकूण मतदार सारांश दाखवा' : 'Show total voters summary' },
-          { label: isMr ? '⚠️ प्रलंबित समस्या' : '⚠️ Pending Issues', query: isMr ? 'प्रलंबित नागरी समस्या' : 'Pending civic issues' },
-        ],
+        suggestedActions: [],
         timestamp: new Date().toLocaleTimeString(),
       },
     ]);
@@ -480,60 +471,6 @@ export default function AdminChatbotDesk({ lang = 'mr', isFloating = false, onCl
         </div>
       </div>
 
-      {/* Quick Suggestion Chips Bar */}
-      <div
-        style={{
-          background: '#f8fafc',
-          borderBottom: '1px solid #e2e8f0',
-          padding: isFloating ? '8px 12px' : '10px 16px',
-          display: 'flex',
-          gap: '6px',
-          overflowX: 'auto',
-          whiteSpace: 'nowrap',
-          scrollbarWidth: 'none',
-          WebkitOverflowScrolling: 'touch',
-          flexShrink: 0,
-        }}
-      >
-        <span style={{ fontSize: '11px', fontWeight: '750', color: '#64748b', alignSelf: 'center', marginRight: '4px', flexShrink: 0 }}>
-          {isMr ? 'त्वरित प्रश्न:' : 'Quick Queries:'}
-        </span>
-        {suggestions.map((sug) => (
-          <button
-            key={sug.id}
-            type="button"
-            onClick={() => handleSend(sug.query)}
-            disabled={loading}
-            style={{
-              background: '#ffffff',
-              border: '1px solid #cbd5e1',
-              borderRadius: '20px',
-              padding: '5px 12px',
-              fontSize: '11.5px',
-              fontWeight: '650',
-              color: '#1e40af',
-              cursor: 'pointer',
-              boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '4px',
-              transition: 'all 0.15s ease',
-              flexShrink: 0,
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.borderColor = '#2563eb';
-              e.currentTarget.style.background = '#eff6ff';
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.borderColor = '#cbd5e1';
-              e.currentTarget.style.background = '#ffffff';
-            }}
-          >
-            {sug.label}
-          </button>
-        ))}
-      </div>
-
       {/* Chat Messages Stream */}
       <div
         style={{
@@ -659,34 +596,6 @@ export default function AdminChatbotDesk({ lang = 'mr', isFloating = false, onCl
                         </div>
                       ))}
                     </div>
-                  </div>
-                )}
-
-                {/* Suggested Follow-up Actions */}
-                {msg.suggestedActions && msg.suggestedActions.length > 0 && (
-                  <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px solid #e2e8f0', display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: '11px', color: '#64748b', fontWeight: '700', alignSelf: 'center' }}>
-                      {isMr ? 'पुढील प्रश्न:' : 'Follow-up:'}
-                    </span>
-                    {msg.suggestedActions.map((act, aIdx) => (
-                      <button
-                        key={aIdx}
-                        type="button"
-                        onClick={() => handleSend(act.query)}
-                        style={{
-                          background: '#f1f5f9',
-                          border: '1px solid #cbd5e1',
-                          borderRadius: '6px',
-                          padding: '4px 10px',
-                          fontSize: '11px',
-                          fontWeight: '700',
-                          color: '#1d4ed8',
-                          cursor: 'pointer',
-                        }}
-                      >
-                        ↳ {act.label}
-                      </button>
-                    ))}
                   </div>
                 )}
               </div>

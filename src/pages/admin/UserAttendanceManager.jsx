@@ -81,6 +81,8 @@ export default function UserAttendanceManager({ language = 'mr' }) {
     d.setDate(d.getDate() - 1);
     return d.toISOString().split('T')[0];
   });
+  const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
+  const [selectedFilterCategory, setSelectedFilterCategory] = useState('status'); // 'status' | 'role' | 'compliance'
   const [openFilterMenu, setOpenFilterMenu] = useState(null); // 'status' | 'role' | 'compliance' | null
   const [searchQuery, setSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
@@ -127,6 +129,7 @@ export default function UserAttendanceManager({ language = 'mr' }) {
     const handleOutsideClick = (e) => {
       if (!e.target.closest('.attendance-filter-dropdown-container')) {
         setOpenFilterMenu(null);
+        setIsFilterPanelOpen(false);
       }
     };
     document.addEventListener('click', handleOutsideClick);
@@ -775,26 +778,6 @@ export default function UserAttendanceManager({ language = 'mr' }) {
               >
                 ▶
               </button>
-
-              {/* Yesterday Quick Jump Button (Today & Future Dates Removed) */}
-              <button
-                type="button"
-                onClick={handleYesterday}
-                className={attendanceDate === maxAllowedDate ? 'tab-btn-3d-blue' : 'tab-btn-3d-inactive'}
-                title={isMr ? 'कालची उपस्थिती पहा' : 'View yesterday attendance'}
-                style={{
-                  padding: '6px 14px',
-                  fontSize: '13px',
-                  fontWeight: 800,
-                  borderRadius: '8px',
-                  height: '34px',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                {isMr ? 'काल (Yesterday)' : 'Yesterday'}
-              </button>
             </div>
 
             {/* Display formatted day pill */}
@@ -870,9 +853,11 @@ export default function UserAttendanceManager({ language = 'mr' }) {
           </div>
         </div>
 
-        {/* Bottom Filter Row: Role, Status, Compliance Custom Dropdown Popups */}
+        {/* Bottom Filter Row with dedicated Filter toggle button */}
         <div
+          className="attendance-filter-dropdown-container"
           style={{
+            position: 'relative',
             display: 'flex',
             flexWrap: 'wrap',
             gap: '12px',
@@ -881,295 +866,320 @@ export default function UserAttendanceManager({ language = 'mr' }) {
             borderTop: '1px dashed #e2e8f0',
           }}
         >
-          <span style={{ fontSize: '12.5px', fontWeight: 750, color: '#475569', display: 'flex', alignItems: 'center', gap: '5px' }}>
-            <Filter size={15} style={{ color: '#2563eb' }} />
-            {isMr ? 'फिल्टर्स:' : 'Filters:'}
-          </span>
-
-          {/* Status Filter Custom Popup */}
-          <div className="attendance-filter-dropdown-container" style={{ position: 'relative' }}>
-            <button
-              type="button"
-              onClick={() => setOpenFilterMenu(openFilterMenu === 'status' ? null : 'status')}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '8px 14px',
-                borderRadius: '10px',
-                border: '1.5px solid #cbd5e1',
-                background: statusFilter !== 'all' ? '#eff6ff' : '#ffffff',
-                color: statusFilter !== 'all' ? '#1d4ed8' : '#334155',
-                borderColor: statusFilter !== 'all' ? '#93c5fd' : '#cbd5e1',
-                fontSize: '13px',
-                fontWeight: 700,
-                cursor: 'pointer',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.04)',
-              }}
-            >
-              <span>
-                {statusFilter === 'all'
-                  ? (isMr ? 'सर्व हजेरी स्थिती (All)' : 'All Statuses')
-                  : statusFilter === 'Present'
-                  ? (isMr ? '🟢 उपस्थित' : '🟢 Present')
-                  : statusFilter === 'Punched In'
-                  ? (isMr ? '🟡 चालू शिफ्ट' : '🟡 Active / Punched In')
-                  : statusFilter === 'Completed'
-                  ? (isMr ? '🔵 काम पूर्ण' : '🔵 Completed')
-                  : (isMr ? '🔴 हजेरी बाकी / गैरहजर' : '🔴 Pending / Absent')}
-              </span>
-              <ChevronDown size={14} style={{ transform: openFilterMenu === 'status' ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }} />
-            </button>
-
-            {openFilterMenu === 'status' && (
-              <div
+          {/* Main Filter Button */}
+          <button
+            type="button"
+            onClick={() => setIsFilterPanelOpen(!isFilterPanelOpen)}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '8px 16px',
+              borderRadius: '10px',
+              border: (statusFilter !== 'all' || roleFilter !== 'all' || complianceFilter !== 'all') ? '1.5px solid #2563eb' : '1.5px solid #cbd5e1',
+              background: (statusFilter !== 'all' || roleFilter !== 'all' || complianceFilter !== 'all') ? '#eff6ff' : '#ffffff',
+              color: (statusFilter !== 'all' || roleFilter !== 'all' || complianceFilter !== 'all') ? '#1d4ed8' : '#334155',
+              fontSize: '13px',
+              fontWeight: 800,
+              cursor: 'pointer',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.04)',
+              transition: 'all 0.15s ease',
+            }}
+          >
+            <Filter size={16} style={{ color: '#2563eb' }} />
+            <span>{isMr ? 'फिल्टर्स (Filters)' : 'Filters'}</span>
+            {(statusFilter !== 'all' || roleFilter !== 'all' || complianceFilter !== 'all') && (
+              <span
                 style={{
-                  position: 'absolute',
-                  top: 'calc(100% + 6px)',
-                  left: 0,
-                  zIndex: 1050,
-                  minWidth: '230px',
-                  background: '#ffffff',
-                  borderRadius: '12px',
-                  boxShadow: '0 12px 28px -4px rgba(0, 0, 0, 0.18), 0 4px 10px rgba(0,0,0,0.06)',
-                  border: '1px solid #e2e8f0',
-                  padding: '6px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '2px',
+                  background: '#2563eb',
+                  color: '#ffffff',
+                  fontSize: '11px',
+                  fontWeight: 900,
+                  padding: '1px 6px',
+                  borderRadius: '10px',
                 }}
               >
-                {[
-                  { value: 'all', label: isMr ? 'सर्व हजेरी स्थिती (All)' : 'All Statuses' },
-                  { value: 'Present', label: isMr ? '🟢 उपस्थित (Present)' : '🟢 Present' },
-                  { value: 'Punched In', label: isMr ? '🟡 चालू शिफ्ट (Punched In)' : '🟡 Active / Punched In' },
-                  { value: 'Completed', label: isMr ? '🔵 काम पूर्ण (Completed)' : '🔵 Completed' },
-                  { value: 'Absent', label: isMr ? '🔴 हजेरी बाकी / गैरहजर' : '🔴 Pending / Absent' },
-                ].map((opt) => (
-                  <button
-                    key={opt.value}
-                    type="button"
-                    onClick={() => {
-                      setStatusFilter(opt.value);
-                      setOpenFilterMenu(null);
-                    }}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      padding: '9px 12px',
-                      borderRadius: '8px',
-                      border: 'none',
-                      background: statusFilter === opt.value ? '#eff6ff' : 'transparent',
-                      color: statusFilter === opt.value ? '#1d4ed8' : '#334155',
-                      fontWeight: statusFilter === opt.value ? 800 : 600,
-                      fontSize: '13px',
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      transition: 'background 0.15s ease',
-                    }}
-                    onMouseEnter={(e) => {
-                      if (statusFilter !== opt.value) e.currentTarget.style.background = '#f8fafc';
-                    }}
-                    onMouseLeave={(e) => {
-                      if (statusFilter !== opt.value) e.currentTarget.style.background = 'transparent';
-                    }}
-                  >
-                    <span>{opt.label}</span>
-                    {statusFilter === opt.value && <Check size={15} style={{ color: '#2563eb' }} />}
-                  </button>
-                ))}
-              </div>
+                {[statusFilter !== 'all', roleFilter !== 'all', complianceFilter !== 'all'].filter(Boolean).length}
+              </span>
+            )}
+            <ChevronDown
+              size={15}
+              style={{
+                transform: isFilterPanelOpen ? 'rotate(180deg)' : 'none',
+                transition: 'transform 0.2s ease',
+              }}
+            />
+          </button>
+
+          {/* Active Filter Pills Preview */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center' }}>
+            {statusFilter !== 'all' && (
+              <span style={{ fontSize: '12px', background: '#e0f2fe', color: '#0369a1', padding: '3px 10px', borderRadius: '8px', fontWeight: 700, border: '1px solid #bae6fd', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <span>हजेरी:</span>
+                <span>{statusFilter === 'Present' ? 'उपस्थित' : statusFilter === 'Punched In' ? 'चालू शिफ्ट' : statusFilter === 'Completed' ? 'काम पूर्ण' : 'गैरहजर'}</span>
+              </span>
+            )}
+            {roleFilter !== 'all' && (
+              <span style={{ fontSize: '12px', background: '#fef3c7', color: '#92400e', padding: '3px 10px', borderRadius: '8px', fontWeight: 700, border: '1px solid #fde68a', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <span>भूमिका:</span>
+                <span>{roleFilter === 'WORKER' ? 'कार्यकर्ता' : roleFilter === 'OFFICER' ? 'अधिकारी' : 'प्रशासक'}</span>
+              </span>
+            )}
+            {complianceFilter !== 'all' && (
+              <span style={{ fontSize: '12px', background: '#dcfce7', color: '#166534', padding: '3px 10px', borderRadius: '8px', fontWeight: 700, border: '1px solid #bbf7d0', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <span>स्थान:</span>
+                <span>{complianceFilter === 'AT_REQUIRED_LOCATION' ? 'ठिकाणी हजर' : complianceFilter === 'ANYWHERE_ALLOWED' ? 'मुक्त' : 'ठिकाणाबाहेर'}</span>
+              </span>
             )}
           </div>
 
-          {/* Role Filter Custom Popup */}
-          <div className="attendance-filter-dropdown-container" style={{ position: 'relative' }}>
-            <button
-              type="button"
-              onClick={() => setOpenFilterMenu(openFilterMenu === 'role' ? null : 'role')}
+          {/* Filter Dropdown Popover */}
+          {isFilterPanelOpen && (
+            <div
               style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '8px 14px',
-                borderRadius: '10px',
+                position: 'absolute',
+                top: 'calc(100% + 8px)',
+                left: 0,
+                zIndex: 1100,
+                width: '380px',
+                maxWidth: '92vw',
+                background: '#ffffff',
+                borderRadius: '16px',
+                boxShadow: '0 16px 36px -4px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0,0,0,0.08)',
                 border: '1.5px solid #cbd5e1',
-                background: roleFilter !== 'all' ? '#eff6ff' : '#ffffff',
-                color: roleFilter !== 'all' ? '#1d4ed8' : '#334155',
-                borderColor: roleFilter !== 'all' ? '#93c5fd' : '#cbd5e1',
-                fontSize: '13px',
-                fontWeight: 700,
-                cursor: 'pointer',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.04)',
+                padding: '12px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '10px',
               }}
             >
-              <span>
-                {roleFilter === 'all'
-                  ? (isMr ? 'सर्व भूमिका (All Roles)' : 'All Roles')
-                  : roleFilter === 'WORKER'
-                  ? (isMr ? 'कार्यकर्ता (Social Worker)' : 'Social Worker')
-                  : roleFilter === 'OFFICER'
-                  ? (isMr ? 'अधिकारी / नेता (Officer / Leader)' : 'Officer / Leader')
-                  : (isMr ? 'प्रशासक (ADMIN)' : 'Admin')}
-              </span>
-              <ChevronDown size={14} style={{ transform: openFilterMenu === 'role' ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }} />
-            </button>
+              {/* Category Selection Tabs: सर्व हजेरी, सर्व भूमिका, सर्व स्थान */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px', background: '#f1f5f9', padding: '4px', borderRadius: '10px' }}>
+                <button
+                  type="button"
+                  onClick={() => setSelectedFilterCategory('status')}
+                  style={{
+                    padding: '7px 4px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    background: selectedFilterCategory === 'status' ? '#ffffff' : 'transparent',
+                    color: selectedFilterCategory === 'status' ? '#1d4ed8' : '#64748b',
+                    fontSize: '12px',
+                    fontWeight: selectedFilterCategory === 'status' ? 850 : 700,
+                    cursor: 'pointer',
+                    boxShadow: selectedFilterCategory === 'status' ? '0 1px 4px rgba(0,0,0,0.08)' : 'none',
+                    transition: 'all 0.15s ease',
+                    textAlign: 'center',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  📋 {isMr ? 'सर्व हजेरी' : 'Attendance'}
+                  {statusFilter !== 'all' && <span style={{ marginLeft: '4px', color: '#2563eb' }}>●</span>}
+                </button>
 
-            {openFilterMenu === 'role' && (
-              <div
-                style={{
-                  position: 'absolute',
-                  top: 'calc(100% + 6px)',
-                  left: 0,
-                  zIndex: 1050,
-                  minWidth: '220px',
-                  background: '#ffffff',
-                  borderRadius: '12px',
-                  boxShadow: '0 12px 28px -4px rgba(0, 0, 0, 0.18), 0 4px 10px rgba(0,0,0,0.06)',
-                  border: '1px solid #e2e8f0',
-                  padding: '6px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '2px',
-                }}
-              >
-                {[
-                  { value: 'all', label: isMr ? 'सर्व भूमिका (All Roles)' : 'All Roles' },
-                  { value: 'WORKER', label: isMr ? 'कार्यकर्ता (Social Worker)' : 'Social Worker' },
-                  { value: 'OFFICER', label: isMr ? 'अधिकारी / नेता (Officer / Leader)' : 'Officer / Leader' },
-                  { value: 'ADMIN', label: isMr ? 'प्रशासक (ADMIN)' : 'Admin' },
-                ].map((opt) => (
-                  <button
-                    key={opt.value}
-                    type="button"
-                    onClick={() => {
-                      setRoleFilter(opt.value);
-                      setOpenFilterMenu(null);
-                    }}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      padding: '9px 12px',
-                      borderRadius: '8px',
-                      border: 'none',
-                      background: roleFilter === opt.value ? '#eff6ff' : 'transparent',
-                      color: roleFilter === opt.value ? '#1d4ed8' : '#334155',
-                      fontWeight: roleFilter === opt.value ? 800 : 600,
-                      fontSize: '13px',
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      transition: 'background 0.15s ease',
-                    }}
-                    onMouseEnter={(e) => {
-                      if (roleFilter !== opt.value) e.currentTarget.style.background = '#f8fafc';
-                    }}
-                    onMouseLeave={(e) => {
-                      if (roleFilter !== opt.value) e.currentTarget.style.background = 'transparent';
-                    }}
-                  >
-                    <span>{opt.label}</span>
-                    {roleFilter === opt.value && <Check size={15} style={{ color: '#2563eb' }} />}
-                  </button>
-                ))}
+                <button
+                  type="button"
+                  onClick={() => setSelectedFilterCategory('role')}
+                  style={{
+                    padding: '7px 4px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    background: selectedFilterCategory === 'role' ? '#ffffff' : 'transparent',
+                    color: selectedFilterCategory === 'role' ? '#1d4ed8' : '#64748b',
+                    fontSize: '12px',
+                    fontWeight: selectedFilterCategory === 'role' ? 850 : 700,
+                    cursor: 'pointer',
+                    boxShadow: selectedFilterCategory === 'role' ? '0 1px 4px rgba(0,0,0,0.08)' : 'none',
+                    transition: 'all 0.15s ease',
+                    textAlign: 'center',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  👥 {isMr ? 'सर्व भूमिका' : 'Roles'}
+                  {roleFilter !== 'all' && <span style={{ marginLeft: '4px', color: '#2563eb' }}>●</span>}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setSelectedFilterCategory('compliance')}
+                  style={{
+                    padding: '7px 4px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    background: selectedFilterCategory === 'compliance' ? '#ffffff' : 'transparent',
+                    color: selectedFilterCategory === 'compliance' ? '#1d4ed8' : '#64748b',
+                    fontSize: '12px',
+                    fontWeight: selectedFilterCategory === 'compliance' ? 850 : 700,
+                    cursor: 'pointer',
+                    boxShadow: selectedFilterCategory === 'compliance' ? '0 1px 4px rgba(0,0,0,0.08)' : 'none',
+                    transition: 'all 0.15s ease',
+                    textAlign: 'center',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  📍 {isMr ? 'सर्व स्थान' : 'Locations'}
+                  {complianceFilter !== 'all' && <span style={{ marginLeft: '4px', color: '#2563eb' }}>●</span>}
+                </button>
               </div>
-            )}
-          </div>
 
-          {/* Compliance Filter Custom Popup */}
-          <div className="attendance-filter-dropdown-container" style={{ position: 'relative' }}>
-            <button
-              type="button"
-              onClick={() => setOpenFilterMenu(openFilterMenu === 'compliance' ? null : 'compliance')}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '8px 14px',
-                borderRadius: '10px',
-                border: '1.5px solid #cbd5e1',
-                background: complianceFilter !== 'all' ? '#eff6ff' : '#ffffff',
-                color: complianceFilter !== 'all' ? '#1d4ed8' : '#334155',
-                borderColor: complianceFilter !== 'all' ? '#93c5fd' : '#cbd5e1',
-                fontSize: '13px',
-                fontWeight: 700,
-                cursor: 'pointer',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.04)',
-              }}
-            >
-              <span>
-                {complianceFilter === 'all'
-                  ? (isMr ? 'सर्व स्थान प्रकार (All Compliance)' : 'All Compliance')
-                  : complianceFilter === 'AT_REQUIRED_LOCATION'
-                  ? (isMr ? '✅ ठरवलेल्या ठिकाणी हजर' : 'At Required Location')
-                  : complianceFilter === 'ANYWHERE_ALLOWED'
-                  ? (isMr ? '🌐 मुक्त हजेरी (Anywhere)' : 'Anywhere Allowed')
-                  : (isMr ? '⚠️ ठिकाणाबाहेर (Violation)' : 'Outside Geofence')}
-              </span>
-              <ChevronDown size={14} style={{ transform: openFilterMenu === 'compliance' ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }} />
-            </button>
+              {/* Sub-points for Category 1: सर्व हजेरी (Attendance Status) */}
+              {selectedFilterCategory === 'status' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', maxHeight: '240px', overflowY: 'auto' }}>
+                  <div style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', padding: '3px 6px' }}>
+                    {isMr ? 'हजेरी स्थितीनुसार पर्याय:' : 'Select by Attendance Status:'}
+                  </div>
+                  {[
+                    { value: 'all', label: isMr ? 'सर्व हजेरी स्थिती (All)' : 'All Statuses' },
+                    { value: 'Present', label: isMr ? '🟢 उपस्थित (Present)' : '🟢 Present' },
+                    { value: 'Punched In', label: isMr ? '🟡 चालू शिफ्ट (Punched In)' : '🟡 Active / Punched In' },
+                    { value: 'Completed', label: isMr ? '🔵 काम पूर्ण (Completed)' : '🔵 Completed' },
+                    { value: 'Absent', label: isMr ? '🔴 हजेरी बाकी / गैरहजर' : '🔴 Pending / Absent' },
+                  ].map((opt) => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => setStatusFilter(opt.value)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '9px 12px',
+                        borderRadius: '8px',
+                        border: 'none',
+                        background: statusFilter === opt.value ? '#eff6ff' : 'transparent',
+                        color: statusFilter === opt.value ? '#1d4ed8' : '#334155',
+                        fontWeight: statusFilter === opt.value ? 850 : 600,
+                        fontSize: '13px',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      <span>{opt.label}</span>
+                      {statusFilter === opt.value && <Check size={16} style={{ color: '#2563eb' }} />}
+                    </button>
+                  ))}
+                </div>
+              )}
 
-            {openFilterMenu === 'compliance' && (
-              <div
-                style={{
-                  position: 'absolute',
-                  top: 'calc(100% + 6px)',
-                  left: 0,
-                  zIndex: 1050,
-                  minWidth: '240px',
-                  background: '#ffffff',
-                  borderRadius: '12px',
-                  boxShadow: '0 12px 28px -4px rgba(0, 0, 0, 0.18), 0 4px 10px rgba(0,0,0,0.06)',
-                  border: '1px solid #e2e8f0',
-                  padding: '6px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '2px',
-                }}
-              >
-                {[
-                  { value: 'all', label: isMr ? 'सर्व स्थान प्रकार (All Compliance)' : 'All Compliance' },
-                  { value: 'AT_REQUIRED_LOCATION', label: isMr ? '✅ ठरवलेल्या ठिकाणी हजर' : 'At Required Location' },
-                  { value: 'ANYWHERE_ALLOWED', label: isMr ? '🌐 मुक्त हजेरी (Anywhere)' : 'Anywhere Allowed' },
-                  { value: 'OUTSIDE_RADIUS', label: isMr ? '⚠️ ठिकाणाबाहेर (Violation)' : 'Outside Geofence' },
-                ].map((opt) => (
-                  <button
-                    key={opt.value}
-                    type="button"
-                    onClick={() => {
-                      setComplianceFilter(opt.value);
-                      setOpenFilterMenu(null);
-                    }}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      padding: '9px 12px',
-                      borderRadius: '8px',
-                      border: 'none',
-                      background: complianceFilter === opt.value ? '#eff6ff' : 'transparent',
-                      color: complianceFilter === opt.value ? '#1d4ed8' : '#334155',
-                      fontWeight: complianceFilter === opt.value ? 800 : 600,
-                      fontSize: '13px',
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      transition: 'background 0.15s ease',
-                    }}
-                    onMouseEnter={(e) => {
-                      if (complianceFilter !== opt.value) e.currentTarget.style.background = '#f8fafc';
-                    }}
-                    onMouseLeave={(e) => {
-                      if (complianceFilter !== opt.value) e.currentTarget.style.background = 'transparent';
-                    }}
-                  >
-                    <span>{opt.label}</span>
-                    {complianceFilter === opt.value && <Check size={15} style={{ color: '#2563eb' }} />}
-                  </button>
-                ))}
+              {/* Sub-points for Category 2: सर्व भूमिका (Roles) */}
+              {selectedFilterCategory === 'role' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', maxHeight: '240px', overflowY: 'auto' }}>
+                  <div style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', padding: '3px 6px' }}>
+                    {isMr ? 'कर्मचारी भूमिकेनुसार पर्याय:' : 'Select by Staff Role:'}
+                  </div>
+                  {[
+                    { value: 'all', label: isMr ? 'सर्व भूमिका (All Roles)' : 'All Roles' },
+                    { value: 'WORKER', label: isMr ? '👷 कार्यकर्ता (Social Worker)' : '👷 Social Worker' },
+                    { value: 'OFFICER', label: isMr ? '👔 अधिकारी / नेता (Officer / Leader)' : '👔 Officer / Leader' },
+                    { value: 'ADMIN', label: isMr ? '🛡️ प्रशासक (Admin)' : '🛡️ Admin' },
+                  ].map((opt) => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => setRoleFilter(opt.value)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '9px 12px',
+                        borderRadius: '8px',
+                        border: 'none',
+                        background: roleFilter === opt.value ? '#eff6ff' : 'transparent',
+                        color: roleFilter === opt.value ? '#1d4ed8' : '#334155',
+                        fontWeight: roleFilter === opt.value ? 850 : 600,
+                        fontSize: '13px',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      <span>{opt.label}</span>
+                      {roleFilter === opt.value && <Check size={16} style={{ color: '#2563eb' }} />}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Sub-points for Category 3: सर्व स्थान (Locations & Compliance) */}
+              {selectedFilterCategory === 'compliance' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', maxHeight: '240px', overflowY: 'auto' }}>
+                  <div style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', padding: '3px 6px' }}>
+                    {isMr ? 'हजेरी स्थान प्रकारानुसार पर्याय:' : 'Select by Location Compliance:'}
+                  </div>
+                  {[
+                    { value: 'all', label: isMr ? 'सर्व स्थान प्रकार (All Locations / Compliance)' : 'All Locations' },
+                    { value: 'AT_REQUIRED_LOCATION', label: isMr ? '✅ ठरवलेल्या ठिकाणी हजर (At Required Location)' : '✅ At Required Location' },
+                    { value: 'ANYWHERE_ALLOWED', label: isMr ? '🌐 मुक्त हजेरी / सर्वत्र (Anywhere Allowed)' : '🌐 Anywhere Allowed' },
+                    { value: 'OUTSIDE_RADIUS', label: isMr ? '⚠️ ठिकाणाबाहेर (Outside Location / Violation)' : '⚠️ Outside Location' },
+                  ].map((opt) => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => setComplianceFilter(opt.value)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '9px 12px',
+                        borderRadius: '8px',
+                        border: 'none',
+                        background: complianceFilter === opt.value ? '#eff6ff' : 'transparent',
+                        color: complianceFilter === opt.value ? '#1d4ed8' : '#334155',
+                        fontWeight: complianceFilter === opt.value ? 850 : 600,
+                        fontSize: '13px',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      <span>{opt.label}</span>
+                      {complianceFilter === opt.value && <Check size={16} style={{ color: '#2563eb' }} />}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Action Buttons: Reset & Done */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '8px', borderTop: '1px solid #f1f5f9' }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setStatusFilter('all');
+                    setRoleFilter('all');
+                    setComplianceFilter('all');
+                  }}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    color: '#ef4444',
+                    fontSize: '12px',
+                    fontWeight: 750,
+                    cursor: 'pointer',
+                    padding: '4px 8px',
+                  }}
+                >
+                  🔄 {isMr ? 'सर्व फिल्टर साफ करा' : 'Clear Filters'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsFilterPanelOpen(false)}
+                  style={{
+                    background: '#2563eb',
+                    border: 'none',
+                    color: '#ffffff',
+                    fontSize: '12px',
+                    fontWeight: 800,
+                    borderRadius: '8px',
+                    padding: '6px 14px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  ✓ {isMr ? 'लागू करा' : 'Done'}
+                </button>
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
           {/* Active Filter Clear indicator if applied */}
           {(statusFilter !== 'all' || roleFilter !== 'all' || complianceFilter !== 'all' || searchQuery.trim() !== '') && (

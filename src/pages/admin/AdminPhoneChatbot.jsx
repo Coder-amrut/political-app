@@ -10,16 +10,10 @@ export default function AdminPhoneChatbot({ lang = 'mr', onClose = null, apiPref
       id: 'welcome',
       sender: 'bot',
       text: isMr
-        ? '👋 नमस्कार! मी आपला AI निवडणूक व प्रचार सहाय्यक आहे. मी आपल्याला मतदार, बूथ, गावनिहाय लोकसंख्या, आणि प्रचार योजनांची माहिती देऊ शकतो.'
-        : '👋 Hello! I am your AI Campaign & Field Operations Assistant. I can help with voter counts, booths, village demographics, and field operations.',
+        ? 'मी तुमची काय मदत करू शकतो?'
+        : 'How can I help you?',
       structuredItems: [],
-      suggestedActions: [
-        { label: isMr ? '🏘️ गावनिहाय लोकसंख्या व मतदार' : '🏘️ Village Population & Voters', query: isMr ? 'गावानुसार एकूण लोकसंख्या आणि मतदार संख्या दाखवा' : 'Show village population and total voters summary' },
-        { label: isMr ? '📊 एकूण मतदार सारांश' : '📊 Total Voters Summary', query: isMr ? 'एकूण मतदार संख्या आणि राजकीय कल दाखवा' : 'Show total voters and political sentiment' },
-        { label: isMr ? '🗳️ बूथनिहाय प्रगती' : '🗳️ Booth Progress', query: isMr ? 'बूथनिहाय प्रगती आणि आघाडीवरील बूथ दाखवा' : 'Show booth progress' },
-        { label: isMr ? '⚠️ प्रलंबित नागरी समस्या' : '⚠️ Pending Issues', query: isMr ? 'सध्याच्या प्रलंबित नागरी समस्या कोणत्या आहेत?' : 'What are pending civic issues?' },
-        { label: isMr ? '👥 सक्रिय कार्यकर्ते' : '👥 Active Workers', query: isMr ? 'सक्रिय कार्यकर्ते आणि त्यांची कामगिरी दाखवा' : 'Show active karyakartas' },
-      ],
+      suggestedActions: [],
       timestamp: new Date().toLocaleTimeString(isMr ? 'mr-IN' : 'en-IN', { hour: '2-digit', minute: '2-digit' }),
     },
   ]);
@@ -129,13 +123,10 @@ export default function AdminPhoneChatbot({ lang = 'mr', onClose = null, apiPref
         id: 'welcome',
         sender: 'bot',
         text: isMr
-          ? 'चॅट रीसेट झाले आहे. मी आपल्याला कशी मदत करू?'
-          : 'Chat has been reset. How may I assist you?',
+          ? 'मी तुमची काय मदत करू शकतो?'
+          : 'How can I help you?',
         structuredItems: [],
-        suggestedActions: [
-          { label: isMr ? '🏘️ गाव लोकसंख्या व मतदार' : '🏘️ Village Population', query: isMr ? 'गावानुसार एकूण लोकसंख्या आणि मतदार संख्या दाखवा' : 'Show village population' },
-          { label: isMr ? '📊 एकूण मतदार सारांश' : '📊 Total Voters', query: isMr ? 'एकूण मतदार संख्या आणि राजकीय कल दाखवा' : 'Show total voters summary' },
-        ],
+        suggestedActions: [],
         timestamp: new Date().toLocaleTimeString(isMr ? 'mr-IN' : 'en-IN', { hour: '2-digit', minute: '2-digit' }),
       },
     ]);
@@ -414,51 +405,6 @@ export default function AdminPhoneChatbot({ lang = 'mr', onClose = null, apiPref
         </div>
       </div>
 
-      {/* Quick Suggestion Chips Bar */}
-      <div
-        style={{
-          background: '#f8fafc',
-          borderBottom: '1px solid #e2e8f0',
-          padding: '8px 12px',
-          display: 'flex',
-          gap: '6px',
-          overflowX: 'auto',
-          whiteSpace: 'nowrap',
-          scrollbarWidth: 'none',
-          WebkitOverflowScrolling: 'touch',
-          flexShrink: 0,
-        }}
-      >
-        <span style={{ fontSize: '11px', fontWeight: '750', color: '#64748b', alignSelf: 'center', marginRight: '4px', flexShrink: 0 }}>
-          {isMr ? 'त्वरित प्रश्न:' : 'Quick Queries:'}
-        </span>
-        {suggestions.map((sug) => (
-          <button
-            key={sug.id}
-            type="button"
-            onClick={() => handleSend(sug.query)}
-            disabled={loading}
-            style={{
-              background: '#ffffff',
-              border: '1px solid #cbd5e1',
-              borderRadius: '20px',
-              padding: '4px 10px',
-              fontSize: '11px',
-              fontWeight: '650',
-              color: '#c2410c',
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '4px',
-              flexShrink: 0,
-              boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
-            }}
-          >
-            {sug.label}
-          </button>
-        ))}
-      </div>
-
       {/* Chat Messages Stream */}
       <div
         style={{
@@ -557,31 +503,6 @@ export default function AdminPhoneChatbot({ lang = 'mr', onClose = null, apiPref
                         </div>
                       ))}
                     </div>
-                  </div>
-                )}
-
-                {/* Suggested Follow-up Actions */}
-                {msg.suggestedActions && msg.suggestedActions.length > 0 && (
-                  <div style={{ marginTop: '10px', paddingTop: '8px', borderTop: '1px solid #e2e8f0', display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                    {msg.suggestedActions.map((act, aIdx) => (
-                      <button
-                        key={aIdx}
-                        type="button"
-                        onClick={() => handleSend(act.query)}
-                        style={{
-                          background: '#fff7ed',
-                          border: '1px solid #ffedd5',
-                          borderRadius: '6px',
-                          padding: '3px 8px',
-                          fontSize: '10.5px',
-                          fontWeight: '700',
-                          color: '#c2410c',
-                          cursor: 'pointer',
-                        }}
-                      >
-                        ↳ {act.label}
-                      </button>
-                    ))}
                   </div>
                 )}
               </div>

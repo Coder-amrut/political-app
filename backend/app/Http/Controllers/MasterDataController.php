@@ -109,6 +109,41 @@ class MasterDataController extends Controller
     }
 
     /**
+     * POST /api/master-data/talukas
+     * Create a new Taluka under a specific district.
+     */
+    public function storeTaluka(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'district_code' => ['required'],
+            'taluka_name'   => ['required', 'string', 'max:255'],
+            'taluka_code'   => ['nullable', 'string', 'max:50'],
+        ]);
+
+        $talukaCode = $validated['taluka_code'] ?? null;
+        if (empty($talukaCode)) {
+            $maxCode = DB::table('talukas')
+                ->where('district_code', $validated['district_code'])
+                ->max('taluka_code');
+            $talukaCode = $maxCode ? ((int)$maxCode + 1) : 4201;
+        }
+
+        $id = DB::table('talukas')->insertGetId([
+            'district_code' => (string) $validated['district_code'],
+            'taluka_code'   => (string) $talukaCode,
+            'taluka_name'   => $validated['taluka_name'],
+        ]);
+
+        $taluka = DB::table('talukas')->where('id', $id)->first();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'तालुका यशस्वीरित्या जोडला गेला!',
+            'data'    => $taluka,
+        ], 201);
+    }
+
+    /**
      * GET /api/master-data/villages?district_code=466&taluka_code=4201
      * Return villages, optionally narrowed by district and taluka codes.
      */

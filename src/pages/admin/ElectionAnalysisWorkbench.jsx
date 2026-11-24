@@ -1,5 +1,10 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import {
+  ELECTIONS_CATEGORIES,
+  ELECTIONS_MASTER_DATA,
+  getElectionDisplayName,
+} from '../../data/electionsMasterData';
+import {
   Vote,
   BarChart3,
   Users,
@@ -37,6 +42,20 @@ import {
   X,
   FileUp
 } from 'lucide-react';
+
+// Taluka to Villages cascading mapping for Sangli district & regional administration
+export const TALUKA_VILLAGES_MAP = {
+  'मिरज': ['सांगलीवाडी', 'कुपवाड', 'मिरज शहर', 'बेडग', 'बोलवाड', 'म्हैसाळ', 'मालगाव', 'कर्नाळ', 'समडोळी', 'कसबे डिग्रज', 'एरंडोली', 'कवलापूर', 'बुधगाव', 'माधवनगर', 'बामणोली', 'वानलेसवाडी', 'हरिपूर', 'बिसूर', 'निलजी', 'पाटगाव'],
+  'तासगाव': ['तासगाव शहर', 'मणेराजुरी', 'विसापूर', 'सावळज', 'चिंचणी', 'वायफळे', 'ढवळी', 'येळावी', 'अंजनी', 'बस्तवडे', 'तुरची', 'बोरगाव', 'गव्हाण'],
+  'वाळवा': ['इस्लामपूर शहर', 'वाळवा', 'बोरगाव', 'ताकारी', 'पेठ', 'आष्टा शहर', 'कामेरी', 'कुरळप', 'शिगाव', 'बावची', 'येडेनिपाणी', 'नेर्ले', 'कासेगाव', 'बहे', 'तांबवे', 'रेठरे हरणाक्ष'],
+  'कवठेमहांकाळ': ['कवठेमहांकाळ शहर', 'ढालगाव', 'देशिंग', 'बोरगाव', 'इरळी', 'हगळूर', 'घाटनांद्रे', 'करोली', 'कुची', 'मळणगाव'],
+  'जत': ['जत शहर', 'डफळापूर', 'उमदी', 'संख', 'मुचंडी', 'शेगाव', 'बिळूर', 'वाघापूर', 'तिकोंडी', 'बेळोंडगी'],
+  'शिराळा': ['शिराळा शहर', 'मांगले', 'कोकरुड', 'चरण', 'बिळाशी', 'वारणावती', 'मोराळे', 'शिरशी', 'वाटेगाव'],
+  'कडेगाव': ['कडेगाव शहर', 'कडेपूर', 'हिंगणगाव', 'शाळगाव', 'शिवणी', 'मोहित्यांचे वडगाव', 'देवराष्ट्रे', 'सोहोली', 'नेरली'],
+  'खानापूर': ['विटा शहर', 'खानापूर', 'भाळवणी', 'पारे', 'करंजे', 'लेंगरे', 'बेनापूर', 'वासुंबे', 'बलवडी'],
+  'पलूस': ['पलूस शहर', 'भिलवडी', 'कुंडल', 'तुपारी', 'बुर्ली', 'सांडगेवाडी', 'दुधारी', 'नागठाणे', 'सावंतपूर', 'आंधळी'],
+  'आटपाडी': ['आटपाडी शहर', 'दिघंची', 'नेलकरंजी', 'करगणी', 'शेटफळ', 'बाळेवाडी', 'खरसुंडी', 'झरे', 'आवळाई']
+};
 
 // Comprehensive List of All Indian / Maharashtra Election Types
 const ELECTION_TYPES = [
@@ -345,6 +364,18 @@ export default function ElectionAnalysisWorkbench({ isMr = true, language = 'mr'
 
   // 3-Dot Election Type Menu & PDF Upload States
   const [isElectionTypeMenuOpen, setIsElectionTypeMenuOpen] = useState(false);
+  const [electionSearchText, setElectionSearchText] = useState('');
+  const [expandedCategory, setExpandedCategory] = useState(null);
+  const [isAddPartyModalOpen, setIsAddPartyModalOpen] = useState(false);
+  const [newPartyModalData, setNewPartyModalData] = useState({
+    name: '',
+    candidate: '',
+    alliance: 'महायुती',
+    previousVotes: '',
+    currentVotes: '',
+    strengths: '',
+    challenges: ''
+  });
   const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
   const [pendingPdfFile, setPendingPdfFile] = useState(null);
   const [selectedPdfType, setSelectedPdfType] = useState('winner'); // 'winner' | 'other'
@@ -656,21 +687,41 @@ export default function ElectionAnalysisWorkbench({ isMr = true, language = 'mr'
 
   // Add Party Form Handlers
   const handleAddParty = () => {
+    setNewPartyModalData({
+      name: '',
+      candidate: '',
+      alliance: 'महायुती',
+      previousVotes: '',
+      currentVotes: '',
+      strengths: '',
+      challenges: ''
+    });
+    setIsAddPartyModalOpen(true);
+  };
+
+  const handleSaveNewPartyModal = (e) => {
+    if (e) e.preventDefault();
+    if (!newPartyModalData.name.trim()) {
+      alert(isMr ? 'कृपया पक्षाचे नाव प्रविष्ट करा.' : 'Please enter Party name.');
+      return;
+    }
     const newId = `party_${Date.now()}`;
     const newParty = {
       id: newId,
-      name: '',
-      candidate: '',
-      alliance: 'स्वबळ',
-      previousVotes: 0,
-      currentVotes: 0,
+      name: newPartyModalData.name.trim(),
+      candidate: newPartyModalData.candidate.trim(),
+      alliance: newPartyModalData.alliance || 'स्वबळ',
+      previousVotes: Number(newPartyModalData.previousVotes) || 0,
+      currentVotes: Number(newPartyModalData.currentVotes) || 0,
       voteShare: 0,
       seatsWon: 0,
-      strengths: '',
-      challenges: ''
+      strengths: newPartyModalData.strengths.trim(),
+      challenges: newPartyModalData.challenges.trim()
     };
-    setParties([...parties, newParty]);
+    // Prepend so it immediately appears right at the top
+    setParties([newParty, ...parties]);
     setEditingPartyId(newId);
+    setIsAddPartyModalOpen(false);
   };
 
   const handleUpdateParty = (id, field, value) => {
@@ -1242,73 +1293,179 @@ ${groundObservations || 'नोंद नाही'}
                       cursor: 'pointer',
                       boxShadow: '0 2px 4px rgba(0,0,0,0.04)'
                     }}
-                    title={isMr ? 'निवडणूक प्रकार बदला (३-डॉट मेनू)' : 'Change election type'}
+                    title={isMr ? 'सर्व ७५ निवडणूक प्रकार (३-डॉट मेनू)' : 'All 75 Election Types'}
                   >
-                    <span>{isMr ? 'प्रकार निवडा' : 'Change'}</span>
+                    <span>{isMr ? 'निवडणूक प्रकार (७५)' : 'All 75 Types'}</span>
                     <MoreVertical size={16} style={{ color: '#2563eb' }} />
                   </button>
 
-                  {/* 3-Dot Popup Menu displaying all 14 types */}
+                  {/* 3-Dot Categorized Modal displaying all 75 elections */}
                   {isElectionTypeMenuOpen && (
                     <div
                       style={{
-                        position: 'absolute',
-                        top: 'calc(100% + 8px)',
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
                         right: 0,
-                        zIndex: 1050,
-                        width: '320px',
-                        maxWidth: '92vw',
-                        maxHeight: '380px',
-                        overflowY: 'auto',
-                        background: '#ffffff',
-                        borderRadius: '14px',
-                        boxShadow: '0 16px 36px -4px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0,0,0,0.08)',
-                        border: '1.5px solid #cbd5e1',
-                        padding: '8px',
+                        bottom: 0,
+                        backgroundColor: 'rgba(15, 23, 42, 0.65)',
                         display: 'flex',
-                        flexDirection: 'column',
-                        gap: '3px'
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        zIndex: 99999,
+                        padding: '16px',
+                        backdropFilter: 'blur(4px)',
                       }}
+                      onClick={() => setIsElectionTypeMenuOpen(false)}
                     >
-                      <div style={{ padding: '6px 10px', fontSize: '11px', fontWeight: '850', color: '#64748b', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span>{isMr ? 'सर्व १४ निवडणूक प्रकार:' : 'All 14 Election Types:'}</span>
-                        <button
-                          type="button"
-                          onClick={() => setIsElectionTypeMenuOpen(false)}
-                          style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '13px', padding: '2px' }}
-                        >
-                          ✕
-                        </button>
+                      <div
+                        style={{
+                          background: '#ffffff',
+                          borderRadius: '16px',
+                          padding: '20px',
+                          width: '100%',
+                          maxWidth: '680px',
+                          boxShadow: '0 20px 45px rgba(0,0,0,0.25)',
+                          maxHeight: '85vh',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '12px'
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1.5px solid #e2e8f0', paddingBottom: '12px' }}>
+                          <div>
+                            <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '850', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <span>🏛️</span>
+                              <span>{isMr ? 'निवडणूक प्रकार निवडा (एकूण ७५ प्रकार)' : 'Select Election Type (All 75 Types)'}</span>
+                            </h3>
+                            <p style={{ margin: '2px 0 0', fontSize: '11.5px', color: '#64748b' }}>
+                              {isMr ? '७ प्रमुख प्रशासकीय स्तरांनुसार अधिकृत वर्गवारी' : 'Official categorized hierarchy across 7 administrative levels'}
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setIsElectionTypeMenuOpen(false)}
+                            style={{ background: '#f1f5f9', border: 'none', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer', fontSize: '15px', fontWeight: '800', color: '#64748b' }}
+                          >
+                            ✕
+                          </button>
+                        </div>
+
+                        {/* Search & Quick Actions */}
+                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+                          <input
+                            type="text"
+                            placeholder={isMr ? '🔍 निवडणुकीचे नाव शोधा...' : '🔍 Search election name...'}
+                            value={electionSearchText}
+                            onChange={(e) => setElectionSearchText(e.target.value)}
+                            style={{ flex: 1, minWidth: '220px', padding: '9px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px' }}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setIsElectionTypeMenuOpen(false);
+                              setActiveTab('winners');
+                            }}
+                            style={{ padding: '9px 14px', borderRadius: '8px', background: '#fef3c7', color: '#92400e', border: '1px solid #fde68a', fontWeight: '800', fontSize: '12.5px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
+                          >
+                            <span>🏆</span>
+                            <span>{isMr ? 'मागील विजेता निकाल' : 'Past Winners View'}</span>
+                          </button>
+                        </div>
+
+                        {/* 7 Categories Accordion List */}
+                        <div style={{ overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: '10px', paddingRight: '4px' }}>
+                          {ELECTIONS_CATEGORIES.map((cat) => {
+                            const catElections = ELECTIONS_MASTER_DATA.filter((e) => {
+                              if (e.cat_id !== cat.id) return false;
+                              if (!electionSearchText.trim()) return true;
+                              const term = electionSearchText.toLowerCase();
+                              return (
+                                (e.name_mr && e.name_mr.toLowerCase().includes(term)) ||
+                                (e.name_en && e.name_en.toLowerCase().includes(term)) ||
+                                (e.sub_mr && e.sub_mr.toLowerCase().includes(term))
+                              );
+                            });
+
+                            if (electionSearchText.trim() && catElections.length === 0) return null;
+                            const isExpanded = expandedCategory === cat.id || Boolean(electionSearchText.trim());
+
+                            return (
+                              <div key={cat.id} style={{ border: '1.5px solid #e2e8f0', borderRadius: '12px', overflow: 'hidden' }}>
+                                <div
+                                  onClick={() => setExpandedCategory(isExpanded ? null : cat.id)}
+                                  style={{
+                                    background: isExpanded ? '#f1f5f9' : '#ffffff',
+                                    padding: '11px 14px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    cursor: 'pointer',
+                                    fontWeight: '850',
+                                    fontSize: '13px',
+                                    color: '#1e293b'
+                                  }}
+                                >
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <span>{cat.icon}</span>
+                                    <span>{isMr ? cat.name_mr : cat.name_en}</span>
+                                    <span style={{ fontSize: '11px', background: '#e2e8f0', color: '#475569', padding: '2px 7px', borderRadius: '10px', fontWeight: '800' }}>
+                                      {catElections.length}
+                                    </span>
+                                  </div>
+                                  <span style={{ fontSize: '12px', color: '#64748b' }}>{isExpanded ? '▲' : '▼'}</span>
+                                </div>
+
+                                {isExpanded && (
+                                  <div style={{ padding: '8px 10px', background: '#ffffff', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '6px' }}>
+                                    {catElections.map((el) => {
+                                      const isSelected = selectedElectionType === String(el.id);
+                                      const titleText = isMr ? `${el.id}. ${el.name_mr}` : `${el.id}. ${el.name_en}`;
+                                      return (
+                                        <button
+                                          key={el.id}
+                                          type="button"
+                                          onClick={() => {
+                                            setSelectedElectionType(String(el.id));
+                                            setElectionName(isMr ? el.name_mr : el.name_en);
+                                            setIsElectionTypeMenuOpen(false);
+                                          }}
+                                          style={{
+                                            padding: '8px 10px',
+                                            borderRadius: '8px',
+                                            border: isSelected ? '1.5px solid #2563eb' : '1px solid #e2e8f0',
+                                            background: isSelected ? '#eff6ff' : '#f8fafc',
+                                            color: isSelected ? '#1d4ed8' : '#334155',
+                                            fontWeight: isSelected ? '850' : '650',
+                                            fontSize: '12px',
+                                            textAlign: 'left',
+                                            cursor: 'pointer',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between',
+                                            gap: '8px'
+                                          }}
+                                        >
+                                          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                                            <span>{titleText}</span>
+                                            {el.sub_mr && (
+                                              <span style={{ fontSize: '10.5px', color: '#64748b' }}>
+                                                {isMr ? el.sub_mr : el.sub_en}
+                                              </span>
+                                            )}
+                                          </div>
+                                          {isSelected && <span style={{ color: '#2563eb', fontWeight: '900' }}>✓</span>}
+                                        </button>
+                                      );
+                                    })}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
-                      {ELECTION_TYPES.map((etype) => (
-                        <button
-                          key={etype.id}
-                          type="button"
-                          onClick={() => {
-                            setSelectedElectionType(etype.id);
-                            setIsElectionTypeMenuOpen(false);
-                          }}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '10px',
-                            padding: '9px 12px',
-                            borderRadius: '8px',
-                            border: 'none',
-                            background: selectedElectionType === etype.id ? '#eff6ff' : 'transparent',
-                            color: selectedElectionType === etype.id ? '#1d4ed8' : '#334155',
-                            fontWeight: selectedElectionType === etype.id ? 850 : 600,
-                            fontSize: '12.5px',
-                            cursor: 'pointer',
-                            textAlign: 'left',
-                            transition: 'all 0.15s ease'
-                          }}
-                        >
-                          <span style={{ fontSize: '18px' }}>{etype.icon}</span>
-                          <span style={{ flex: 1 }}>{isMr ? etype.label_mr : etype.label_en}</span>
-                          {selectedElectionType === etype.id && <Check size={16} style={{ color: '#2563eb' }} />}
-                        </button>
-                      ))}
                     </div>
                   )}
                 </div>
@@ -1357,13 +1514,15 @@ ${groundObservations || 'नोंद नाही'}
                 <label style={{ display: 'block', fontSize: '12px', fontWeight: '750', color: '#334155', marginBottom: '5px' }}>
                   {isMr ? 'निवडणूक वर्ष' : 'Election Year'} <span style={{ color: '#ef4444' }}>*</span>
                 </label>
-                <input
-                  type="text"
+                <select
                   value={electionYear}
                   onChange={(e) => setElectionYear(e.target.value)}
-                  placeholder="2024"
-                  style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
-                />
+                  style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box', background: '#fff' }}
+                >
+                  {['2026', '2025', '2024', '2023', '2022', '2021', '2020', '2019', '2018', '2017', '2016', '2015', '2014', '2013', '2012', '2011', '2010', '2009', '2004', '1999', '1994', '1990'].map((yr) => (
+                    <option key={yr} value={yr}>{yr}</option>
+                  ))}
+                </select>
               </div>
 
               {/* १. राज्य */}
@@ -1394,18 +1553,29 @@ ${groundObservations || 'नोंद नाही'}
                 />
               </div>
 
-              {/* ३. तालुका */}
+              {/* ३. तालुका (Cascading) */}
               <div>
                 <label style={{ display: 'block', fontSize: '12px', fontWeight: '750', color: '#334155', marginBottom: '5px' }}>
                   ३. {isMr ? 'तालुका:' : 'Taluka:'}
                 </label>
-                <input
-                  type="text"
+                <select
                   value={talukaName}
-                  onChange={(e) => setTalukaName(e.target.value)}
-                  placeholder={isMr ? 'उदा. मिरज' : 'e.g. Miraj'}
-                  style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
-                />
+                  onChange={(e) => {
+                    const newTal = e.target.value;
+                    setTalukaName(newTal);
+                    const availableVillages = TALUKA_VILLAGES_MAP[newTal] || [];
+                    if (availableVillages.length > 0) {
+                      setVillageName(availableVillages[0]);
+                    }
+                  }}
+                  style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1.5px solid #93c5fd', fontSize: '13px', boxSizing: 'border-box', background: '#fff' }}
+                >
+                  <option value="">{isMr ? '-- तालुका निवडा --' : '-- Select Taluka --'}</option>
+                  {Object.keys(TALUKA_VILLAGES_MAP).map((tName) => (
+                    <option key={tName} value={tName}>{tName}</option>
+                  ))}
+                  <option value="इतर">{isMr ? 'इतर तालुका' : 'Other Taluka'}</option>
+                </select>
               </div>
 
               {/* ४. शहर */}
@@ -1422,11 +1592,33 @@ ${groundObservations || 'नोंद नाही'}
                 />
               </div>
 
-              {/* ५. गाव */}
+              {/* ५. गाव (Cascading strictly filtered by Taluka) */}
               <div>
                 <label style={{ display: 'block', fontSize: '12px', fontWeight: '750', color: '#334155', marginBottom: '5px' }}>
-                  ५. {isMr ? 'गाव:' : 'Village:'}
+                  ५. {isMr ? 'गाव / प्रभाग:' : 'Village / Ward:'}
                 </label>
+                {TALUKA_VILLAGES_MAP[talukaName] ? (
+                  <select
+                    value={villageName}
+                    onChange={(e) => setVillageName(e.target.value)}
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1.5px solid #93c5fd', fontSize: '13px', boxSizing: 'border-box', background: '#fff' }}
+                  >
+                    <option value="">{isMr ? '-- गाव निवडा --' : '-- Select Village --'}</option>
+                    {TALUKA_VILLAGES_MAP[talukaName].map((vName) => (
+                      <option key={vName} value={vName}>{vName}</option>
+                    ))}
+                    <option value="इतर">{isMr ? 'इतर गाव' : 'Other Village'}</option>
+                  </select>
+                ) : (
+                  <input
+                    type="text"
+                    value={villageName}
+                    onChange={(e) => setVillageName(e.target.value)}
+                    placeholder={isMr ? 'उदा. सांगलीवाडी' : 'e.g. Sangliwadi'}
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
+                  />
+                )}
+              </div>
                 <input
                   type="text"
                   value={villageName}
@@ -3653,6 +3845,172 @@ ${groundObservations || 'नोंद नाही'}
                 <span>{isMr ? 'डेटा अरेंज करा (Process & Arrange)' : 'Arrange Data'}</span>
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ================= ADD PARTY MODAL ================= */}
+      {isAddPartyModalOpen && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(15, 23, 42, 0.6)',
+          backdropFilter: 'blur(4px)',
+          zIndex: 99999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '16px'
+        }} onClick={() => setIsAddPartyModalOpen(false)}>
+          <div style={{
+            background: '#ffffff',
+            borderRadius: '20px',
+            maxWidth: '520px',
+            width: '100%',
+            padding: '24px',
+            boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.3)',
+            border: '1.5px solid #e2e8f0',
+            maxHeight: '90vh',
+            overflowY: 'auto'
+          }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1.5px solid #e2e8f0', paddingBottom: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '24px' }}>🚩</span>
+                <h3 style={{ margin: 0, fontSize: '17px', fontWeight: '900', color: '#0f172a' }}>
+                  {isMr ? 'नवीन राजकीय पक्ष जोडा' : 'Add New Political Party'}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsAddPartyModalOpen(false)}
+                style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: '4px' }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveNewPartyModal} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: '800', color: '#334155', marginBottom: '5px' }}>
+                  १. {isMr ? 'पक्षाचे नाव:' : 'Party Name:'} <span style={{ color: '#ef4444' }}>*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder={isMr ? 'उदा. भारतीय जनता पक्ष, काँग्रेस, शिवसेना...' : 'e.g. BJP, Congress, Shiv Sena...'}
+                  value={newPartyModalData.name}
+                  onChange={(e) => setNewPartyModalData({ ...newPartyModalData, name: e.target.value })}
+                  list="standard-16-parties-list"
+                  required
+                  style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: '800', color: '#334155', marginBottom: '5px' }}>
+                  २. {isMr ? 'उमेदवाराचे नाव:' : 'Candidate Name:'}
+                </label>
+                <input
+                  type="text"
+                  placeholder={isMr ? 'उमेदवाराचे नाव प्रविष्ट करा' : 'Enter candidate name'}
+                  value={newPartyModalData.candidate}
+                  onChange={(e) => setNewPartyModalData({ ...newPartyModalData, candidate: e.target.value })}
+                  style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: '800', color: '#334155', marginBottom: '5px' }}>
+                  ३. {isMr ? 'आघाडी / युती:' : 'Alliance:'}
+                </label>
+                <select
+                  value={newPartyModalData.alliance}
+                  onChange={(e) => setNewPartyModalData({ ...newPartyModalData, alliance: e.target.value })}
+                  style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box', background: '#fff' }}
+                >
+                  <option value="महायुती">महायुती (Mahayuti)</option>
+                  <option value="महाविकास आघाडी">महाविकास आघाडी (MVA)</option>
+                  <option value="स्वबळ">स्वबळ (Independent / Own)</option>
+                  <option value="अपक्ष">अपक्ष (Independent)</option>
+                  <option value="इतर">इतर (Other)</option>
+                </select>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '800', color: '#334155', marginBottom: '5px' }}>
+                    ४. {isMr ? 'मागील मते:' : 'Previous Votes:'}
+                  </label>
+                  <input
+                    type="number"
+                    placeholder="0"
+                    value={newPartyModalData.previousVotes}
+                    onChange={(e) => setNewPartyModalData({ ...newPartyModalData, previousVotes: e.target.value })}
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: '800', color: '#334155', marginBottom: '5px' }}>
+                    ५. {isMr ? 'अंदाजित मते:' : 'Projected Votes:'}
+                  </label>
+                  <input
+                    type="number"
+                    placeholder="0"
+                    value={newPartyModalData.currentVotes}
+                    onChange={(e) => setNewPartyModalData({ ...newPartyModalData, currentVotes: e.target.value })}
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: '800', color: '#334155', marginBottom: '5px' }}>
+                  ६. {isMr ? 'प्रमुख बलस्थाने:' : 'Key Strengths:'}
+                </label>
+                <input
+                  type="text"
+                  placeholder={isMr ? 'उदा. मजबूत संघटन, पारंपरिक मतदार' : 'e.g. Strong organization'}
+                  value={newPartyModalData.strengths}
+                  onChange={(e) => setNewPartyModalData({ ...newPartyModalData, strengths: e.target.value })}
+                  style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: '10px', marginTop: '12px' }}>
+                <button
+                  type="submit"
+                  style={{
+                    flex: 1,
+                    padding: '11px',
+                    borderRadius: '10px',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+                    color: '#ffffff',
+                    fontSize: '13px',
+                    fontWeight: '800',
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 12px rgba(37, 99, 235, 0.25)'
+                  }}
+                >
+                  ✓ {isMr ? 'पक्ष जतन करा (Save Party)' : 'Save Party'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsAddPartyModalOpen(false)}
+                  style={{
+                    padding: '11px 18px',
+                    borderRadius: '10px',
+                    border: '1px solid #cbd5e1',
+                    background: '#f8fafc',
+                    color: '#475569',
+                    fontSize: '13px',
+                    fontWeight: '750',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {isMr ? 'रद्द करा' : 'Cancel'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

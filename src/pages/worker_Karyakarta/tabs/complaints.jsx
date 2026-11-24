@@ -204,13 +204,23 @@ export default function ComplaintsTab({
   const filteredComplaints = complaintsData.filter((c) => {
     const matchesStatus = complaintFilter === 'All' || c.status === complaintFilter;
     if (!matchesStatus) return false;
+    if (filterDistrict !== 'All' && c.district && c.district !== filterDistrict) return false;
+    if (filterTaluka !== 'All' && c.taluka && c.taluka !== filterTaluka) return false;
+    if (filterVillage !== 'All' && (c.village || c.city) && !((c.village || '').toLowerCase().includes(filterVillage.toLowerCase()) || (c.city || '').toLowerCase().includes(filterVillage.toLowerCase()))) return false;
+    if (filterWard !== 'All' && (c.ward || c.prabhag) && !((c.ward || '').toLowerCase().includes(filterWard.toLowerCase()) || (c.prabhag || '').toLowerCase().includes(filterWard.toLowerCase()))) return false;
     if (!complaintSearchQuery.trim()) return true;
     const q = complaintSearchQuery.toLowerCase();
     return (
       (c.name && c.name.toLowerCase().includes(q)) ||
       (c.phone && c.phone.includes(q)) ||
       (c.category && c.category.toLowerCase().includes(q)) ||
+      (c.custom_category && c.custom_category.toLowerCase().includes(q)) ||
       (c.complaint_code && c.complaint_code.toLowerCase().includes(q)) ||
+      (c.district && c.district.toLowerCase().includes(q)) ||
+      (c.taluka && c.taluka.toLowerCase().includes(q)) ||
+      (c.village && c.village.toLowerCase().includes(q)) ||
+      (c.city && c.city.toLowerCase().includes(q)) ||
+      (c.ward && c.ward.toLowerCase().includes(q)) ||
       (c.desc && c.desc.toLowerCase().includes(q))
     );
   });
@@ -246,6 +256,12 @@ export default function ComplaintsTab({
       bg: '#15803d',
     },
   ];
+
+  // Location Filter States (District, Taluka, Village, Ward)
+  const [filterDistrict, setFilterDistrict] = useState('All');
+  const [filterTaluka, setFilterTaluka] = useState('All');
+  const [filterVillage, setFilterVillage] = useState('All');
+  const [filterWard, setFilterWard] = useState('All');
 
   // Confirmation state for Save & Cancel popups ('save' | 'cancel' | null)
   const [confirmComplaintAction, setConfirmComplaintAction] = useState(null);
@@ -512,6 +528,64 @@ export default function ComplaintsTab({
               )}
             </div>
 
+            {/* Location Fields: District & Taluka */}
+            <div className="takrari-form-row-2">
+              <div className="takrari-form-group">
+                <label className="takrari-form-label">
+                  🏛️ {isMr ? 'जिल्हा' : 'District'} *
+                </label>
+                <input
+                  type="text"
+                  placeholder="सांगली"
+                  value={complaintFormData.district !== undefined ? complaintFormData.district : 'सांगली'}
+                  onChange={(e) => setComplaintFormData({ ...complaintFormData, district: e.target.value })}
+                  className="takrari-form-input"
+                />
+              </div>
+
+              <div className="takrari-form-group">
+                <label className="takrari-form-label">
+                  📍 {isMr ? 'तालुका' : 'Taluka'} *
+                </label>
+                <input
+                  type="text"
+                  placeholder="मिरज / तासगाव / वाळवा"
+                  value={complaintFormData.taluka !== undefined ? complaintFormData.taluka : 'मिरज'}
+                  onChange={(e) => setComplaintFormData({ ...complaintFormData, taluka: e.target.value })}
+                  className="takrari-form-input"
+                />
+              </div>
+            </div>
+
+            {/* Location Fields: Village/City & Ward/Prabhag */}
+            <div className="takrari-form-row-2">
+              <div className="takrari-form-group">
+                <label className="takrari-form-label">
+                  🏡 {isMr ? 'गाव / शहर' : 'Village / City'}
+                </label>
+                <input
+                  type="text"
+                  placeholder="सांगली शहर / माधवनगर"
+                  value={complaintFormData.village || complaintFormData.city || ''}
+                  onChange={(e) => setComplaintFormData({ ...complaintFormData, village: e.target.value, city: e.target.value })}
+                  className="takrari-form-input"
+                />
+              </div>
+
+              <div className="takrari-form-group">
+                <label className="takrari-form-label">
+                  🏘️ {isMr ? 'प्रभाग क्र. / वॉर्ड' : 'Ward / Prabhag'}
+                </label>
+                <input
+                  type="text"
+                  placeholder="प्रभाग क्र. १ / स्टेशन रोड"
+                  value={complaintFormData.ward || complaintFormData.prabhag || ''}
+                  onChange={(e) => setComplaintFormData({ ...complaintFormData, ward: e.target.value, prabhag: e.target.value })}
+                  className="takrari-form-input"
+                />
+              </div>
+            </div>
+
             {/* Row for Category & Priority */}
             <div className="takrari-form-row-2">
               {/* Field 3: Category */}
@@ -546,6 +620,23 @@ export default function ComplaintsTab({
                   ]}
                   placeholder={isMr ? "समस्येचा वर्ग निवडा" : "Select Category"}
                 />
+                {/* Custom Category Input if 'इतर तक्रारी' is selected */}
+                {(complaintFormData.category === 'इतर तक्रारी' || complaintFormData.category?.includes('इतर')) && (
+                  <div style={{ marginTop: '8px' }}>
+                    <label className="takrari-form-label" style={{ color: '#ea580c', fontSize: '12px' }}>
+                      ✍️ {isMr ? 'इतर समस्येचे स्वरूप / विषय स्पष्ट लिहा *' : 'Specify Other Problem Type *'}
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder={isMr ? "उदा. स्मशानभूमी रस्ता दुरुस्ती, क्रीडांगण मागणी, पथदिवे दुरुस्ती..." : "Specify custom complaint type..."}
+                      value={complaintFormData.custom_category || ''}
+                      onChange={(e) => setComplaintFormData({ ...complaintFormData, custom_category: e.target.value })}
+                      className="takrari-form-input"
+                      style={{ border: '1.5px solid #ea580c', background: '#fff7ed', marginTop: '4px' }}
+                    />
+                  </div>
+                )}
               </div>
 
               {/* Field 4: Urgency */}
@@ -681,6 +772,51 @@ export default function ComplaintsTab({
             </button>
           );
         })}
+      </div>
+
+      {/* Location Filter Bar (District, Taluka, Village, Ward) */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '8px', margin: '4px 0 10px' }}>
+        <select
+          value={filterDistrict}
+          onChange={(e) => setFilterDistrict(e.target.value)}
+          style={{ padding: '8px 10px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '12px', background: '#ffffff', fontWeight: '700', color: '#334155', outline: 'none' }}
+        >
+          <option value="All">{isMr ? '🏛️ सर्व जिल्हे' : 'All Districts'}</option>
+          <option value="सांगली">सांगली</option>
+          <option value="कोल्हापूर">कोल्हापूर</option>
+          <option value="सातारा">सातारा</option>
+        </select>
+
+        <select
+          value={filterTaluka}
+          onChange={(e) => setFilterTaluka(e.target.value)}
+          style={{ padding: '8px 10px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '12px', background: '#ffffff', fontWeight: '700', color: '#334155', outline: 'none' }}
+        >
+          <option value="All">{isMr ? '📍 सर्व तालुके' : 'All Talukas'}</option>
+          <option value="मिरज">मिरज</option>
+          <option value="तासगाव">तासगाव</option>
+          <option value="वाळवा">वाळवा / इस्लामपूर</option>
+          <option value="खानापूर">खानापूर</option>
+          <option value="कडेगाव">कडेगाव</option>
+          <option value="जत">जत</option>
+          <option value="शिरोळ">शिरोळ</option>
+        </select>
+
+        <input
+          type="text"
+          placeholder={isMr ? "🏡 गाव / शहर..." : "Village / City..."}
+          value={filterVillage === 'All' ? '' : filterVillage}
+          onChange={(e) => setFilterVillage(e.target.value || 'All')}
+          style={{ padding: '8px 10px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '12px', background: '#ffffff', outline: 'none' }}
+        />
+
+        <input
+          type="text"
+          placeholder={isMr ? "🏘️ प्रभाग / वॉर्ड..." : "Ward / Prabhag..."}
+          value={filterWard === 'All' ? '' : filterWard}
+          onChange={(e) => setFilterWard(e.target.value || 'All')}
+          style={{ padding: '8px 10px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '12px', background: '#ffffff', outline: 'none' }}
+        />
       </div>
 
       {/* Search Input Bar */}

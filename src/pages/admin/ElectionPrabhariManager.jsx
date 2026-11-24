@@ -1,14 +1,19 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import apiClient from '../../api/axios';
+import {
+  ELECTIONS_CATEGORIES,
+  ELECTIONS_MASTER_DATA,
+  getElectionDisplayName,
+} from '../../data/electionsMasterData';
 
-// Tab configuration starting from Booth hierarchy
+// Tab configuration starting from Booth hierarchy (Prefixed with निवडणूक प्रभारी)
 const HIERARCHY_TABS = [
-  { id: 'booth_karyakarta', label_mr: '१. बूथ कार्यकर्ता', label_en: '1. Booth Karyakarta', icon: '👤', color: '#2563eb' },
-  { id: 'booth_pramukh', label_mr: '२. बूथ प्रमुख', label_en: '2. Booth Pramukh', icon: '🎖️', color: '#16a34a' },
-  { id: 'booth_area_pramukh', label_mr: '३. बूथ एरिया प्रमुख', label_en: '3. Booth Area Pramukh', icon: '📍', color: '#d97706' },
-  { id: 'taluka_pramukh', label_mr: '४. तालुका प्रमुख', label_en: '4. Taluka Pramukh', icon: '🏛️', color: '#9333ea' },
-  { id: 'jilha_pramukh', label_mr: '५. जिल्हा प्रमुख', label_en: '5. Jilha Pramukh', icon: '👑', color: '#dc2626' },
-  { id: 'vibhag_pramukh', label_mr: '६. विभाग प्रमुख', label_en: '6. Vibhag Pramukh', icon: '⭐', color: '#0891b2' },
+  { id: 'booth_karyakarta', label_mr: '१. निवडणूक प्रभारी - बूथ कार्यकर्ता', label_en: '1. Election Prabhari - Booth Karyakarta', icon: '👤', color: '#2563eb' },
+  { id: 'booth_pramukh', label_mr: '२. निवडणूक प्रभारी - बूथ प्रमुख', label_en: '2. Election Prabhari - Booth Pramukh', icon: '🎖️', color: '#16a34a' },
+  { id: 'booth_area_pramukh', label_mr: '३. निवडणूक प्रभारी - बूथ एरिया प्रमुख', label_en: '3. Election Prabhari - Booth Area Pramukh', icon: '📍', color: '#d97706' },
+  { id: 'taluka_pramukh', label_mr: '४. निवडणूक प्रभारी - तालुका प्रमुख', label_en: '4. Election Prabhari - Taluka Pramukh', icon: '🏛️', color: '#9333ea' },
+  { id: 'jilha_pramukh', label_mr: '५. निवडणूक प्रभारी - जिल्हा प्रमुख', label_en: '5. Election Prabhari - Jilha Pramukh', icon: '👑', color: '#dc2626' },
+  { id: 'vibhag_pramukh', label_mr: '६. निवडणूक प्रभारी - विभाग प्रमुख', label_en: '6. Election Prabhari - Vibhag Pramukh', icon: '⭐', color: '#0891b2' },
   { id: 'add_more', label_mr: '➕ अजून जोडा (सर्व निवडणुका)', label_en: '+ Add More (All Elections)', icon: '🗳️', color: '#4f46e5' },
 ];
 
@@ -167,6 +172,41 @@ export default function ElectionPrabhariManager({ isMr = true, lang = 'mr' }) {
   const [selectedAppUser, setSelectedAppUser] = useState(null);
   const [userValidationError, setUserValidationError] = useState('');
   const userComboboxRef = useRef(null);
+
+  // Additional Prabharis State (Multi-add > 2)
+  const [additionalPrabharis, setAdditionalPrabharis] = useState([]);
+  const [selectedElectionFilter, setSelectedElectionFilter] = useState('ALL');
+
+  const handleAddAnotherPrabhari = () => {
+    setAdditionalPrabharis((prev) => [
+      ...prev,
+      {
+        id: Date.now() + Math.random(),
+        name: '',
+        phone: '',
+        whatsapp_number: '',
+        role_type: 'booth_karyakarta',
+        district: formData.district || 'सांगली',
+        taluka: formData.taluka || 'मिरज',
+        village: formData.village || 'माधवनगर',
+        city: formData.city || 'सांगली शहर',
+        prabhag: formData.prabhag || 'प्रभाग क्र. १',
+        booth_no: formData.booth_no || '१',
+        booth_name: formData.booth_name || '',
+        assigned_voters_target: 500,
+      },
+    ]);
+  };
+
+  const handleRemoveAdditionalPrabhari = (id) => {
+    setAdditionalPrabharis((prev) => prev.filter((p) => p.id !== id));
+  };
+
+  const handleUpdateAdditionalPrabhari = (id, field, value) => {
+    setAdditionalPrabharis((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, [field]: value } : p))
+    );
+  };
 
   // Form State
   const [formData, setFormData] = useState({
@@ -359,9 +399,26 @@ export default function ElectionPrabhariManager({ isMr = true, lang = 'mr' }) {
         showToast(isMr ? 'प्रभारी माहिती अद्ययावत केली!' : 'Prabhari updated successfully!');
       } else {
         await apiClient.post('/election-prabharis', formData);
-        showToast(isMr ? 'नवीन प्रभारी यशस्वीरीत्या नियुक्त केले!' : 'New Prabhari appointed!');
+        if (additionalPrabharis.length > 0) {
+          for (const extra of additionalPrabharis) {
+            if (extra.name && extra.phone) {
+              await apiClient.post('/election-prabharis', {
+                ...extra,
+                election_id: formData.election_id,
+                election_name: formData.election_name,
+                status: 'active',
+              });
+            }
+          }
+        }
+        showToast(
+          isMr
+            ? `एकूण ${1 + additionalPrabharis.length} नवीन प्रभारी यशस्वीरीत्या नियुक्त केले!`
+            : 'Prabharis appointed successfully!'
+        );
       }
       setShowAddModal(false);
+      setAdditionalPrabharis([]);
       setEditItem(null);
       setSelectedAppUser(null);
       setUserSearchText('');
@@ -440,9 +497,16 @@ export default function ElectionPrabhariManager({ isMr = true, lang = 'mr' }) {
     setShowAddModal(true);
   };
 
-  // Filtered List for Display based on single search bar
+  // Filtered List for Display based on single search bar and election filter
   const displayedPrabharis = useMemo(() => {
     let list = prabharis;
+    if (selectedElectionFilter && selectedElectionFilter !== 'ALL') {
+      list = list.filter(
+        (p) =>
+          p.election_name?.toLowerCase().includes(selectedElectionFilter.toLowerCase()) ||
+          p.election_type?.toLowerCase().includes(selectedElectionFilter.toLowerCase())
+      );
+    }
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       list = list.filter(
@@ -460,7 +524,7 @@ export default function ElectionPrabhariManager({ isMr = true, lang = 'mr' }) {
       );
     }
     return list;
-  }, [prabharis, searchQuery]);
+  }, [prabharis, searchQuery, selectedElectionFilter]);
 
   const activeTabConfig = HIERARCHY_TABS.find((t) => t.id === activeTab) || HIERARCHY_TABS[0];
 
@@ -722,7 +786,7 @@ export default function ElectionPrabhariManager({ isMr = true, lang = 'mr' }) {
         </div>
       </div>
 
-      {/* Clean Single Modern Search Bar (Replacing Screenshot 3 as requested) */}
+      {/* Clean Modern Search Bar & 75 Elections Filter */}
       <div
         style={{
           background: '#ffffff',
@@ -733,8 +797,41 @@ export default function ElectionPrabhariManager({ isMr = true, lang = 'mr' }) {
           display: 'flex',
           alignItems: 'center',
           gap: '12px',
+          flexWrap: 'wrap',
         }}
       >
+        {/* Election Selector Filter Dropdown (75 Elections Master) */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <span style={{ fontSize: '16px' }}>🗳️</span>
+          <select
+            value={selectedElectionFilter}
+            onChange={(e) => setSelectedElectionFilter(e.target.value)}
+            style={{
+              padding: '8px 12px',
+              borderRadius: '8px',
+              border: '1.5px solid #cbd5e1',
+              fontSize: '12.5px',
+              fontWeight: '700',
+              color: '#0f172a',
+              background: '#f8fafc',
+              maxWidth: '260px',
+              cursor: 'pointer',
+              outline: 'none',
+            }}
+          >
+            <option value="ALL">{isMr ? 'सर्व निवडणुका (All 75 Elections)' : 'All 75 Elections'}</option>
+            {ELECTIONS_MASTER_DATA.map((cat) => (
+              <optgroup key={cat.category_id} label={`${cat.category_id}. ${isMr ? cat.title_mr : cat.title_en}`}>
+                {cat.elections.map((el) => (
+                  <option key={el.id} value={isMr ? el.title_mr : el.title_en}>
+                    {el.id}. {isMr ? el.title_mr : el.title_en}
+                  </option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
+        </div>
+
         <span style={{ fontSize: '17px', color: '#64748b' }}>🔍</span>
         <input
           type="text"
@@ -1179,357 +1276,502 @@ export default function ElectionPrabhariManager({ isMr = true, lang = 'mr' }) {
             </div>
 
             <form onSubmit={handleSavePrabhari} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              {/* Row 1: Role Type & Election */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '700', marginBottom: '4px', color: '#334155' }}>
-                    {isMr ? 'प्रभारी पद स्तर (Hierarchy Role)' : 'Hierarchy Role'} *
-                  </label>
-                  <select
-                    value={formData.role_type}
-                    onChange={(e) => setFormData({ ...formData, role_type: e.target.value })}
-                    style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px' }}
-                    required
-                  >
-                    <option value="booth_karyakarta">१. बूथ कार्यकर्ता (Booth Karyakarta)</option>
-                    <option value="booth_pramukh">२. बूथ प्रमुख (Booth Pramukh)</option>
-                    <option value="booth_area_pramukh">३. बूथ एरिया प्रमुख (Booth Area Pramukh)</option>
-                    <option value="taluka_pramukh">४. तालुका प्रमुख (Taluka Pramukh)</option>
-                    <option value="jilha_pramukh">५. जिल्हा प्रमुख (Jilha Pramukh)</option>
-                    <option value="vibhag_pramukh">६. विभाग प्रमुख (Vibhag Pramukh)</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '700', marginBottom: '4px', color: '#334155' }}>
-                    {isMr ? 'निवडणूक (Election)' : 'Election'} *
-                  </label>
-                  <select
-                    value={formData.election_id}
-                    onChange={(e) => {
-                      const sel = elections.find((x) => x.id === Number(e.target.value));
-                      setFormData({ ...formData, election_id: e.target.value, election_name: sel?.name || formData.election_name });
-                    }}
-                    style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px' }}
-                    required
-                  >
-                    {elections.map((el) => (
-                      <option key={el.id} value={el.id}>{el.name}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              {/* Row 2: SEARCHABLE FULL NAME DROPDOWN (Combobox) + Phone with Autofill */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                {/* Full Name with Type-to-Search Dropdown */}
-                <div ref={userComboboxRef} style={{ position: 'relative' }}>
-                  <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '700', marginBottom: '4px', color: '#334155' }}>
-                    {isMr ? 'पूर्ण नाव (ॲप नोंदणीकृत युझर निवडा)' : 'Full Name (Select App User)'} *
-                  </label>
-
-                  <div style={{ position: 'relative' }}>
-                    <input
-                      type="text"
-                      required
-                      placeholder={isMr ? 'नाव टाईप करा किंवा निवडा...' : 'Type name or select from list...'}
-                      value={userSearchText}
-                      onChange={(e) => {
-                        setUserSearchText(e.target.value);
-                        setFormData({ ...formData, name: e.target.value });
-                        setIsUserDropdownOpen(true);
-                        setUserValidationError('');
-                      }}
-                      onFocus={() => setIsUserDropdownOpen(true)}
-                      style={{
-                        width: '100%',
-                        padding: '9px 30px 9px 12px',
-                        borderRadius: '8px',
-                        border: userValidationError ? '1.5px solid #ef4444' : selectedAppUser ? '1.5px solid #10b981' : '1.5px solid #cbd5e1',
-                        fontSize: '13px',
-                        boxSizing: 'border-box',
-                        background: '#ffffff',
-                      }}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
-                      style={{
-                        position: 'absolute',
-                        right: '8px',
-                        top: '50%',
-                        transform: 'translateY(-50%)',
-                        background: 'transparent',
-                        border: 'none',
-                        cursor: 'pointer',
-                        color: '#64748b',
-                        fontSize: '11px',
-                        padding: 0,
-                      }}
-                    >
-                      ▼
-                    </button>
-                  </div>
-
-                  {/* Registered Users Autocomplete Dropdown List */}
-                  {isUserDropdownOpen && (
-                    <div
-                      style={{
-                        position: 'absolute',
-                        top: '100%',
-                        left: 0,
-                        right: 0,
-                        maxHeight: '220px',
-                        overflowY: 'auto',
-                        background: '#ffffff',
-                        border: '1.5px solid #cbd5e1',
-                        borderRadius: '10px',
-                        boxShadow: '0 12px 28px rgba(0,0,0,0.18)',
-                        zIndex: 10001,
-                        marginTop: '4px',
-                      }}
-                    >
-                      <div style={{ padding: '6px 10px', fontSize: '11px', fontWeight: '800', color: '#64748b', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
-                        {isMr ? '📱 ॲपवर नोंदणीकृत सर्व कार्यकर्ते:' : 'Registered App Users:'} ({filteredUsersList.length})
-                      </div>
-
-                      {filteredUsersList.length === 0 ? (
-                        <div style={{ padding: '12px', fontSize: '12px', color: '#ef4444', textAlign: 'center', fontWeight: '700' }}>
-                          ⚠️ {isMr ? 'हा युझर ॲपवर सापडला नाही. केवळ ॲप युझर्सच नेमले जाऊ शकतात.' : 'User not found in registered app users.'}
-                        </div>
-                      ) : (
-                        filteredUsersList.map((u) => (
-                          <div
-                            key={u.id}
-                            onClick={() => handleSelectUser(u)}
-                            style={{
-                              padding: '9px 12px',
-                              borderBottom: '1px solid #f1f5f9',
-                              cursor: 'pointer',
-                              display: 'flex',
-                              justifyContent: 'space-between',
-                              alignItems: 'center',
-                              transition: 'background 0.15s ease',
-                            }}
-                            onMouseOver={(e) => (e.currentTarget.style.background = '#eff6ff')}
-                            onMouseOut={(e) => (e.currentTarget.style.background = '#ffffff')}
-                          >
-                            <div>
-                              <div style={{ fontWeight: '800', color: '#0f172a', fontSize: '13px' }}>
-                                {u.full_name}
-                              </div>
-                              <div style={{ fontSize: '11.5px', color: '#64748b' }}>
-                                📞 {u.phone} {u.ward ? `• ${u.ward}` : ''}
-                              </div>
-                            </div>
-                            <span style={{ fontSize: '10.5px', fontWeight: '800', background: '#dcfce7', color: '#166534', padding: '2px 7px', borderRadius: '10px' }}>
-                              ✓ App
-                            </span>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  )}
-
-                  {/* Validation Error Banner */}
-                  {userValidationError && (
-                    <div style={{ fontSize: '11.5px', color: '#ef4444', fontWeight: '700', marginTop: '4px' }}>
-                      {userValidationError}
-                    </div>
-                  )}
-
-                  {selectedAppUser && !userValidationError && (
-                    <div style={{ fontSize: '11px', color: '#15803d', fontWeight: '700', marginTop: '3px' }}>
-                      ✓ ॲप युझर पडताळणी यशस्वी ({selectedAppUser.phone})
-                    </div>
-                  )}
-                </div>
-
-                {/* Phone Number (Autofilled automatically from user selection) */}
-                <div>
-                  <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '700', marginBottom: '4px', color: '#334155' }}>
-                    {isMr ? 'मोबाईल नंबर (आपोआप भरला जाईल)' : 'Phone Number (Auto-filled)'} *
-                  </label>
-                  <input
-                    type="tel"
-                    required
-                    placeholder="9822000000"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value, whatsapp_number: formData.whatsapp_number || e.target.value })}
-                    style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box', background: selectedAppUser ? '#f0fdf4' : '#ffffff' }}
-                  />
-                </div>
-              </div>
-
-              {/* Row 3: District, Taluka, Village */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '700', marginBottom: '4px', color: '#334155' }}>
-                    {isMr ? '१. जिल्हा (District)' : '1. District'} *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.district}
-                    onChange={(e) => setFormData({ ...formData, district: e.target.value })}
-                    style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '700', marginBottom: '4px', color: '#334155' }}>
-                    {isMr ? '२. तालुका (Taluka)' : '2. Taluka'} *
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="मिरज / सांगली"
-                    value={formData.taluka}
-                    onChange={(e) => setFormData({ ...formData, taluka: e.target.value })}
-                    style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '700', marginBottom: '4px', color: '#334155' }}>
-                    {isMr ? '३. गाव (Village)' : '3. Village'}
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="माधवनगर / बुधगाव"
-                    value={formData.village}
-                    onChange={(e) => setFormData({ ...formData, village: e.target.value })}
-                    style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
-                  />
-                </div>
-              </div>
-
-              {/* Row 4: City, Prabhag / Area */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '700', marginBottom: '4px', color: '#334155' }}>
-                    {isMr ? '४. शहर (City)' : '4. City'}
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="सांगली शहर"
-                    value={formData.city}
-                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                    style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
-                  />
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '700', marginBottom: '4px', color: '#334155' }}>
-                    {isMr ? '५. परिसर / प्रभाग (Area / Ward)' : '5. Area / Prabhag'}
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="प्रभाग क्र. १ / स्टेशन रोड परिसर"
-                    value={formData.prabhag}
-                    onChange={(e) => setFormData({ ...formData, prabhag: e.target.value, area_name: e.target.value })}
-                    style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
-                  />
-                </div>
-              </div>
-
-              {/* Row 5: Official Booth Selection (Loaded from DB) */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '12px' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '700', marginBottom: '4px', color: '#334155' }}>
-                    {isMr ? '६. बूथ क्रमांक (Booth No.)' : '6. Booth No.'}
-                  </label>
-                  <select
-                    value={formData.booth_no}
-                    onChange={(e) => {
-                      const matched = boothsList.find((b) => b.booth_no?.includes(e.target.value));
-                      setFormData({
-                        ...formData,
-                        booth_no: e.target.value,
-                        booth_name: matched?.booth_name_mr || formData.booth_name,
-                      });
-                    }}
-                    style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px' }}
-                  >
-                    <option value="सर्व">{isMr ? 'सर्व बूथ (All Booths)' : 'All Booths'}</option>
-                    {boothsList.map((b) => {
-                      const num = b.booth_no?.replace(/[^\d]/g, '') || b.id;
-                      return (
-                        <option key={b.id} value={num}>
-                          बूथ क्र. {num} ({b.village_mr || b.taluka_mr})
-                        </option>
-                      );
-                    })}
-                  </select>
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '700', marginBottom: '4px', color: '#334155' }}>
-                    {isMr ? '७. मतदान केंद्र (Polling Station)' : '7. Polling Station'}
-                  </label>
-                  <input
-                    type="text"
-                    placeholder={isMr ? 'उदा. जिल्हा परिषद प्राथमिक शाळा' : 'e.g. ZP Primary School'}
-                    value={formData.booth_name}
-                    onChange={(e) => setFormData({ ...formData, booth_name: e.target.value })}
-                    style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
-                  />
-                </div>
-              </div>
-
-              {/* Row 5: Target Voters & Status */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '700', marginBottom: '4px', color: '#334155' }}>
-                    {isMr ? 'उद्दिष्टित मतदार गट (संख्या)' : 'Target Voter Group (Target)'}
-                  </label>
-                  <input
-                    type="number"
-                    value={formData.assigned_voters_target}
-                    onChange={(e) => setFormData({ ...formData, assigned_voters_target: Number(e.target.value) })}
-                    style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
-                  />
-                </div>
-
-                <div>
-                  <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '700', marginBottom: '4px', color: '#334155' }}>
-                    {isMr ? 'कार्य स्थिती' : 'Status'}
-                  </label>
-                  <select
-                    value={formData.status}
-                    onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                    style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px' }}
-                  >
-                    <option value="active">{isMr ? 'सक्रिय (Active)' : 'Active'}</option>
-                    <option value="training">{isMr ? 'प्रशिक्षणार्थी (Training)' : 'Training'}</option>
-                    <option value="inactive">{isMr ? 'रजेवर / निष्क्रिय (Inactive)' : 'Inactive'}</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Row 6: Responsibilities */}
+              {/* Field 1: Election Type Dropdown (75 Elections Master) */}
               <div>
                 <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '700', marginBottom: '4px', color: '#334155' }}>
-                  {isMr ? 'विशेष जबाबदारी व कार्यसूचना (Responsibilities)' : 'Responsibilities'}
+                  🗳️ {isMr ? 'निवडणूक निवडा (Election Type)' : 'Select Election'} *
                 </label>
-                <textarea
-                  rows="3"
-                  placeholder={isMr ? 'उदा. घरोघरी मतदार स्लिप वाटप, व्हीलचेअर व्यवस्था व संपर्क...' : 'Enter specific responsibilities...'}
-                  value={formData.responsibilities}
-                  onChange={(e) => setFormData({ ...formData, responsibilities: e.target.value })}
-                  style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
+                <select
+                  value={formData.election_name}
+                  onChange={(e) => {
+                    const selName = e.target.value;
+                    const found = elections.find((x) => x.name === selName);
+                    setFormData({
+                      ...formData,
+                      election_id: found ? found.id : formData.election_id,
+                      election_name: selName,
+                    });
+                  }}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', background: '#ffffff', boxSizing: 'border-box' }}
+                  required
+                >
+                  {ELECTIONS_MASTER_DATA.map((cat) => (
+                    <optgroup key={cat.category_id} label={`${cat.category_id}. ${isMr ? cat.title_mr : cat.title_en}`}>
+                      {cat.elections.map((el) => (
+                        <option key={el.id} value={isMr ? el.title_mr : el.title_en}>
+                          {el.id}. {isMr ? el.title_mr : el.title_en}
+                        </option>
+                      ))}
+                    </optgroup>
+                  ))}
+                </select>
+              </div>
+
+              {/* Field 2: Hierarchy Role (Prefixed with 'निवडणूक प्रभारी - ') */}
+              <div>
+                <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '700', marginBottom: '4px', color: '#334155' }}>
+                  🎖️ {isMr ? 'प्रभारी पद स्तर (Hierarchy Role)' : 'Hierarchy Role'} *
+                </label>
+                <select
+                  value={formData.role_type}
+                  onChange={(e) => setFormData({ ...formData, role_type: e.target.value })}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', background: '#ffffff', boxSizing: 'border-box' }}
+                  required
+                >
+                  <option value="booth_karyakarta">{isMr ? '१. निवडणूक प्रभारी - बूथ कार्यकर्ता' : '1. Election Prabhari - Booth Worker'}</option>
+                  <option value="booth_pramukh">{isMr ? '२. निवडणूक प्रभारी - बूथ प्रमुख' : '2. Election Prabhari - Booth Pramukh'}</option>
+                  <option value="booth_area_pramukh">{isMr ? '३. निवडणूक प्रभारी - बूथ एरिया प्रमुख' : '3. Election Prabhari - Booth Area Pramukh'}</option>
+                  <option value="taluka_pramukh">{isMr ? '४. निवडणूक प्रभारी - तालुका प्रमुख' : '4. Election Prabhari - Taluka Pramukh'}</option>
+                  <option value="jilha_pramukh">{isMr ? '५. निवडणूक प्रभारी - जिल्हा प्रमुख' : '5. Election Prabhari - District Pramukh'}</option>
+                  <option value="vibhag_pramukh">{isMr ? '६. निवडणूक प्रभारी - विभाग प्रमुख' : '6. Election Prabhari - Division Pramukh'}</option>
+                </select>
+              </div>
+
+              {/* Field 3: Registered App User Search Combobox */}
+              <div ref={userComboboxRef} style={{ position: 'relative' }}>
+                <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '700', marginBottom: '4px', color: '#334155' }}>
+                  👤 {isMr ? 'पूर्ण नाव (ॲप नोंदणीकृत युझर निवडा)' : 'Full Name (Select App User)'} *
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type="text"
+                    required
+                    placeholder={isMr ? 'नाव टाईप करा किंवा यादीतून निवडा...' : 'Type name or select from list...'}
+                    value={userSearchText}
+                    onChange={(e) => {
+                      setUserSearchText(e.target.value);
+                      setFormData({ ...formData, name: e.target.value });
+                      setIsUserDropdownOpen(true);
+                      setUserValidationError('');
+                    }}
+                    onFocus={() => setIsUserDropdownOpen(true)}
+                    style={{
+                      width: '100%',
+                      padding: '10px 30px 10px 12px',
+                      borderRadius: '8px',
+                      border: userValidationError ? '1.5px solid #ef4444' : selectedAppUser ? '1.5px solid #10b981' : '1.5px solid #cbd5e1',
+                      fontSize: '13px',
+                      boxSizing: 'border-box',
+                      background: '#ffffff',
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
+                    style={{
+                      position: 'absolute',
+                      right: '8px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      background: 'transparent',
+                      border: 'none',
+                      cursor: 'pointer',
+                      color: '#64748b',
+                      fontSize: '11px',
+                      padding: 0,
+                    }}
+                  >
+                    ▼
+                  </button>
+                </div>
+
+                {isUserDropdownOpen && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: '100%',
+                      left: 0,
+                      right: 0,
+                      maxHeight: '220px',
+                      overflowY: 'auto',
+                      background: '#ffffff',
+                      border: '1.5px solid #cbd5e1',
+                      borderRadius: '10px',
+                      boxShadow: '0 12px 28px rgba(0,0,0,0.18)',
+                      zIndex: 10001,
+                      marginTop: '4px',
+                    }}
+                  >
+                    <div style={{ padding: '6px 10px', fontSize: '11px', fontWeight: '800', color: '#64748b', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+                      {isMr ? '📱 ॲपवर नोंदणीकृत सर्व कार्यकर्ते:' : 'Registered App Users:'} ({filteredUsersList.length})
+                    </div>
+                    {filteredUsersList.length === 0 ? (
+                      <div style={{ padding: '12px', fontSize: '12px', color: '#ef4444', textAlign: 'center', fontWeight: '700' }}>
+                        ⚠️ {isMr ? 'हा युझर ॲपवर सापडला नाही. केवळ ॲप युझर्सच नेमले जाऊ शकतात.' : 'User not found in registered app users.'}
+                      </div>
+                    ) : (
+                      filteredUsersList.map((u) => (
+                        <div
+                          key={u.id}
+                          onClick={() => handleSelectUser(u)}
+                          style={{
+                            padding: '9px 12px',
+                            borderBottom: '1px solid #f1f5f9',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            transition: 'background 0.15s ease',
+                          }}
+                          onMouseOver={(e) => (e.currentTarget.style.background = '#eff6ff')}
+                          onMouseOut={(e) => (e.currentTarget.style.background = '#ffffff')}
+                        >
+                          <div>
+                            <div style={{ fontWeight: '800', color: '#0f172a', fontSize: '13px' }}>
+                              {u.full_name}
+                            </div>
+                            <div style={{ fontSize: '11.5px', color: '#64748b' }}>
+                              📞 {u.phone} {u.ward ? `• ${u.ward}` : ''}
+                            </div>
+                          </div>
+                          <span style={{ fontSize: '10.5px', fontWeight: '800', background: '#dcfce7', color: '#166534', padding: '2px 7px', borderRadius: '10px' }}>
+                            ✓ App
+                          </span>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
+
+                {userValidationError && (
+                  <div style={{ fontSize: '11.5px', color: '#ef4444', fontWeight: '700', marginTop: '4px' }}>
+                    {userValidationError}
+                  </div>
+                )}
+                {selectedAppUser && !userValidationError && (
+                  <div style={{ fontSize: '11px', color: '#15803d', fontWeight: '700', marginTop: '3px' }}>
+                    ✓ ॲप युझर पडताळणी यशस्वी ({selectedAppUser.phone})
+                  </div>
+                )}
+              </div>
+
+              {/* Field 4: Phone Number */}
+              <div>
+                <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '700', marginBottom: '4px', color: '#334155' }}>
+                  📞 {isMr ? 'मोबाईल नंबर (आपोआप भरला जाईल)' : 'Phone Number (Auto-filled)'} *
+                </label>
+                <input
+                  type="tel"
+                  required
+                  placeholder="9822000000"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value, whatsapp_number: formData.whatsapp_number || e.target.value })}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box', background: selectedAppUser ? '#f0fdf4' : '#ffffff' }}
                 />
               </div>
 
-              {/* Submit Buttons */}
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '10px', paddingTop: '12px', borderTop: '1px solid #e2e8f0' }}>
+              {/* Field 5: WhatsApp Number */}
+              <div>
+                <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '700', marginBottom: '4px', color: '#334155' }}>
+                  💬 {isMr ? 'व्हॉट्सॲप नंबर' : 'WhatsApp Number'}
+                </label>
+                <input
+                  type="tel"
+                  placeholder="9822000000"
+                  value={formData.whatsapp_number}
+                  onChange={(e) => setFormData({ ...formData, whatsapp_number: e.target.value })}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              {/* Field 6: District */}
+              <div>
+                <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '700', marginBottom: '4px', color: '#334155' }}>
+                  🏛️ {isMr ? '१. जिल्हा (District)' : '1. District'} *
+                </label>
+                <input
+                  type="text"
+                  value={formData.district}
+                  onChange={(e) => setFormData({ ...formData, district: e.target.value })}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
+                  required
+                />
+              </div>
+
+              {/* Field 7: Taluka */}
+              <div>
+                <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '700', marginBottom: '4px', color: '#334155' }}>
+                  📍 {isMr ? '२. तालुका (Taluka)' : '2. Taluka'} *
+                </label>
+                <input
+                  type="text"
+                  placeholder="मिरज / तासगाव / वाळवा"
+                  value={formData.taluka}
+                  onChange={(e) => setFormData({ ...formData, taluka: e.target.value })}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
+                  required
+                />
+              </div>
+
+              {/* Field 8: Village */}
+              <div>
+                <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '700', marginBottom: '4px', color: '#334155' }}>
+                  🏡 {isMr ? '३. गाव (Village)' : '3. Village'}
+                </label>
+                <input
+                  type="text"
+                  placeholder="माधवनगर / बुधगाव"
+                  value={formData.village}
+                  onChange={(e) => setFormData({ ...formData, village: e.target.value })}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              {/* Field 9: City */}
+              <div>
+                <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '700', marginBottom: '4px', color: '#334155' }}>
+                  🏙️ {isMr ? '४. शहर (City)' : '4. City'}
+                </label>
+                <input
+                  type="text"
+                  placeholder="सांगली शहर / मिरज शहर"
+                  value={formData.city}
+                  onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              {/* Field 10: Prabhag / Ward */}
+              <div>
+                <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '700', marginBottom: '4px', color: '#334155' }}>
+                  🏘️ {isMr ? '५. परिसर / प्रभाग (Area / Ward)' : '5. Area / Prabhag'}
+                </label>
+                <input
+                  type="text"
+                  placeholder="प्रभाग क्र. १ / स्टेशन रोड परिसर"
+                  value={formData.prabhag}
+                  onChange={(e) => setFormData({ ...formData, prabhag: e.target.value, area_name: e.target.value })}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              {/* Field 11: Booth Number */}
+              <div>
+                <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '700', marginBottom: '4px', color: '#334155' }}>
+                  🗳️ {isMr ? '६. बूथ क्रमांक (Booth No.)' : '6. Booth No.'}
+                </label>
+                <select
+                  value={formData.booth_no}
+                  onChange={(e) => {
+                    const matched = boothsList.find((b) => b.booth_no?.includes(e.target.value));
+                    setFormData({
+                      ...formData,
+                      booth_no: e.target.value,
+                      booth_name: matched?.booth_name_mr || formData.booth_name,
+                    });
+                  }}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', background: '#ffffff', boxSizing: 'border-box' }}
+                >
+                  <option value="सर्व">{isMr ? 'सर्व बूथ (All Booths)' : 'All Booths'}</option>
+                  {boothsList.map((b) => {
+                    const num = b.booth_no?.replace(/[^\d]/g, '') || b.id;
+                    return (
+                      <option key={b.id} value={num}>
+                        बूथ क्र. {num} ({b.village_mr || b.taluka_mr})
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+
+              {/* Field 12: Polling Station */}
+              <div>
+                <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '700', marginBottom: '4px', color: '#334155' }}>
+                  🏫 {isMr ? '७. मतदान केंद्र (Polling Station)' : '7. Polling Station'}
+                </label>
+                <input
+                  type="text"
+                  placeholder={isMr ? 'उदा. जिल्हा परिषद प्राथमिक शाळा, खोली क्र. १' : 'e.g. ZP Primary School'}
+                  value={formData.booth_name}
+                  onChange={(e) => setFormData({ ...formData, booth_name: e.target.value })}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              {/* Field 13: Target Voter Count */}
+              <div>
+                <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '700', marginBottom: '4px', color: '#334155' }}>
+                  🎯 {isMr ? 'उद्दिष्टित मतदार गट (संख्या)' : 'Target Voter Group (Target)'}
+                </label>
+                <input
+                  type="number"
+                  value={formData.assigned_voters_target}
+                  onChange={(e) => setFormData({ ...formData, assigned_voters_target: Number(e.target.value) })}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              {/* Field 14: Status */}
+              <div>
+                <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '700', marginBottom: '4px', color: '#334155' }}>
+                  ⚡ {isMr ? 'कार्य स्थिती' : 'Status'}
+                </label>
+                <select
+                  value={formData.status}
+                  onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', background: '#ffffff', boxSizing: 'border-box' }}
+                >
+                  <option value="active">{isMr ? 'सक्रिय (Active)' : 'Active'}</option>
+                  <option value="training">{isMr ? 'प्रशिक्षणार्थी (Training)' : 'Training'}</option>
+                  <option value="inactive">{isMr ? 'रजेवर / निष्क्रिय (Inactive)' : 'Inactive'}</option>
+                </select>
+              </div>
+
+              {/* Field 15: Responsibilities */}
+              <div>
+                <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '700', marginBottom: '4px', color: '#334155' }}>
+                  📝 {isMr ? 'विशेष जबाबदारी व कार्यसूचना (Responsibilities)' : 'Responsibilities'}
+                </label>
+                <textarea
+                  rows="3"
+                  placeholder={isMr ? 'उदा. घरोघरी मतदार स्लिप वाटप, मतदार संपर्क व मेळावे...' : 'Enter specific responsibilities...'}
+                  value={formData.responsibilities}
+                  onChange={(e) => setFormData({ ...formData, responsibilities: e.target.value })}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              {/* Multi-Prabhari Dynamic Section (Add > 2 Prabharis at once) */}
+              {!editItem && (
+                <div style={{ marginTop: '14px', borderTop: '2px dashed #cbd5e1', paddingTop: '16px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
+                    <div>
+                      <h4 style={{ margin: 0, fontSize: '14.5px', fontWeight: '800', color: '#1e293b' }}>
+                        👥 {isMr ? 'एकाच वेळी आणखी प्रभारी जोडा (> 2)' : 'Add Multiple Prabharis (> 2)'}
+                      </h4>
+                      <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#64748b' }}>
+                        {isMr ? 'एकाच फॉर्ममधून अनेक कार्यकर्त्यांची नियुक्ती करा' : 'Appoint multiple prabharis simultaneously in one go'}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleAddAnotherPrabhari}
+                      style={{
+                        background: '#eff6ff',
+                        border: '1.5px solid #3b82f6',
+                        color: '#1d4ed8',
+                        padding: '7px 14px',
+                        borderRadius: '8px',
+                        fontSize: '12.5px',
+                        fontWeight: '800',
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                      }}
+                    >
+                      ➕ {isMr ? 'आणखी प्रभारी जोडा' : 'Add Another Prabhari'}
+                    </button>
+                  </div>
+
+                  {additionalPrabharis.map((extra, index) => (
+                    <div
+                      key={extra.id}
+                      style={{
+                        background: '#f8fafc',
+                        border: '1.5px solid #cbd5e1',
+                        borderRadius: '12px',
+                        padding: '14px',
+                        marginBottom: '12px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '10px',
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontWeight: '800', fontSize: '13px', color: '#1e40af' }}>
+                          #{index + 2} {isMr ? 'अतिरिक्त प्रभारी' : 'Additional Prabhari'}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveAdditionalPrabhari(extra.id)}
+                          style={{
+                            background: '#fee2e2',
+                            color: '#dc2626',
+                            border: '1px solid #fecaca',
+                            padding: '3px 8px',
+                            borderRadius: '6px',
+                            fontSize: '11.5px',
+                            fontWeight: '700',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          ✕ {isMr ? 'काढून टाका' : 'Remove'}
+                        </button>
+                      </div>
+
+                      <div>
+                        <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', marginBottom: '3px', color: '#334155' }}>
+                          {isMr ? 'पूर्ण नाव' : 'Full Name'} *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          placeholder={isMr ? 'नाव प्रविष्ट करा...' : 'Enter full name...'}
+                          value={extra.name}
+                          onChange={(e) => handleUpdateAdditionalPrabhari(extra.id, 'name', e.target.value)}
+                          style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
+                        />
+                      </div>
+
+                      <div>
+                        <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', marginBottom: '3px', color: '#334155' }}>
+                          {isMr ? 'मोबाईल नंबर' : 'Phone Number'} *
+                        </label>
+                        <input
+                          type="tel"
+                          required
+                          placeholder="98XXXXXXXX"
+                          value={extra.phone}
+                          onChange={(e) => handleUpdateAdditionalPrabhari(extra.id, 'phone', e.target.value)}
+                          style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
+                        />
+                      </div>
+
+                      <div>
+                        <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', marginBottom: '3px', color: '#334155' }}>
+                          {isMr ? 'प्रभारी पद स्तर' : 'Hierarchy Role'}
+                        </label>
+                        <select
+                          value={extra.role_type}
+                          onChange={(e) => handleUpdateAdditionalPrabhari(extra.id, 'role_type', e.target.value)}
+                          style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', background: '#ffffff', boxSizing: 'border-box' }}
+                        >
+                          <option value="booth_karyakarta">{isMr ? '१. निवडणूक प्रभारी - बूथ कार्यकर्ता' : '1. Election Prabhari - Booth Worker'}</option>
+                          <option value="booth_pramukh">{isMr ? '२. निवडणूक प्रभारी - बूथ प्रमुख' : '2. Election Prabhari - Booth Pramukh'}</option>
+                          <option value="booth_area_pramukh">{isMr ? '३. निवडणूक प्रभारी - बूथ एरिया प्रमुख' : '3. Election Prabhari - Booth Area Pramukh'}</option>
+                          <option value="taluka_pramukh">{isMr ? '४. निवडणूक प्रभारी - तालुका प्रमुख' : '4. Election Prabhari - Taluka Pramukh'}</option>
+                          <option value="jilha_pramukh">{isMr ? '५. निवडणूक प्रभारी - जिल्हा प्रमुख' : '5. Election Prabhari - District Pramukh'}</option>
+                          <option value="vibhag_pramukh">{isMr ? '६. निवडणूक प्रभारी - विभाग प्रमुख' : '6. Election Prabhari - Division Pramukh'}</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', marginBottom: '3px', color: '#334155' }}>
+                          {isMr ? 'बूथ क्रमांक / कार्यक्षेत्र' : 'Booth No. / Area'}
+                        </label>
+                        <input
+                          type="text"
+                          placeholder={isMr ? 'उदा. बूथ क्र. २ / प्रभाग २' : 'e.g. Booth 2'}
+                          value={extra.booth_no}
+                          onChange={(e) => handleUpdateAdditionalPrabhari(extra.id, 'booth_no', e.target.value)}
+                          style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Submit / Cancel Buttons */}
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '10px', paddingTop: '14px', borderTop: '1px solid #e2e8f0' }}>
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
                   style={{
                     background: '#f1f5f9',
                     border: '1px solid #cbd5e1',
-                    padding: '9px 16px',
+                    padding: '10px 18px',
                     borderRadius: '8px',
                     fontSize: '13px',
                     fontWeight: '700',
@@ -1544,7 +1786,7 @@ export default function ElectionPrabhariManager({ isMr = true, lang = 'mr' }) {
                   style={{
                     background: '#2563eb',
                     border: 'none',
-                    padding: '9px 20px',
+                    padding: '10px 22px',
                     borderRadius: '8px',
                     fontSize: '13px',
                     fontWeight: '800',

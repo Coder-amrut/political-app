@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import apiClient from '../../api/axios';
+import { ELECTIONS_MASTER_DATA } from '../../data/electionsMasterData';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -154,6 +155,7 @@ export default function DocumentMediaManager({ lang = 'mr' }) {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [categoryFilter, setCategoryFilter] = useState('all');
+  const [selectedElectionFilter, setSelectedElectionFilter] = useState('ALL');
   const [search, setSearch] = useState('');
 
   // Modals & PDF Viewer state
@@ -197,7 +199,10 @@ export default function DocumentMediaManager({ lang = 'mr' }) {
       } else {
         // Fallback filter
         let filtered = sampleFallbackDocs;
-        if (categoryFilter !== 'all') {
+        if (selectedElectionFilter !== 'ALL') {
+        filtered = filtered.filter((d) => (d.election_name && d.election_name.toLowerCase().includes(selectedElectionFilter.toLowerCase())) || (d.tags && d.tags.toLowerCase().includes(selectedElectionFilter.toLowerCase())));
+      }
+      if (categoryFilter !== 'all') {
           filtered = filtered.filter((d) => d.category === categoryFilter);
         }
         if (search.trim()) {
@@ -221,6 +226,9 @@ export default function DocumentMediaManager({ lang = 'mr' }) {
     } catch (err) {
       console.error('Failed to load documents:', err);
       let filtered = sampleFallbackDocs;
+      if (selectedElectionFilter !== 'ALL') {
+        filtered = filtered.filter((d) => (d.election_name && d.election_name.toLowerCase().includes(selectedElectionFilter.toLowerCase())) || (d.tags && d.tags.toLowerCase().includes(selectedElectionFilter.toLowerCase())));
+      }
       if (categoryFilter !== 'all') {
         filtered = filtered.filter((d) => d.category === categoryFilter);
       }
@@ -879,56 +887,82 @@ export default function DocumentMediaManager({ lang = 'mr' }) {
         </div>
       )}
 
-      {/* KPI Summary Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '14px' }}>
-        <div className="doc-kpi-card-3d" style={{ background: '#ffffff', padding: '16px 20px', borderRadius: '12px', border: '1px solid #e2e8f0', borderTop: '3.5px solid #1e60d5', boxShadow: '0 2px 6px rgba(0,0,0,0.04)' }}>
-          <div style={{ fontSize: '12px', color: '#1e60d5', fontWeight: '750' }}>{isMr ? 'एकूण अधिकृत दस्तऐवज' : 'Total Official Documents'}</div>
-          <div style={{ fontSize: '24px', fontWeight: '800', color: '#0f172a', marginTop: '4px' }}>{stats?.total ?? documents.length}</div>
-          <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>{isMr ? 'सुरक्षित सेंट्रल डेटाबेस' : 'Secured Central Archive'}</div>
-        </div>
-
-        <div className="doc-kpi-card-3d" style={{ background: '#ffffff', padding: '16px 20px', borderRadius: '12px', border: '1px solid #e2e8f0', borderTop: '3.5px solid #f59e0b', boxShadow: '0 2px 6px rgba(0,0,0,0.04)' }}>
-          <div style={{ fontSize: '12px', color: '#b45309', fontWeight: '750' }}>{isMr ? 'शासकीय अर्ज व निवेदने' : 'Official Applications'}</div>
-          <div style={{ fontSize: '24px', fontWeight: '800', color: '#b45309', marginTop: '4px' }}>{stats?.applications ?? documents.filter((d) => d.category === 'application_form').length}</div>
-          <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>{isMr ? 'योजना व नागरिक मागण्या' : 'Schemes & Petitions'}</div>
-        </div>
-
-        <div className="doc-kpi-card-3d" style={{ background: '#ffffff', padding: '16px 20px', borderRadius: '12px', border: '1px solid #e2e8f0', borderTop: '3.5px solid #2563eb', boxShadow: '0 2px 6px rgba(0,0,0,0.04)' }}>
-          <div style={{ fontSize: '12px', color: '#1d4ed8', fontWeight: '750' }}>{isMr ? 'मतदार ओळख व पुरावे' : 'Voter ID & Proofs'}</div>
-          <div style={{ fontSize: '24px', fontWeight: '800', color: '#1d4ed8', marginTop: '4px' }}>{stats?.id_proofs ?? documents.filter((d) => d.category === 'voter_id_proof').length}</div>
-          <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>{isMr ? 'फॉर्म ६, ८ व आधार पुरावे' : 'Forms 6, 8 & Aadhaar'}</div>
-        </div>
-
-        <div className="doc-kpi-card-3d" style={{ background: '#ffffff', padding: '16px 20px', borderRadius: '12px', border: '1px solid #e2e8f0', borderTop: '3.5px solid #10b981', boxShadow: '0 2px 6px rgba(0,0,0,0.04)' }}>
-          <div style={{ fontSize: '12px', color: '#059669', fontWeight: '750' }}>{isMr ? 'अहवाल व परिपत्रके' : 'Reports & Circulars'}</div>
-          <div style={{ fontSize: '24px', fontWeight: '800', color: '#059669', marginTop: '4px' }}>{stats?.reports ?? documents.filter((d) => ['survey_report', 'party_circular', 'legal_affidavit'].includes(d.category)).length}</div>
-          <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>{isMr ? 'सर्वेक्षण व पक्षादेश' : 'Survey & Orders'}</div>
-        </div>
-      </div>
-
-      {/* 3D Category Filter Tabs & Add Document Action */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-          {categoryTabs.map((tab) => (
-            <button
-              key={tab.key}
-              type="button"
-              onClick={() => setCategoryFilter(tab.key)}
-              className={categoryFilter === tab.key ? 'doc-tab-3d-active' : 'doc-tab-3d-inactive'}
+      {/* Clean Unified Document & Election Filter Bar */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '12px',
+          background: '#ffffff',
+          padding: '12px 16px',
+          borderRadius: '12px',
+          border: '1.5px solid #e2e8f0',
+          boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+          {/* Dedicated Category Filter Selector (Containing all 6 Categories) */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ fontSize: '14px', fontWeight: '800', color: '#475569' }}>📑 {isMr ? 'प्रवर्ग:' : 'Category:'}</span>
+            <select
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
               style={{
-                padding: '8px 16px',
-                fontSize: '12.5px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
+                padding: '8px 12px',
+                borderRadius: '8px',
+                border: '1.5px solid #cbd5e1',
+                fontSize: '13px',
+                fontWeight: '750',
+                color: '#0f172a',
+                background: '#f8fafc',
+                cursor: 'pointer',
+                outline: 'none',
               }}
             >
-              <span>{tab.icon}</span>
-              <span>{isMr ? tab.label_mr : tab.label_en}</span>
-            </button>
-          ))}
+              {categoryTabs.map((tab) => (
+                <option key={tab.key} value={tab.key}>
+                  {tab.icon} {isMr ? tab.label_mr : tab.label_en}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Dedicated Election Type Filter Selector (All 75 Elections) */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ fontSize: '14px', fontWeight: '800', color: '#475569' }}>🗳️ {isMr ? 'निवडणूक:' : 'Election:'}</span>
+            <select
+              value={selectedElectionFilter}
+              onChange={(e) => setSelectedElectionFilter(e.target.value)}
+              style={{
+                padding: '8px 12px',
+                borderRadius: '8px',
+                border: '1.5px solid #cbd5e1',
+                fontSize: '13px',
+                fontWeight: '750',
+                color: '#0f172a',
+                background: '#f8fafc',
+                maxWidth: '280px',
+                cursor: 'pointer',
+                outline: 'none',
+              }}
+            >
+              <option value="ALL">{isMr ? 'सर्व निवडणुका (All 75 Elections)' : 'All 75 Elections'}</option>
+              {ELECTIONS_MASTER_DATA.map((cat) => (
+                <optgroup key={cat.category_id} label={`${cat.category_id}. ${isMr ? cat.title_mr : cat.title_en}`}>
+                  {cat.elections.map((el) => (
+                    <option key={el.id} value={isMr ? el.title_mr : el.title_en}>
+                      {el.id}. {isMr ? el.title_mr : el.title_en}
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
+          </div>
         </div>
 
+        {/* Add New Document Action Button */}
         <button
           type="button"
           onClick={() => {
@@ -937,7 +971,7 @@ export default function DocumentMediaManager({ lang = 'mr' }) {
           }}
           className="doc-btn-3d-primary"
           style={{
-            padding: '9px 20px',
+            padding: '9px 18px',
             fontSize: '13px',
             display: 'flex',
             alignItems: 'center',
@@ -1822,6 +1856,38 @@ export default function DocumentMediaManager({ lang = 'mr' }) {
             </div>
 
             <form onSubmit={handleCreateDocument} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              {/* Election Tag Selector (All 75 Elections) */}
+              <div>
+                <label style={{ fontSize: '12.5px', fontWeight: '750', color: '#334155' }}>
+                  🗳️ {isMr ? 'निवडणूक टॅग करा (Election Type)' : 'Tag Election Type'}
+                </label>
+                <select
+                  value={newDoc.election_name || ''}
+                  onChange={(e) => setNewDoc({ ...newDoc, election_name: e.target.value, tags: `${newDoc.tags ? newDoc.tags + ', ' : ''}${e.target.value}` })}
+                  style={{
+                    width: '100%',
+                    padding: '9px 12px',
+                    borderRadius: '8px',
+                    border: '1px solid #cbd5e1',
+                    marginTop: '4px',
+                    boxSizing: 'border-box',
+                    fontSize: '13px',
+                    background: '#ffffff',
+                  }}
+                >
+                  <option value="">{isMr ? 'कोणतीही निवडणूक निवडा (ऐच्छिक)' : 'Select Election (Optional)'}</option>
+                  {ELECTIONS_MASTER_DATA.map((cat) => (
+                    <optgroup key={cat.category_id} label={`${cat.category_id}. ${isMr ? cat.title_mr : cat.title_en}`}>
+                      {cat.elections.map((el) => (
+                        <option key={el.id} value={isMr ? el.title_mr : el.title_en}>
+                          {el.id}. {isMr ? el.title_mr : el.title_en}
+                        </option>
+                      ))}
+                    </optgroup>
+                  ))}
+                </select>
+              </div>
+
               {/* Document Title */}
               <div>
                 <label style={{ fontSize: '12.5px', fontWeight: '750', color: '#334155' }}>

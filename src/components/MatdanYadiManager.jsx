@@ -1,6 +1,11 @@
 import apiClient from '../api/axios';
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
+  ELECTIONS_CATEGORIES,
+  ELECTIONS_MASTER_DATA,
+  getElectionDisplayName
+} from '../data/electionsMasterData';
+import {
   Users,
   Upload,
   Search,
@@ -651,6 +656,7 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
 
   // -------------------------------------------------------------
   // Filter States (7-Level Hierarchy): 1. District -> 2. Taluka -> 3. Village -> 4. City -> 5. Prabhag -> 6. Booth No -> 7. Polling Station
+  const [selectedElectionFilter, setSelectedElectionFilter] = useState('all'); // Filter voters by any of 75 elections
   const [selectedDistrict, setSelectedDistrict] = useState(''); // Initially unselected for clean simple UI
   const [selectedTaluka, setSelectedTaluka] = useState('');
   const [selectedVillage, setSelectedVillage] = useState('');
@@ -1958,6 +1964,51 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
                   🔄 {isMr ? 'सर्व रीसेट' : 'Reset All'}
                 </button>
               </div>
+            </div>
+
+            {/* ०. निवडणूक प्रकार निवडा (All 75 Elections Master Selector) */}
+            <div style={{ marginBottom: '14px', background: '#f8fafc', padding: '12px 14px', borderRadius: '12px', border: '1.5px solid #cbd5e1' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <label style={{ fontSize: '12.5px', fontWeight: '850', color: '#1e3a8a', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span>🗳️</span>
+                  <span>{isMr ? 'निवडणूक प्रकारानुसार मतदार यादी फिल्टर (सर्व ७५ अधिकृत निवडणुका):' : 'Filter Voters by Election Type (All 75 Elections):'}</span>
+                </label>
+                {selectedElectionFilter !== 'all' && (
+                  <button
+                    type="button"
+                    onClick={() => setSelectedElectionFilter('all')}
+                    style={{ fontSize: '11px', background: '#fee2e2', color: '#dc2626', border: 'none', borderRadius: '6px', padding: '2px 8px', fontWeight: '750', cursor: 'pointer' }}
+                  >
+                    ✕ {isMr ? 'फिल्टर काढा' : 'Clear Filter'}
+                  </button>
+                )}
+              </div>
+              <select
+                value={selectedElectionFilter}
+                onChange={(e) => setSelectedElectionFilter(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '10px 14px',
+                  borderRadius: '8px',
+                  border: selectedElectionFilter !== 'all' ? '2px solid #2563eb' : '1.5px solid #cbd5e1',
+                  fontSize: '13px',
+                  fontWeight: '750',
+                  background: selectedElectionFilter !== 'all' ? '#eff6ff' : '#ffffff',
+                  color: selectedElectionFilter !== 'all' ? '#1d4ed8' : '#1e293b',
+                  outline: 'none'
+                }}
+              >
+                <option value="all">🗳️ {isMr ? 'सर्व निवडणुका (All Elections - ७५ प्रकार)' : 'All Elections (75 Types)'}</option>
+                {ELECTIONS_CATEGORIES.map((cat) => (
+                  <optgroup key={cat.id} label={`${cat.icon} ${isMr ? cat.name_mr : cat.name_en}`}>
+                    {ELECTIONS_MASTER_DATA.filter((e) => e.cat_id === cat.id).map((el) => (
+                      <option key={el.id} value={String(el.id)}>
+                        {el.id}. {isMr ? el.name_mr : el.name_en} {el.sub_mr ? `(${el.sub_mr})` : ''}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
+              </select>
             </div>
 
             {/* 7-Level Geographic Hierarchy Filters in Requested Sequence */}

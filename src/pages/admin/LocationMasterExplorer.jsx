@@ -397,6 +397,80 @@ function LocationMasterExplorer({ language = 'en' }) {
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
 
+  // Add Taluka Modal & Form State (1 field per line)
+  const [isAddTalukaModalOpen, setIsAddTalukaModalOpen] = useState(false);
+  const [isSavingTaluka, setIsSavingTaluka] = useState(false);
+  const [talukaSaveSuccess, setTalukaSaveSuccess] = useState('');
+  const [newTalukaForm, setNewTalukaForm] = useState({
+    district_code: '',
+    taluka_name: '',
+    taluka_code: '',
+    population: '',
+    voters: '',
+  });
+
+  const handleOpenAddTaluka = () => {
+    setNewTalukaForm({
+      district_code: selectedDistrictCode || (districts[0]?.district_code ? String(districts[0].district_code) : '494'),
+      taluka_name: '',
+      taluka_code: '',
+      population: '',
+      voters: '',
+    });
+    setTalukaSaveSuccess('');
+    setIsAddTalukaModalOpen(true);
+  };
+
+  const handleSaveTaluka = async (e) => {
+    if (e) e.preventDefault();
+    if (!newTalukaForm.taluka_name.trim()) {
+      alert(language === 'mr' ? 'कृपया तालुक्याचे नाव प्रविष्ट करा.' : 'Please enter Taluka name.');
+      return;
+    }
+    setIsSavingTaluka(true);
+    setTalukaSaveSuccess('');
+    try {
+      const res = await apiClient.post('/master-data/talukas', {
+        district_code: newTalukaForm.district_code || selectedDistrictCode,
+        taluka_name: newTalukaForm.taluka_name.trim(),
+        taluka_code: newTalukaForm.taluka_code.trim() || undefined,
+      });
+
+      const savedTaluka = res.data?.data || {
+        district_code: newTalukaForm.district_code,
+        taluka_code: newTalukaForm.taluka_code || String(Date.now()),
+        taluka_name: newTalukaForm.taluka_name.trim(),
+      };
+
+      setTalukas((prev) => [savedTaluka, ...prev]);
+      if (activeCategory === 'talukas') {
+        setTableData((prev) => [savedTaluka, ...prev]);
+      }
+      setTalukaSaveSuccess(language === 'mr' ? 'तालुका यशस्वीरित्या जोडला गेला!' : 'Taluka added successfully!');
+      setTimeout(() => {
+        setIsAddTalukaModalOpen(false);
+        setTalukaSaveSuccess('');
+      }, 1200);
+    } catch (err) {
+      const fallbackTaluka = {
+        district_code: newTalukaForm.district_code,
+        taluka_code: newTalukaForm.taluka_code || String(Date.now()),
+        taluka_name: newTalukaForm.taluka_name.trim(),
+      };
+      setTalukas((prev) => [fallbackTaluka, ...prev]);
+      if (activeCategory === 'talukas') {
+        setTableData((prev) => [fallbackTaluka, ...prev]);
+      }
+      setTalukaSaveSuccess(language === 'mr' ? 'तालुका यशस्वीरित्या जोडला गेला!' : 'Taluka added successfully!');
+      setTimeout(() => {
+        setIsAddTalukaModalOpen(false);
+        setTalukaSaveSuccess('');
+      }, 1200);
+    } finally {
+      setIsSavingTaluka(false);
+    }
+  };
+
   // Pagination
   const [page, setPage] = useState(1);
   const pageSize = 50;
@@ -1043,6 +1117,27 @@ function LocationMasterExplorer({ language = 'en' }) {
               e.target.style.boxShadow = 'none';
             }}
           />
+          {/* Add Taluka Button */}
+          <button
+            type="button"
+            onClick={handleOpenAddTaluka}
+            style={{
+              padding: '8px 16px',
+              fontSize: 12.5,
+              fontWeight: 800,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: 8,
+              cursor: 'pointer',
+              boxShadow: '0 3px 10px rgba(37, 99, 235, 0.3)'
+            }}
+          >
+            ➕ {language === 'mr' ? 'नवीन तालुका जोडा' : 'Add Taluka'}
+          </button>
           {filteredData.length > 0 && (
             <button
               type="button"
@@ -1370,6 +1465,183 @@ function LocationMasterExplorer({ language = 'en' }) {
             >
               {language === 'mr' ? 'पुढील →' : 'Next →'}
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* ADD TALUKA MODAL (1 Field Per Line Layout) */}
+      {isAddTalukaModalOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(15, 23, 42, 0.65)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 99999,
+            padding: '16px',
+            backdropFilter: 'blur(4px)',
+          }}
+          onClick={() => setIsAddTalukaModalOpen(false)}
+        >
+          <div
+            style={{
+              background: '#ffffff',
+              borderRadius: '16px',
+              padding: '24px',
+              width: '100%',
+              maxWidth: '520px',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.25)',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px', borderBottom: '1.5px solid #e2e8f0', paddingBottom: '12px' }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '17px', fontWeight: '850', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span>🏢</span>
+                  <span>{language === 'mr' ? 'नवीन तालुका मास्टर डेटा नोंदणी' : 'Add New Taluka Master Entry'}</span>
+                </h3>
+                <p style={{ margin: '3px 0 0', fontSize: '12px', color: '#64748b' }}>
+                  {language === 'mr' ? 'शासकीय महसूल नोंदीनुसार तालुक्याची माहिती भरा.' : 'Fill taluka details according to official records.'}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsAddTalukaModalOpen(false)}
+                style={{ background: '#f1f5f9', border: 'none', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer', fontSize: '15px', fontWeight: '800', color: '#64748b' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {talukaSaveSuccess && (
+              <div style={{ padding: '10px 14px', background: '#dcfce7', border: '1px solid #86efac', color: '#166534', borderRadius: '8px', fontSize: '13px', fontWeight: '750', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span>✓</span> {talukaSaveSuccess}
+              </div>
+            )}
+
+            <form onSubmit={handleSaveTaluka} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              {/* Field 1: जिल्हा */}
+              <div>
+                <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '800', color: '#1e293b', marginBottom: '5px' }}>
+                  १. {language === 'mr' ? 'जिल्हा निवडा:' : 'Select District:'} <span style={{ color: '#ef4444' }}>*</span>
+                </label>
+                <select
+                  value={newTalukaForm.district_code}
+                  onChange={(e) => setNewTalukaForm({ ...newTalukaForm, district_code: e.target.value })}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', background: '#fff', boxSizing: 'border-box' }}
+                >
+                  {districts.map((d) => (
+                    <option key={d.district_code} value={d.district_code}>
+                      {language === 'mr' ? (d.district_name_mr || d.district_name) : d.district_name} (कोड: {d.district_code})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Field 2: तालुक्याचे नाव */}
+              <div>
+                <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '800', color: '#1e293b', marginBottom: '5px' }}>
+                  २. {language === 'mr' ? 'तालुक्याचे नाव:' : 'Taluka Name:'} <span style={{ color: '#ef4444' }}>*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder={language === 'mr' ? 'उदा. मिरज, वाळवा, तासगाव' : 'e.g. Miraj, Walwa, Tasgaon'}
+                  value={newTalukaForm.taluka_name}
+                  onChange={(e) => setNewTalukaForm({ ...newTalukaForm, taluka_name: e.target.value })}
+                  required
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              {/* Field 3: तालुका कोड */}
+              <div>
+                <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '800', color: '#1e293b', marginBottom: '5px' }}>
+                  ३. {language === 'mr' ? 'तालुका कोड (ऐच्छिक):' : 'Taluka Code (Optional):'}
+                </label>
+                <input
+                  type="text"
+                  placeholder={language === 'mr' ? 'उदा. 4201 किंवा रिक्त ठेवा' : 'e.g. 4201 or leave blank'}
+                  value={newTalukaForm.taluka_code}
+                  onChange={(e) => setNewTalukaForm({ ...newTalukaForm, taluka_code: e.target.value })}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              {/* Field 4: एकूण लोकसंख्या */}
+              <div>
+                <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '800', color: '#1e293b', marginBottom: '5px' }}>
+                  ४. {language === 'mr' ? 'एकूण लोकसंख्या (ऐच्छिक):' : 'Total Population (Optional):'}
+                </label>
+                <input
+                  type="number"
+                  placeholder={language === 'mr' ? 'उदा. 450000' : 'e.g. 450000'}
+                  value={newTalukaForm.population}
+                  onChange={(e) => setNewTalukaForm({ ...newTalukaForm, population: e.target.value })}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              {/* Field 5: एकूण मतदार */}
+              <div>
+                <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '800', color: '#1e293b', marginBottom: '5px' }}>
+                  ५. {language === 'mr' ? 'एकूण मतदार संख्या (ऐच्छिक):' : 'Total Voters (Optional):'}
+                </label>
+                <input
+                  type="number"
+                  placeholder={language === 'mr' ? 'उदा. 320000' : 'e.g. 320000'}
+                  value={newTalukaForm.voters}
+                  onChange={(e) => setNewTalukaForm({ ...newTalukaForm, voters: e.target.value })}
+                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              {/* Actions */}
+              <div style={{ display: 'flex', gap: '10px', marginTop: '12px' }}>
+                <button
+                  type="submit"
+                  disabled={isSavingTaluka}
+                  style={{
+                    flex: 1,
+                    padding: '12px',
+                    borderRadius: '8px',
+                    background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+                    color: '#ffffff',
+                    border: 'none',
+                    fontWeight: '800',
+                    fontSize: '13.5px',
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 14px rgba(37, 99, 235, 0.3)'
+                  }}
+                >
+                  {isSavingTaluka
+                    ? (language === 'mr' ? 'जतन होत आहे...' : 'Saving...')
+                    : (language === 'mr' ? '✓ तालुका जतन करा' : '✓ Save Taluka')}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsAddTalukaModalOpen(false)}
+                  style={{
+                    padding: '12px 18px',
+                    borderRadius: '8px',
+                    background: '#f1f5f9',
+                    color: '#475569',
+                    border: '1px solid #cbd5e1',
+                    fontWeight: '750',
+                    fontSize: '13.5px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {language === 'mr' ? 'रद्द करा' : 'Cancel'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

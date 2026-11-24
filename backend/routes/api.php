@@ -86,6 +86,7 @@ Route::prefix('master-data')->group(function () {
 
     // GET /api/master-data/talukas?district_code=466
     Route::get('/talukas', [MasterDataController::class, 'talukas']);
+    Route::post('/talukas', [MasterDataController::class, 'storeTaluka']);
 
     // GET /api/master-data/villages?district_code=466&taluka_code=4201
     Route::get('/villages', [MasterDataController::class, 'villages']);

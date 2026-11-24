@@ -29,12 +29,29 @@
   box-sizing: border-box;
 }
 
-/* Outer Atmosphere - Deep Midnight Abyss with Starlight Micro-depth */
-.admin-phone-root {
-  height: 100vh;
+html,
+body {
+  height: 100%;
+  height: 100dvh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: var(--admin-canvas-bg);
+}
+
+#root {
+  height: 100%;
   height: 100dvh;
   width: 100%;
-  max-width: 440px;
+  overflow: hidden;
+}
+
+/* Outer Atmosphere - Fully responsive and glued across all screen sizes */
+.admin-phone-root {
+  height: 100%;
+  height: 100dvh;
+  width: 100%;
+  max-width: 480px;
   margin: 0 auto;
   background-color: var(--admin-canvas-bg);
   font-family: 'Inter', 'Noto Sans Devanagari', 'Mukta', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -42,67 +59,11 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 35px rgba(0, 0, 0, 0.15);
   overflow: hidden;
 }
 
-@media (max-width: 480px) {
-  html,
-  body {
-    height: 100% !important;
-    height: 100dvh !important;
-    overflow: hidden !important;
-    overscroll-behavior: none !important;
-    position: fixed !important;
-    width: 100% !important;
-    left: 0 !important;
-    top: 0 !important;
-  }
-
-  #root {
-    height: 100% !important;
-    height: 100dvh !important;
-    overflow: hidden !important;
-    width: 100% !important;
-  }
-
-  .admin-phone-root {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    bottom: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    height: 100dvh !important;
-    max-width: 100% !important;
-    margin: 0 !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-    overflow: hidden !important;
-  }
-
-  .admin-bottom-nav {
-    position: fixed !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    z-index: 1000 !important;
-    padding-bottom: max(6px, env(safe-area-inset-bottom, 6px)) !important;
-    height: calc(58px + env(safe-area-inset-bottom, 0px)) !important;
-  }
-
-  .admin-ai-floating-btn {
-    position: fixed !important;
-    bottom: calc(68px + env(safe-area-inset-bottom, 0px)) !important;
-    right: 14px !important;
-    z-index: 999 !important;
-  }
-}
-
-@media (min-width: 481px) {
+@media (min-width: 768px) {
   body {
     background-color: var(--admin-navy-abyss);
     background-image:
@@ -110,20 +71,11 @@
       radial-gradient(circle at 85% 15%, rgba(255, 255, 255, 0.1) 1.5px, transparent 1.5px),
       radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
     background-size: 180px 180px;
-    margin: 0;
-    padding: 0;
-    height: 100vh;
-    overflow: hidden;
   }
 
   .admin-phone-root {
-    margin: 16px auto;
-    border-radius: 36px;
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    box-shadow: 0 30px 70px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.08);
-    height: calc(100vh - 32px);
-    max-height: calc(100vh - 32px);
-    overflow: hidden;
+    border-left: 1px solid rgba(255, 255, 255, 0.12);
+    border-right: 1px solid rgba(255, 255, 255, 0.12);
   }
 }
 
@@ -932,24 +884,26 @@
   background: #fecaca;
 }
 
-/* ================= 10. DOCKED BOTTOM NAVIGATION ================= */
+/* ================= 10. DOCKED BOTTOM NAVIGATION (STATIC & PINNED ON ALL DEVICES) ================= */
 .admin-bottom-nav {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  width: 100%;
-  height: 62px;
-  background: #ffffff;
-  border-top: 1px solid var(--admin-border-subtle);
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  z-index: 90;
-  box-shadow: 0 -4px 18px rgba(7, 30, 59, 0.08);
-  padding: 0 4px;
-  padding-bottom: env(safe-area-inset-bottom, 0);
-  flex-shrink: 0;
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  margin: 0 auto !important;
+  max-width: 480px !important;
+  width: 100% !important;
+  height: calc(58px + env(safe-area-inset-bottom, 0px)) !important;
+  background: #ffffff !important;
+  border-top: 1px solid var(--admin-border-subtle) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-around !important;
+  z-index: 9999 !important;
+  box-shadow: 0 -4px 18px rgba(7, 30, 59, 0.08) !important;
+  padding: 0 4px !important;
+  padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+  flex-shrink: 0 !important;
 }
 
 .admin-bottom-item {
@@ -1004,10 +958,10 @@
 
 /* ================= 11. FLOATING AI ASSISTANT (ORANGE SPARK) ================= */
 .admin-ai-floating-btn {
-  position: absolute;
-  bottom: 74px;
-  right: 14px;
-  z-index: 44;
+  position: fixed !important;
+  bottom: calc(68px + env(safe-area-inset-bottom, 0px)) !important;
+  right: max(14px, calc((100vw - 480px) / 2 + 14px)) !important;
+  z-index: 9998 !important;
   background: linear-gradient(135deg, var(--admin-orange-start) 0%, var(--admin-orange-end) 100%);
   color: #ffffff;
   border: 1.5px solid rgba(255, 255, 255, 0.3);

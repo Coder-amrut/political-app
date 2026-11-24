@@ -1,5 +1,105 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import apiClient from '../../api/axios';
+// PRESET SURVEY FORMAT TEMPLATES (Format 1: Quick Household, Format 2: Detailed Voter/Sentiment)
+const SURVEY_FORMAT_TEMPLATES = {
+  FORMAT_1: {
+    id: 'FORMAT_1',
+    title_mr: '१. संक्षिप्त कुटुंब नोंदणी (Format 1: Quick Household Survey)',
+    title_en: 'Format 1: Quick Household Survey',
+    badge: 'संक्षिप्त (Quick)',
+    badge_bg: '#dbeafe',
+    badge_color: '#1e40af',
+    desc_mr: 'कुटुंब प्रमुखाची माहिती, पत्ता, मोबाईल नंबर आणि मतदार संख्या यांची जलद नोंदणी.',
+    desc_en: 'Quick registration of family head, contact, address, and total voter count.',
+    questions: [
+      {
+        id: 'q_f1_mobile',
+        title_mr: 'कुटुंब प्रमुख / संपर्क व्यक्तीचा व्हॉट्सॲप / मोबाईल नंबर',
+        title_en: 'Primary Contact Mobile / WhatsApp Number',
+        type: 'PHONE',
+        required: true,
+        options: []
+      },
+      {
+        id: 'q_f1_address',
+        title_mr: 'घर क्रमांक / परिसर / गल्लीचे नाव',
+        title_en: 'House No. / Street / Area',
+        type: 'TEXT',
+        required: true,
+        options: []
+      },
+      {
+        id: 'q_f1_voters',
+        title_mr: 'कुटुंबातील १८ वर्षांवरील एकूण मतदार संख्या',
+        title_en: 'Total Voting Members in Household (18+)',
+        type: 'NUMBER',
+        required: true,
+        options: []
+      },
+      {
+        id: 'q_f1_id_card',
+        title_mr: 'कुटुंबातील सर्व मतदारांकडे मतदार ओळखपत्र (EPIC) उपलब्ध आहे का?',
+        title_en: 'Do all adult family members have Voter ID card?',
+        type: 'RADIO',
+        required: true,
+        options: ['होय, सर्वांकडे आहे', 'काहींचे नाही', 'कोणाकडेच नाही']
+      }
+    ]
+  },
+  FORMAT_2: {
+    id: 'FORMAT_2',
+    title_mr: '२. सविस्तर मतदार व जनमत सर्व्हे (Format 2: Detailed Voter & Sentiment Survey)',
+    title_en: 'Format 2: Detailed Voter & Sentiment Survey',
+    badge: 'सविस्तर (Comprehensive)',
+    badge_bg: '#fef3c7',
+    badge_color: '#92400e',
+    desc_mr: 'राजकीय कल, परिसरातील समस्या, जातीनिहाय वर्गवारी, सरकारी योजना लाभ आणि जनमत कल.',
+    desc_en: 'Comprehensive political sentiment, local civic issues, caste category, and voting inclination.',
+    questions: [
+      {
+        id: 'q_f2_caste',
+        title_mr: 'कुटुंबाचा सामाजिक वर्ग / जात संवर्ग',
+        title_en: 'Social Category / Caste Group',
+        type: 'DROPDOWN',
+        required: true,
+        options: ['मराठा', 'कुणबी', 'ओबीसी (OBC)', 'मातंग / चांभार (SC)', 'नवबौद्ध (SC)', 'धनगर / वंजारी (NT)', 'मुस्लिम', 'जैन / मारवाडी', 'इतर']
+      },
+      {
+        id: 'q_f2_issues',
+        title_mr: 'आपल्या परिसरातील सर्वात महत्त्वाची नागरी समस्या कोणती आहे?',
+        title_en: 'Most critical civic problem in your neighborhood?',
+        type: 'CHECKBOX',
+        required: true,
+        options: ['पिण्याचे पाणी / पाणीटंचाई', 'रस्ते व खड्डे', 'सांडपाणी व गटार व्यवस्था', 'कचरा व स्वच्छता', 'वारंवार वीजपुरवठा खंडित', 'बेरोजगारी व रोजगार प्रश्न']
+      },
+      {
+        id: 'q_f2_schemes',
+        title_mr: 'कुटुंबाला शासकीय योजनांचा लाभ मिळाला आहे का?',
+        title_en: 'Has the family benefited from government welfare schemes?',
+        type: 'RADIO',
+        required: true,
+        options: ['होय, लाडकी बहीण योजना', 'होय, पीएम किसान / नमो शेतकरी', 'होय, आयुष्यमान भारत / महात्मा फुले जनआरोग्य', 'होय, मोफत रेशन योजना', 'नाही, कोणत्याही योजनेचा लाभ नाही']
+      },
+      {
+        id: 'q_f2_sentiment',
+        title_mr: 'येणाऱ्या निवडणुकीत कुटुंबाचा मतदानाचा कल कोणत्या बाजूने आहे?',
+        title_en: 'Household voting intention & political inclination?',
+        type: 'RADIO',
+        required: true,
+        options: ['आपल्या पक्षाच्या बाजूने (कट्टर समर्थक)', 'कल अनुकूल (Neutral Leaning)', 'अद्याप ठरलेले नाही (Undecided)', 'विरोधी कल (Opposition Leaning)']
+      },
+      {
+        id: 'q_f2_worker_rating',
+        title_mr: 'आपल्या प्रभागातील कार्यकर्त्याच्या जनसंपर्क व कामाचे मूल्यांकन',
+        title_en: 'Rating of local booth worker responsiveness and service',
+        type: 'RADIO',
+        required: true,
+        options: ['उत्कृष्ट (Excellent)', 'समाधानकारक (Satisfactory)', 'सुधारणा हवी (Needs Improvement)']
+      }
+    ]
+  }
+};
+
 
 const SCOPES = [
   { value: 'DISTRICT', title: 'District', title_mr: 'जिल्हा', icon: '▤' },
@@ -54,6 +154,18 @@ function HouseholdSurveyForm({ user, language: appLang = 'en' }) {
 
   // Form Builder Configuration State
   const [formStatus, setFormStatus] = useState('DRAFT');
+  // Selected Survey Format: 'FORMAT_1' | 'FORMAT_2' | 'CUSTOM'
+  const [selectedFormat, setSelectedFormat] = useState('FORMAT_1');
+
+  const handleApplyFormat = (formatKey) => {
+    const tmpl = SURVEY_FORMAT_TEMPLATES[formatKey];
+    if (!tmpl) return;
+    setSelectedFormat(formatKey);
+    setFormTitleMr(tmpl.title_mr);
+    setFormTitleEn(tmpl.title_en);
+    setCustomQuestions(tmpl.questions);
+  };
+
   const [lastPublishedAt, setLastPublishedAt] = useState(null);
   const [customQuestions, setCustomQuestions] = useState([]);
   const [savingForm, setSavingForm] = useState(false);
@@ -2005,6 +2117,68 @@ function HouseholdSurveyForm({ user, language: appLang = 'en' }) {
                       <span>🚀</span>
                       <span>{publishingForm ? (isMr ? 'सेव्ह होत आहे...' : 'Saving...') : (isMr ? 'प्रकाशित करा (Save to DB)' : 'Save & Publish')}</span>
                     </button>
+                  </div>
+                </div>
+
+                {/* 2 Clean & Distinct Survey Format Choices (Format 1: Quick, Format 2: Detailed) */}
+                <div style={{ marginBottom: '20px' }}>
+                  <label style={{ display: 'block', fontSize: '13.5px', fontWeight: '800', color: '#0f172a', marginBottom: '8px' }}>
+                    🎯 {isMr ? 'सर्वेक्षण प्रारूप निवडा (Select Survey Format)' : 'Select Survey Format'} *
+                  </label>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '14px' }}>
+                    {/* Format 1 Card */}
+                    <div
+                      onClick={() => handleApplyFormat('FORMAT_1')}
+                      style={{
+                        padding: '16px',
+                        borderRadius: '12px',
+                        border: selectedFormat === 'FORMAT_1' ? '2px solid #2563eb' : '1.5px solid #cbd5e1',
+                        background: selectedFormat === 'FORMAT_1' ? '#eff6ff' : '#ffffff',
+                        cursor: 'pointer',
+                        boxShadow: selectedFormat === 'FORMAT_1' ? '0 4px 14px rgba(37,99,235,0.15)' : 'none',
+                        transition: 'all 0.2s ease',
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                        <span style={{ fontSize: '11px', fontWeight: '800', background: '#dbeafe', color: '#1e40af', padding: '2px 8px', borderRadius: '6px' }}>
+                          {isMr ? 'प्रारूप १: संक्षिप्त' : 'Format 1: Quick'}
+                        </span>
+                        {selectedFormat === 'FORMAT_1' && <span style={{ color: '#2563eb', fontWeight: '900', fontSize: '12px' }}>✓ {isMr ? 'निवडले' : 'Selected'}</span>}
+                      </div>
+                      <h4 style={{ margin: '0 0 6px', fontSize: '14px', fontWeight: '800', color: '#0f172a' }}>
+                        {isMr ? '१. संक्षिप्त कुटुंब नोंदणी' : '1. Quick Household Survey'}
+                      </h4>
+                      <p style={{ margin: 0, fontSize: '12px', color: '#64748b', lineHeight: 1.4 }}>
+                        {isMr ? 'कुटुंब प्रमुख, पत्ता, मोबाईल आणि मतदार संख्या यांची जलद नोंदणी.' : 'Quick registration of family head, phone, address, and voter count.'}
+                      </p>
+                    </div>
+
+                    {/* Format 2 Card */}
+                    <div
+                      onClick={() => handleApplyFormat('FORMAT_2')}
+                      style={{
+                        padding: '16px',
+                        borderRadius: '12px',
+                        border: selectedFormat === 'FORMAT_2' ? '2px solid #ea580c' : '1.5px solid #cbd5e1',
+                        background: selectedFormat === 'FORMAT_2' ? '#fff7ed' : '#ffffff',
+                        cursor: 'pointer',
+                        boxShadow: selectedFormat === 'FORMAT_2' ? '0 4px 14px rgba(234,88,12,0.15)' : 'none',
+                        transition: 'all 0.2s ease',
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                        <span style={{ fontSize: '11px', fontWeight: '800', background: '#ffedd5', color: '#c2410c', padding: '2px 8px', borderRadius: '6px' }}>
+                          {isMr ? 'प्रारूप २: सविस्तर' : 'Format 2: Detailed'}
+                        </span>
+                        {selectedFormat === 'FORMAT_2' && <span style={{ color: '#ea580c', fontWeight: '900', fontSize: '12px' }}>✓ {isMr ? 'निवडले' : 'Selected'}</span>}
+                      </div>
+                      <h4 style={{ margin: '0 0 6px', fontSize: '14px', fontWeight: '800', color: '#0f172a' }}>
+                        {isMr ? '२. सविस्तर मतदार व जनमत सर्व्हे' : '2. Detailed Voter & Sentiment Survey'}
+                      </h4>
+                      <p style={{ margin: 0, fontSize: '12px', color: '#64748b', lineHeight: 1.4 }}>
+                        {isMr ? 'राजकीय कल, स्थानिक नागरी समस्या, जात संवर्ग, सरकारी योजना व जनमत.' : 'Political sentiment, civic issues, caste group, welfare schemes, and voter intention.'}
+                      </p>
+                    </div>
                   </div>
                 </div>
 

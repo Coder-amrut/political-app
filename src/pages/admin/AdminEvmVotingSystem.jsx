@@ -675,7 +675,6 @@ function KarkartaEvmVotingSystem({ user, isMr = true, isAdmin: isAdminProp }) {
       await loadEvmData();
       setVotedCandidate(null);
       setVotedCandidateId(null);
-      setShowConfirmationModal(false);
       alert(isMr ? 'डेमो मतदानाचे आकडे रीसेट झाले!' : 'Vote counters reset successfully!');
     } catch (err) {
       alert('रीसेट करताना त्रुटी आली.');

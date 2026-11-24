@@ -1956,6 +1956,7 @@ ${groundObservations || 'नोंद नाही'}
                 </div>
               </div>
             </div>
+          </div>
 
           {/* 3. Add Multiple Political Parties */}
           <div style={{ background: '#ffffff', borderRadius: '16px', border: '1.5px solid #e2e8f0', padding: '22px', boxShadow: '0 2px 10px rgba(0,0,0,0.03)' }}>
@@ -3271,7 +3272,6 @@ ${groundObservations || 'नोंद नाही'}
               </li>
             </ul>
           </div>
-        </div>
         </div>
       )}
 

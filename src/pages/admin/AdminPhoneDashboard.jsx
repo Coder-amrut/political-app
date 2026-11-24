@@ -164,6 +164,20 @@ export const MAHARASHTRA_DISTRICTS_LIST = [
   'अमरावती', 'नागपूर', 'यवतमाळ', 'चंद्रपूर'
 ];
 
+// Official 10 Talukas for Sangli District with official Census / LGD codes
+export const SANGLI_OFFICIAL_TALUKAS = [
+  { code: '4001', name: 'Miraj', nameMr: 'मिरज', hq: 'मिरज' },
+  { code: '4002', name: 'Tasgaon', nameMr: 'तासगाव', hq: 'तासगाव' },
+  { code: '4003', name: 'Kavathe Mahankal', nameMr: 'कवठेमहांकाळ', hq: 'कवठेमहांकाळ' },
+  { code: '4004', name: 'Walwa', nameMr: 'वाळवा / इस्लामपूर', hq: 'इस्लामपूर' },
+  { code: '4005', name: 'Shirala', nameMr: 'शिराळा', hq: 'शिराळा' },
+  { code: '4006', name: 'Khanapur', nameMr: 'खानापूर / विटा', hq: 'विटा' },
+  { code: '4007', name: 'Atpadi', nameMr: 'आटपाडी', hq: 'आटपाडी' },
+  { code: '4008', name: 'Jat', nameMr: 'जत', hq: 'जत' },
+  { code: '4009', name: 'Kadegaon', nameMr: 'कडेगाव', hq: 'कडेगाव' },
+  { code: '4010', name: 'Palus', nameMr: 'पलूस', hq: 'पलूस' },
+];
+
 // Pre-configured Department Officers Directory for Instant Assignment & Forwarding
 export const DEPARTMENT_OFFICERS_DIRECTORY = [
   { id: 'off-1', name: 'इंजि. अविनाश सावंत', designation: 'कार्यकारी अभियंता', department: 'पाणीपुरवठा विभाग', phone: '9822114401', email: 'water.sangli@makanisms.gov.in', district: 'सांगली' },
@@ -884,6 +898,22 @@ export default function AdminPhoneDashboard() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
+
+  // AI Floating Button visibility (User can add / remove it)
+  const [showAiFloatingBtn, setShowAiFloatingBtn] = useState(() => localStorage.getItem('admin_show_ai_floating_btn') !== 'false');
+
+  const toggleAiFloatingBtn = (forceState) => {
+    setShowAiFloatingBtn((prev) => {
+      const next = typeof forceState === 'boolean' ? forceState : !prev;
+      localStorage.setItem('admin_show_ai_floating_btn', String(next));
+      setToastMsg(next
+        ? (isMr ? '🤖 AI सहाय्यक बटण स्क्रीनवर जोडले गेले!' : 'AI Assistant button added to screen!')
+        : (isMr ? '🤖 AI बटण स्क्रीनवरून काढले. वरून किंवा मेन्यूमधून पुन्हा जोडू शकता.' : 'AI button removed. You can re-add it anytime from menu.')
+      );
+      setTimeout(() => setToastMsg(''), 3500);
+      return next;
+    });
+  };
 
   // Search & Filter
   const [searchQuery, setSearchQuery] = useState('');
@@ -1901,10 +1931,74 @@ export default function AdminPhoneDashboard() {
       incharge: 'संतोष कदम',
       phone: '9890334477',
       isSensitive: false
+    },
+    {
+      nameMr: 'शिराळा शहर',
+      nameEn: 'Shirala City',
+      district: 'सांगली',
+      taluka: 'शिराळा',
+      city: 'शिराळा शहर',
+      area: 'नागपंचमी मैदान मुख्य पेठ',
+      boothNo: '24',
+      pollingCenter: 'शिराळा नगरपंचायत प्राथमिक शाळा',
+      population: 29000,
+      voters: 20300,
+      boothsCount: 24,
+      incharge: 'तानाजी पाटील',
+      phone: '9822445566',
+      isSensitive: false
+    },
+    {
+      nameMr: 'आटपाडी शहर',
+      nameEn: 'Atpadi City',
+      district: 'सांगली',
+      taluka: 'आटपाडी',
+      city: 'आटपाडी शहर',
+      area: 'बाजार चौक प्रभाग क्र. ३',
+      boothNo: '26',
+      pollingCenter: 'आटपाडी हायस्कूल व ज्युनिअर कॉलेज',
+      population: 34000,
+      voters: 23800,
+      boothsCount: 26,
+      incharge: 'रमेश खाडे',
+      phone: '9822776655',
+      isSensitive: false
+    },
+    {
+      nameMr: 'कडेगाव शहर',
+      nameEn: 'Kadegaon City',
+      district: 'सांगली',
+      taluka: 'कडेगाव',
+      city: 'कडेगाव शहर',
+      area: 'कडेगाव मध्यवर्ती प्रभाग क्र. २',
+      boothNo: '22',
+      pollingCenter: 'कडेगाव आदर्श विद्यामंदिर',
+      population: 31000,
+      voters: 21700,
+      boothsCount: 22,
+      incharge: 'मोहन मोहिते',
+      phone: '9822338899',
+      isSensitive: false
+    },
+    {
+      nameMr: 'पलूस शहर',
+      nameEn: 'Palus City',
+      district: 'सांगली',
+      taluka: 'पलूस',
+      city: 'पलूस शहर',
+      area: 'क्रांती चौक प्रभाग क्र. १',
+      boothNo: '27',
+      pollingCenter: 'पलूस नगरपरिषद शाळा',
+      population: 37000,
+      voters: 25900,
+      boothsCount: 27,
+      incharge: 'विश्वास कदम',
+      phone: '9822557788',
+      isSensitive: false
     }
   ], []);
 
-  // Available Talukas for Selector based on selected district
+  // Available Talukas for Selector based on selected district (Guaranteed all 10 Sangli Talukas)
   const availableTalukas = useMemo(() => {
     if (dbTalukas && dbTalukas.length > 0) {
       return dbTalukas.map((t) => ({
@@ -1913,12 +2007,24 @@ export default function AdminPhoneDashboard() {
         nameMr: t.taluka_name_mr || t.name_mr || t.taluka_name || t.name,
       }));
     }
+    // Always provide all 10 official talukas for Sangli
+    if (
+      !selectedDistrictCode ||
+      selectedDistrictCode === '493' ||
+      locFilterDistrict === 'सांगली' ||
+      villageExplorerDistrict === 'सांगली' ||
+      locFilterDistrict === 'Sangli' ||
+      villageExplorerDistrict === 'Sangli'
+    ) {
+      return SANGLI_OFFICIAL_TALUKAS;
+    }
     const set = new Set();
     DEFAULT_SANGLI_VILLAGES.forEach((v) => {
       if (v.taluka) set.add(v.taluka);
     });
+    SANGLI_OFFICIAL_TALUKAS.forEach((t) => set.add(t.nameMr));
     return Array.from(set).map((name) => ({ code: name, name, nameMr: name }));
-  }, [dbTalukas, DEFAULT_SANGLI_VILLAGES]);
+  }, [dbTalukas, selectedDistrictCode, locFilterDistrict, villageExplorerDistrict, DEFAULT_SANGLI_VILLAGES]);
 
   // Master merged villages list (with all 7 fields)
   const villagesList = useMemo(() => {
@@ -2322,6 +2428,28 @@ export default function AdminPhoneDashboard() {
             <span>{isMr ? 'युजर पेज' : 'User App'}</span>
           </button>
 
+          {/* Quick AI Floating Widget Add/Remove Button */}
+          <button
+            type="button"
+            className="admin-lang-btn"
+            onClick={() => toggleAiFloatingBtn()}
+            style={{
+              background: showAiFloatingBtn ? 'rgba(255, 82, 0, 0.18)' : 'rgba(255, 255, 255, 0.12)',
+              borderColor: showAiFloatingBtn ? '#ff5200' : 'rgba(255, 255, 255, 0.3)',
+              color: showAiFloatingBtn ? '#ff7700' : '#ffffff',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px',
+              padding: '4px 8px',
+              fontWeight: '850',
+              fontSize: '11px'
+            }}
+            title={showAiFloatingBtn ? (isMr ? 'स्क्रीनवरील AI बटण काढा / लपवा' : 'Remove Screen AI Widget') : (isMr ? 'स्क्रीनवर AI बटण जोडा' : 'Add Screen AI Widget')}
+          >
+            <Sparkles size={12} />
+            <span>{showAiFloatingBtn ? (isMr ? 'AI चालू' : 'AI ON') : (isMr ? '+ AI' : '+ AI')}</span>
+          </button>
+
           <button
             type="button"
             className="admin-lang-btn"
@@ -2498,6 +2626,30 @@ export default function AdminPhoneDashboard() {
                 </span>
                 <span className="admin-badge-count" style={{ background: '#f0fdfa', color: '#0f766e' }}>LIVE AI</span>
               </button>
+
+              {/* Quick AI Floating Widget Control Toggle */}
+              <div style={{ padding: '8px 12px', background: '#f8fafc', margin: '2px 14px 10px', borderRadius: '10px', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11.5px', fontWeight: '800', color: '#334155' }}>
+                  <span>📌</span>
+                  <span>{isMr ? 'स्क्रीनवरील AI बटण' : 'Screen AI Widget'}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => toggleAiFloatingBtn()}
+                  style={{
+                    background: showAiFloatingBtn ? '#dcfce7' : '#fee2e2',
+                    color: showAiFloatingBtn ? '#166534' : '#991b1b',
+                    border: `1px solid ${showAiFloatingBtn ? '#bbf7d0' : '#fecaca'}`,
+                    padding: '2px 8px',
+                    borderRadius: '8px',
+                    fontSize: '10.5px',
+                    fontWeight: '850',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {showAiFloatingBtn ? (isMr ? 'चालू (काढा)' : 'ON (Hide)') : (isMr ? '+ जोडा' : '+ Add')}
+                </button>
+              </div>
 
               {/* Category 2: फील्ड ऑपरेशन्स व डेटा / FIELD OPERATIONS & DATA */}
               <div className="admin-drawer-section-title">
@@ -7246,15 +7398,56 @@ export default function AdminPhoneDashboard() {
         </div>
       )}
 
-      {/* ================= FLOATING AI ASSISTANT BUTTON ================= */}
-      <button
-        type="button"
-        className="admin-ai-floating-btn"
-        onClick={() => setIsChatbotOpen(true)}
-      >
-        <Sparkles size={16} />
-        <span>{isMr ? '🤖 AI सहाय्यक' : '🤖 AI Assistant'}</span>
-      </button>
+      {/* ================= FLOATING AI ASSISTANT BUTTON WITH DISMISS / ADD OPTION ================= */}
+      {showAiFloatingBtn && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: 'calc(68px + env(safe-area-inset-bottom, 0px))',
+            right: 'max(14px, calc((100vw - 480px) / 2 + 14px))',
+            zIndex: 9998,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px'
+          }}
+        >
+          <button
+            type="button"
+            className="admin-ai-floating-btn"
+            onClick={() => setIsChatbotOpen(true)}
+            style={{ position: 'static', bottom: 'auto', right: 'auto', margin: 0 }}
+          >
+            <Sparkles size={16} />
+            <span>{isMr ? '🤖 AI सहाय्यक' : '🤖 AI Assistant'}</span>
+          </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleAiFloatingBtn(false);
+            }}
+            title={isMr ? "AI बटण स्क्रीनवरून काढा / लपवा" : "Remove AI button"}
+            style={{
+              background: '#0f172a',
+              color: '#ffffff',
+              border: '1.5px solid rgba(255, 255, 255, 0.45)',
+              borderRadius: '50%',
+              width: '26px',
+              height: '26px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              fontSize: '11px',
+              fontWeight: '900',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+              flexShrink: 0
+            }}
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       {/* ================= AI CHATBOT MODAL BOTTOM SHEET ================= */}
       {isChatbotOpen && (

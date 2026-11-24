@@ -1313,7 +1313,7 @@ ${groundObservations || 'नोंद नाही'}
                         alignItems: 'center',
                         justifyContent: 'center',
                         zIndex: 99999,
-                        padding: '16px',
+                        padding: '12px',
                         backdropFilter: 'blur(4px)',
                       }}
                       onClick={() => setIsElectionTypeMenuOpen(false)}
@@ -1322,14 +1322,16 @@ ${groundObservations || 'नोंद नाही'}
                         style={{
                           background: '#ffffff',
                           borderRadius: '16px',
-                          padding: '20px',
+                          padding: 'clamp(12px, 3vw, 18px)',
                           width: '100%',
                           maxWidth: '680px',
                           boxShadow: '0 20px 45px rgba(0,0,0,0.25)',
-                          maxHeight: '85vh',
+                          maxHeight: '90dvh',
                           display: 'flex',
                           flexDirection: 'column',
-                          gap: '12px'
+                          gap: '10px',
+                          boxSizing: 'border-box',
+                          overflow: 'hidden'
                         }}
                         onClick={(e) => e.stopPropagation()}
                       >
@@ -1375,7 +1377,19 @@ ${groundObservations || 'नोंद नाही'}
                         </div>
 
                         {/* 7 Categories Accordion List */}
-                        <div style={{ overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: '10px', paddingRight: '4px' }}>
+                        <div
+                          style={{
+                            overflowY: 'auto',
+                            WebkitOverflowScrolling: 'touch',
+                            flex: 1,
+                            minHeight: 0,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '8px',
+                            paddingRight: '4px',
+                            touchAction: 'pan-y'
+                          }}
+                        >
                           {ELECTIONS_CATEGORIES.map((cat) => {
                             const catElections = ELECTIONS_MASTER_DATA.filter((e) => {
                               if (e.cat_id !== cat.id) return false;
@@ -1418,7 +1432,7 @@ ${groundObservations || 'नोंद नाही'}
                                 </div>
 
                                 {isExpanded && (
-                                  <div style={{ padding: '8px 10px', background: '#ffffff', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '6px' }}>
+                                  <div style={{ padding: '8px 10px', background: '#ffffff', display: 'flex', flexDirection: 'column', gap: '6px' }}>
                                     {catElections.map((el) => {
                                       const isSelected = selectedElectionType === String(el.id);
                                       const titleText = isMr ? `${el.id}. ${el.name_mr}` : `${el.id}. ${el.name_en}`;
@@ -1432,19 +1446,21 @@ ${groundObservations || 'नोंद नाही'}
                                             setIsElectionTypeMenuOpen(false);
                                           }}
                                           style={{
-                                            padding: '8px 10px',
+                                            padding: '9px 12px',
                                             borderRadius: '8px',
                                             border: isSelected ? '1.5px solid #2563eb' : '1px solid #e2e8f0',
                                             background: isSelected ? '#eff6ff' : '#f8fafc',
                                             color: isSelected ? '#1d4ed8' : '#334155',
                                             fontWeight: isSelected ? '850' : '650',
-                                            fontSize: '12px',
+                                            fontSize: '12.5px',
                                             textAlign: 'left',
                                             cursor: 'pointer',
                                             display: 'flex',
                                             alignItems: 'center',
                                             justifyContent: 'space-between',
-                                            gap: '8px'
+                                            gap: '8px',
+                                            width: '100%',
+                                            boxSizing: 'border-box'
                                           }}
                                         >
                                           <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>

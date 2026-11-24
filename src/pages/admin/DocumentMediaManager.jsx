@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import apiClient from '../../api/axios';
-import { ELECTIONS_MASTER_DATA } from '../../data/electionsMasterData';
+import { ELECTIONS_CATEGORIES, ELECTIONS_MASTER_DATA } from '../../data/electionsMasterData';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -949,15 +949,18 @@ export default function DocumentMediaManager({ lang = 'mr' }) {
               }}
             >
               <option value="ALL">{isMr ? 'सर्व निवडणुका (All 75 Elections)' : 'All 75 Elections'}</option>
-              {ELECTIONS_MASTER_DATA.map((cat) => (
-                <optgroup key={cat.category_id} label={`${cat.category_id}. ${isMr ? cat.title_mr : cat.title_en}`}>
-                  {cat.elections.map((el) => (
-                    <option key={el.id} value={isMr ? el.title_mr : el.title_en}>
-                      {el.id}. {isMr ? el.title_mr : el.title_en}
-                    </option>
-                  ))}
-                </optgroup>
-              ))}
+              {ELECTIONS_CATEGORIES.map((cat) => {
+                const catElections = ELECTIONS_MASTER_DATA.filter((el) => el.cat_id === cat.id);
+                return (
+                  <optgroup key={cat.id} label={`${cat.id}. ${isMr ? cat.name_mr : cat.name_en}`}>
+                    {catElections.map((el) => (
+                      <option key={el.id} value={isMr ? el.name_mr : el.name_en}>
+                        {el.id}. {isMr ? el.name_mr : el.name_en}
+                      </option>
+                    ))}
+                  </optgroup>
+                );
+              })}
             </select>
           </div>
         </div>
@@ -1876,15 +1879,18 @@ export default function DocumentMediaManager({ lang = 'mr' }) {
                   }}
                 >
                   <option value="">{isMr ? 'कोणतीही निवडणूक निवडा (ऐच्छिक)' : 'Select Election (Optional)'}</option>
-                  {ELECTIONS_MASTER_DATA.map((cat) => (
-                    <optgroup key={cat.category_id} label={`${cat.category_id}. ${isMr ? cat.title_mr : cat.title_en}`}>
-                      {cat.elections.map((el) => (
-                        <option key={el.id} value={isMr ? el.title_mr : el.title_en}>
-                          {el.id}. {isMr ? el.title_mr : el.title_en}
-                        </option>
-                      ))}
-                    </optgroup>
-                  ))}
+                  {ELECTIONS_CATEGORIES.map((cat) => {
+                    const catElections = ELECTIONS_MASTER_DATA.filter((el) => el.cat_id === cat.id);
+                    return (
+                      <optgroup key={cat.id} label={`${cat.id}. ${isMr ? cat.name_mr : cat.name_en}`}>
+                        {catElections.map((el) => (
+                          <option key={el.id} value={isMr ? el.name_mr : el.name_en}>
+                            {el.id}. {isMr ? el.name_mr : el.name_en}
+                          </option>
+                        ))}
+                      </optgroup>
+                    );
+                  })}
                 </select>
               </div>
 

@@ -820,15 +820,18 @@ export default function ElectionPrabhariManager({ isMr = true, lang = 'mr' }) {
             }}
           >
             <option value="ALL">{isMr ? 'सर्व निवडणुका (All 75 Elections)' : 'All 75 Elections'}</option>
-            {ELECTIONS_MASTER_DATA.map((cat) => (
-              <optgroup key={cat.category_id} label={`${cat.category_id}. ${isMr ? cat.title_mr : cat.title_en}`}>
-                {cat.elections.map((el) => (
-                  <option key={el.id} value={isMr ? el.title_mr : el.title_en}>
-                    {el.id}. {isMr ? el.title_mr : el.title_en}
-                  </option>
-                ))}
-              </optgroup>
-            ))}
+            {ELECTIONS_CATEGORIES.map((cat) => {
+              const catElections = ELECTIONS_MASTER_DATA.filter((el) => el.cat_id === cat.id);
+              return (
+                <optgroup key={cat.id} label={`${cat.id}. ${isMr ? cat.name_mr : cat.name_en}`}>
+                  {catElections.map((el) => (
+                    <option key={el.id} value={isMr ? el.name_mr : el.name_en}>
+                      {el.id}. {isMr ? el.name_mr : el.name_en}
+                    </option>
+                  ))}
+                </optgroup>
+              );
+            })}
           </select>
         </div>
 
@@ -1295,15 +1298,18 @@ export default function ElectionPrabhariManager({ isMr = true, lang = 'mr' }) {
                   style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', background: '#ffffff', boxSizing: 'border-box' }}
                   required
                 >
-                  {ELECTIONS_MASTER_DATA.map((cat) => (
-                    <optgroup key={cat.category_id} label={`${cat.category_id}. ${isMr ? cat.title_mr : cat.title_en}`}>
-                      {cat.elections.map((el) => (
-                        <option key={el.id} value={isMr ? el.title_mr : el.title_en}>
-                          {el.id}. {isMr ? el.title_mr : el.title_en}
-                        </option>
-                      ))}
-                    </optgroup>
-                  ))}
+                  {ELECTIONS_CATEGORIES.map((cat) => {
+                    const catElections = ELECTIONS_MASTER_DATA.filter((el) => el.cat_id === cat.id);
+                    return (
+                      <optgroup key={cat.id} label={`${cat.id}. ${isMr ? cat.name_mr : cat.name_en}`}>
+                        {catElections.map((el) => (
+                          <option key={el.id} value={isMr ? el.name_mr : el.name_en}>
+                            {el.id}. {isMr ? el.name_mr : el.name_en}
+                          </option>
+                        ))}
+                      </optgroup>
+                    );
+                  })}
                 </select>
               </div>
 

@@ -1619,14 +1619,6 @@ ${groundObservations || 'नोंद नाही'}
                   />
                 )}
               </div>
-                <input
-                  type="text"
-                  value={villageName}
-                  onChange={(e) => setVillageName(e.target.value)}
-                  placeholder={isMr ? 'उदा. सांगलीवाडी' : 'e.g. Sangliwadi'}
-                  style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
-                />
-              </div>
 
               {/* ६. प्रभाग / वार्ड */}
               <div>
@@ -1964,7 +1956,6 @@ ${groundObservations || 'नोंद नाही'}
                 </div>
               </div>
             </div>
-          </div>
 
           {/* 3. Add Multiple Political Parties */}
           <div style={{ background: '#ffffff', borderRadius: '16px', border: '1.5px solid #e2e8f0', padding: '22px', boxShadow: '0 2px 10px rgba(0,0,0,0.03)' }}>
@@ -2663,6 +2654,7 @@ ${groundObservations || 'नोंद नाही'}
             </div>
           )}
         </div>
+        </div>
       )}
 
       {/* ================= TAB 3: GENERATED ANALYSIS REPORT ================= */}
@@ -3280,6 +3272,7 @@ ${groundObservations || 'नोंद नाही'}
               </li>
             </ul>
           </div>
+        </div>
         </div>
       )}
 

@@ -2365,7 +2365,7 @@ export default function AdminPhoneDashboard() {
             alignItems: 'center',
             gap: '4px',
           }}
-          title={isMr ? 'डेटाबेस रिफ्रेश करा' : 'Refresh DB'}
+          title={isMr ? 'रिफ्रेश करा' : 'Refresh'}
         >
           <RefreshCw size={12} className={refreshing ? 'admin-spin' : ''} />
 
@@ -2439,7 +2439,7 @@ export default function AdminPhoneDashboard() {
                 onClick={() => { setActiveTab('dashboard'); setIsDrawerOpen(false); }}
               >
                 <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span>📊</span> {isMr ? 'डॅशबोर्ड सारांश' : 'Dashboard'}
+                  <span>📊</span> {isMr ? 'डॅशबोर्ड' : 'Dashboard'}
                 </span>
                 <ChevronRight size={16} />
               </button>
@@ -2494,7 +2494,7 @@ export default function AdminPhoneDashboard() {
                 onClick={() => { setActiveTab('chatbot'); setIsDrawerOpen(false); }}
               >
                 <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span>🤖</span> {isMr ? 'AI डेटाबेस सहाय्यक' : 'AI Database Assistant'}
+                  <span>🤖</span> {isMr ? 'AI सहाय्यक' : 'AI Assistant'}
                 </span>
                 <span className="admin-badge-count" style={{ background: '#f0fdfa', color: '#0f766e' }}>LIVE AI</span>
               </button>
@@ -2532,7 +2532,7 @@ export default function AdminPhoneDashboard() {
                 onClick={() => { setActiveTab('voter_list'); setIsDrawerOpen(false); }}
               >
                 <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span>📋</span> {isMr ? 'मतदान यादी (Voter List)' : 'Voter List (मतदान यादी)'}
+                  <span>📋</span> {isMr ? 'मतदान यादी' : 'Voter List (मतदान यादी)'}
                 </span>
                 <span className="admin-badge-count" style={{ background: '#ecfdf5', color: '#047857' }}>NEW</span>
               </button>
@@ -2645,7 +2645,7 @@ export default function AdminPhoneDashboard() {
                 onClick={() => { setActiveTab('system'); setIsDrawerOpen(false); }}
               >
                 <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span>💾</span> {isMr ? 'डेटाबेस बॅकअप व रिस्टोअर' : 'Backup & Restore'}
+                  <span>💾</span> {isMr ? 'बॅकअप व रिस्टोअर' : 'Backup & Restore'}
                 </span>
                 <ChevronRight size={16} />
               </button>
@@ -2679,7 +2679,7 @@ export default function AdminPhoneDashboard() {
           <div style={{ textAlign: 'center', padding: '60px 20px', color: '#64748b' }}>
             <Loader2 size={32} className="admin-spin" style={{ color: '#ff5200', margin: '0 auto 12px' }} />
             <div style={{ fontSize: '13px', fontWeight: '750' }}>
-              {isMr ? 'डेटाबेसवरून माहिती लोड होत आहे...' : 'Loading data from database...'}
+              {isMr ? 'लोड होत आहे...' : 'Loading...'}
             </div>
           </div>
         ) : (
@@ -3085,7 +3085,7 @@ export default function AdminPhoneDashboard() {
                       <div className="admin-section-header">
                         <div className="admin-section-title">
                           <UserCheck size={18} style={{ color: '#10b981' }} />
-                          <span>{isMr ? 'उपस्थिती सारांश (थेट DB)' : 'Live DB Attendance'}</span>
+                          <span>{isMr ? 'उपस्थिती सारांश' : 'Attendance'}</span>
                         </div>
                         <span className="admin-badge-count">{attendances.length} नोंदी</span>
                       </div>
@@ -3294,7 +3294,7 @@ export default function AdminPhoneDashboard() {
                     <div className="admin-section-header">
                       <div className="admin-section-title">
                         <ClipboardCheck size={18} style={{ color: '#e11d48' }} />
-                        <span>{isMr ? 'सर्व्हे मंजुऱ्या कक्ष (थेट DB)' : 'Survey Approvals (DB)'}</span>
+                        <span>{isMr ? 'सर्व्हे मंजुऱ्या कक्ष' : 'Survey Approvals'}</span>
                       </div>
                       <span className="admin-badge-count">{filteredApprovals.length} नोंदी</span>
                     </div>
@@ -3450,7 +3450,7 @@ export default function AdminPhoneDashboard() {
                       type="button"
                       onClick={() => fetchAllAdminData(true)}
                       disabled={refreshing}
-                      title={isMr ? 'थेट डेटाबेस रिफ्रेश करा' : 'Refresh from DB'}
+                      title={isMr ? 'रिफ्रेश' : 'Refresh'}
                       style={{
                         background: '#ffffff',
                         border: '1.5px solid #cbd5e1',
@@ -3574,7 +3574,7 @@ export default function AdminPhoneDashboard() {
                         {pendingIssuesCount}
                       </div>
                       <div style={{ fontSize: '11px', fontWeight: '800', color: '#78350f', marginTop: '3px' }}>
-                        {isMr ? 'प्रलंबित (Pending)' : 'Pending'}
+                        {isMr ? 'प्रलंबित' : 'Pending'}
                       </div>
                     </div>
                   </div>
@@ -3613,7 +3613,7 @@ export default function AdminPhoneDashboard() {
                         {verifiedIssuesCount}
                       </div>
                       <div style={{ fontSize: '11px', fontWeight: '800', color: '#1e40af', marginTop: '3px' }}>
-                        {isMr ? 'पडताळणी (Verified)' : 'Verified'}
+                        {isMr ? 'पडताळणी' : 'Verified'}
                       </div>
                     </div>
                   </div>
@@ -3652,7 +3652,7 @@ export default function AdminPhoneDashboard() {
                         {forwardedIssuesCount}
                       </div>
                       <div style={{ fontSize: '11px', fontWeight: '800', color: '#5b21b6', marginTop: '3px' }}>
-                        {isMr ? 'फॉरवर्ड (Assigned)' : 'Forwarded'}
+                        {isMr ? 'फॉरवर्ड' : 'Forwarded'}
                       </div>
                     </div>
                   </div>
@@ -3691,7 +3691,7 @@ export default function AdminPhoneDashboard() {
                         {resolvedIssuesCount}
                       </div>
                       <div style={{ fontSize: '11px', fontWeight: '800', color: '#166534', marginTop: '3px' }}>
-                        {isMr ? 'निकाली (Resolved)' : 'Resolved'}
+                        {isMr ? 'निकाली' : 'Resolved'}
                       </div>
                     </div>
                   </div>
@@ -3730,7 +3730,7 @@ export default function AdminPhoneDashboard() {
                         {urgentIssuesCount}
                       </div>
                       <div style={{ fontSize: '11px', fontWeight: '800', color: '#881337', marginTop: '3px' }}>
-                        {isMr ? 'तातडीच्या (Urgent)' : 'Urgent'}
+                        {isMr ? 'तातडीच्या' : 'Urgent'}
                       </div>
                     </div>
                   </div>
@@ -3795,7 +3795,7 @@ export default function AdminPhoneDashboard() {
                     {/* District Dropdown */}
                     <div>
                       <label style={{ fontSize: '10.5px', fontWeight: '800', color: '#475569', marginBottom: '3px', display: 'block' }}>
-                        📍 {isMr ? 'जिल्हा निवडा (District)' : 'District Filter'}
+                        📍 {isMr ? 'जिल्हा निवडा' : 'District Filter'}
                       </label>
                       <select
                         value={selectedDistrict}
@@ -3813,7 +3813,7 @@ export default function AdminPhoneDashboard() {
                           cursor: 'pointer'
                         }}
                       >
-                        <option value="all">{isMr ? 'सर्व जिल्हे (All Districts)' : 'All Districts'}</option>
+                        <option value="all">{isMr ? 'सर्व जिल्हे' : 'All Districts'}</option>
                         {MAHARASHTRA_DISTRICTS_LIST.map((dist) => (
                           <option key={dist} value={dist}>{dist}</option>
                         ))}
@@ -3823,7 +3823,7 @@ export default function AdminPhoneDashboard() {
                     {/* Department Dropdown */}
                     <div>
                       <label style={{ fontSize: '10.5px', fontWeight: '800', color: '#475569', marginBottom: '3px', display: 'block' }}>
-                        🏛️ {isMr ? 'विभाग निवडा (Department)' : 'Department Filter'}
+                        🏛️ {isMr ? 'विभाग निवडा' : 'Department Filter'}
                       </label>
                       <select
                         value={selectedDepartment}
@@ -3841,7 +3841,7 @@ export default function AdminPhoneDashboard() {
                           cursor: 'pointer'
                         }}
                       >
-                        <option value="all">{isMr ? 'सर्व २० विभाग (All Departments)' : 'All 20 Departments'}</option>
+                        <option value="all">{isMr ? 'सर्व २० विभाग' : 'All 20 Departments'}</option>
                         {GRIEVANCE_DEPARTMENTS_20.map((dept) => (
                           <option key={dept.id} value={dept.name_mr}>{dept.no}. {dept.name_mr}</option>
                         ))}
@@ -3907,7 +3907,7 @@ export default function AdminPhoneDashboard() {
                           boxShadow: complaintViewMode === 'table' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'
                         }}
                       >
-                        📊 {isMr ? 'तक्ता (Table)' : 'Table'}
+                        📊 {isMr ? 'तक्ता' : 'Table'}
                       </button>
                       <button
                         type="button"
@@ -3924,7 +3924,7 @@ export default function AdminPhoneDashboard() {
                           boxShadow: complaintViewMode === 'cards' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'
                         }}
                       >
-                        📱 {isMr ? 'कार्ड्स (Cards)' : 'Cards'}
+                        📱 {isMr ? 'कार्ड्स' : 'Cards'}
                       </button>
                     </div>
                   </div>

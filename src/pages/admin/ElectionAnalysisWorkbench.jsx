@@ -2654,7 +2654,6 @@ ${groundObservations || 'नोंद नाही'}
             </div>
           )}
         </div>
-        </div>
       )}
 
       {/* ================= TAB 3: GENERATED ANALYSIS REPORT ================= */}

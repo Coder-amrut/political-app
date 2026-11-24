@@ -338,7 +338,7 @@ function KarkartaEvmVotingSystem({ user, isMr = true, isAdmin: isAdminProp }) {
       }
     } catch (err) {
       console.error('Error loading EVM data:', err);
-      setError('डेटाबेसकडून EVM माहिती मिळवताना अडचण आली.');
+      setError('डेटाबेसकडून माहिती मिळवताना अडचण आली.');
     } finally {
       setLoading(false);
     }
@@ -554,8 +554,8 @@ function KarkartaEvmVotingSystem({ user, isMr = true, isAdmin: isAdminProp }) {
       if (!isNetworkOnline()) {
         enqueueOfflineItem({
           type: 'EVM_VOTE',
-          label_mr: `EVM मत - ${candidate.candidate_name}`,
-          label_en: `EVM Vote - ${candidate.candidate_name}`,
+          label_mr: `मत - ${candidate.candidate_name}`,
+          label_en: `Vote - ${candidate.candidate_name}`,
           payload: {
             candidateId: candidate.id,
             candidateName: candidate.candidate_name,
@@ -626,8 +626,8 @@ function KarkartaEvmVotingSystem({ user, isMr = true, isAdmin: isAdminProp }) {
       } else {
         enqueueOfflineItem({
           type: 'EVM_VOTE',
-          label_mr: `EVM मत - ${candidate.candidate_name}`,
-          label_en: `EVM Vote - ${candidate.candidate_name}`,
+          label_mr: `मत - ${candidate.candidate_name}`,
+          label_en: `Vote - ${candidate.candidate_name}`,
           payload: {
             candidateId: candidate.id,
             candidateName: candidate.candidate_name,
@@ -699,7 +699,7 @@ function KarkartaEvmVotingSystem({ user, isMr = true, isAdmin: isAdminProp }) {
         alert(isMr ? 'उमेदवाराची माहिती अद्यतनित झाली!' : 'Candidate updated successfully!');
       } else {
         await workerApi.addEvmCandidate(candidateFormData);
-        alert(isMr ? 'नवीन उमेदवार EVM बॅलेटवर जोडला गेला!' : 'Candidate added to EVM ballot!');
+        alert(isMr ? 'नवीन उमेदवार बॅलेटवर जोडला गेला!' : 'Candidate added to ballot!');
       }
       setIsCandidateModalOpen(false);
       setEditingCandidate(null);
@@ -763,7 +763,7 @@ function KarkartaEvmVotingSystem({ user, isMr = true, isAdmin: isAdminProp }) {
 
   // Delete Candidate
   const handleDeleteCandidate = async (id) => {
-    if (!window.confirm(isMr ? 'हा उमेदवार EVM बॅलेटवरून काढायचा का?' : 'Delete candidate from EVM ballot?')) return;
+    if (!window.confirm(isMr ? 'हा उमेदवार बॅलेटवरून काढायचा का?' : 'Delete candidate from ballot?')) return;
     try {
       await workerApi.deleteEvmCandidate(id);
       loadEvmData();
@@ -806,8 +806,8 @@ function KarkartaEvmVotingSystem({ user, isMr = true, isAdmin: isAdminProp }) {
   const shareOnWhatsApp = (candidate) => {
     const cand = candidate || votedCandidate || candidates.find(c => c.highlighted) || candidates[0];
     const text = isMr
-      ? `🚩 *डेमो EVM मतदान प्रात्यक्षिक*\n\nमी इलेक्ट्रॉनिक मतदान यंत्रावर (EVM) खालील उमेदवाराला मत देऊन प्रात्यक्षिक पूर्ण केले:\n\n👤 *उमेदवार:* ${cand?.candidate_name}\n📌 *अनुक्रमांक:* क्र. ${cand?.serial_number}\n🚩 *पक्ष:* ${cand?.party_name}\n\n🏛️ *${election?.name || 'सांगली विधानसभा निवडणूक २०२६'}*\n\nतुम्ही सुद्धा मतदान प्रात्यक्षिक पाहून जागरूक मतदार बना!`
-      : `EVM Voting Demo: Voted for ${cand?.candidate_name} (Serial No. ${cand?.serial_number}, ${cand?.party_name}).`;
+      ? `🚩 *डेमो मतदान प्रात्यक्षिक*\n\nमी इलेक्ट्रॉनिक मतदान यंत्रावर खालील उमेदवाराला मत देऊन प्रात्यक्षिक पूर्ण केले:\n\n👤 *उमेदवार:* ${cand?.candidate_name}\n📌 *अनुक्रमांक:* क्र. ${cand?.serial_number}\n🚩 *पक्ष:* ${cand?.party_name}\n\n🏛️ *${election?.name || 'सांगली विधानसभा निवडणूक २०२६'}*\n\nतुम्ही सुद्धा मतदान प्रात्यक्षिक पाहून जागरूक मतदार बना!`
+      : `Voting Demo: Voted for ${cand?.candidate_name} (Serial No. ${cand?.serial_number}, ${cand?.party_name}).`;
 
     const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
     window.open(url, '_blank');
@@ -890,7 +890,7 @@ function KarkartaEvmVotingSystem({ user, isMr = true, isAdmin: isAdminProp }) {
             </span>
             <div>
               <h1 style={{ fontSize: '19px', fontWeight: '800', color: '#0f172a', margin: 0, lineHeight: 1.2 }}>
-                {isMr ? 'प्रत्यक्ष डेमो EVM मतदान प्रणाली' : 'Digital EVM Voting & Training Station'}
+                {isMr ? 'निवडणूक मतदान सर्व्हे' : 'Election Voting Survey'}
               </h1>
               <div style={{ fontSize: '12px', color: '#64748b', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <span>{election?.name || '२८२ - सांगली मतदारसंघ (Sangli Constituency)'}</span>
@@ -925,7 +925,7 @@ function KarkartaEvmVotingSystem({ user, isMr = true, isAdmin: isAdminProp }) {
               }}
             >
               <Radio size={14} />
-              <span>{isMr ? 'EVM मशीन सिम्युलेटर' : 'EVM Simulator'}</span>
+              <span>{isMr ? 'मशीन सिम्युलेटर' : 'Machine Simulator'}</span>
             </button>
 
             <button
@@ -1006,7 +1006,7 @@ function KarkartaEvmVotingSystem({ user, isMr = true, isAdmin: isAdminProp }) {
           }}>
             <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#2563eb' }} />
             <span style={{ fontSize: '12.5px', fontWeight: '800', color: '#1d4ed8' }}>
-              {isMr ? 'अधिकारी प्रत्यक्ष मतदान केंद्र (EVM)' : 'Officer Polling Station (EVM)'}
+              {isMr ? 'अधिकारी प्रत्यक्ष मतदान केंद्र' : 'Officer Polling Station'}
             </span>
           </div>
         )}
@@ -1479,7 +1479,7 @@ function KarkartaEvmVotingSystem({ user, isMr = true, isAdmin: isAdminProp }) {
                                     boxShadow: isVotedThis ? '0 0 16px 4px #ef4444, inset 0 0 4px #ffffff' : 'none',
                                     transition: 'all 0.15s ease'
                                   }}
-                                  title="EVM Red Vote Lamp"
+                                  title="Red Vote Lamp"
                                 />
 
                                 {/* Realistic 3D Blue EVM Vote Button */}
@@ -1575,10 +1575,10 @@ function KarkartaEvmVotingSystem({ user, isMr = true, isAdmin: isAdminProp }) {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
             <div>
               <h2 style={{ fontSize: '18px', fontWeight: '800', color: '#0f172a', margin: 0 }}>
-                {isMr ? 'EVM बॅलेट उमेदवार व्यवस्थापन' : 'EVM Ballot Candidates Directory'}
+                {isMr ? 'बॅलेट उमेदवार व्यवस्थापन' : 'Ballot Candidates Directory'}
               </h2>
               <p style={{ fontSize: '13px', color: '#64748b', margin: '3px 0 0 0' }}>
-                {isMr ? 'EVM वरील उमेदवारांचे अनुक्रमांक, फोटो, पक्ष चिन्ह व ऑडिओ संदेश अद्यतनित करा.' : 'Manage candidates on EVM ballot paper with photos, symbols, and audio.'}
+                {isMr ? 'उमेदवारांचे अनुक्रमांक, फोटो, पक्ष चिन्ह व ऑडिओ संदेश अद्यतनित करा.' : 'Manage candidates on ballot paper with photos, symbols, and audio.'}
               </p>
             </div>
 
@@ -1761,7 +1761,7 @@ function KarkartaEvmVotingSystem({ user, isMr = true, isAdmin: isAdminProp }) {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
               <div>
                 <h2 style={{ fontSize: '18px', fontWeight: '800', color: '#0f172a', margin: 0 }}>
-                  📊 {isMr ? 'EVM थेट मतदान निकाल व कल विश्लेषण' : 'EVM Live Mock Polling Results'}
+                  📊 {isMr ? 'थेट मतदान निकाल व कल विश्लेषण' : 'Live Mock Polling Results'}
                 </h2>
                 <p style={{ fontSize: '13px', color: '#64748b', margin: '3px 0 0 0' }}>
                   {isMr ? 'अधिकाऱ्याने घेतलेल्या प्रात्यक्षिक मतदानाची थेट आकडेवारी.' : 'Real-time mock polling tallies recorded from voters in the field.'}
@@ -2113,7 +2113,7 @@ function KarkartaEvmVotingSystem({ user, isMr = true, isAdmin: isAdminProp }) {
             boxShadow: '0 4px 16px rgba(15, 23, 42, 0.04)'
           }}>
             <h2 style={{ fontSize: '18px', fontWeight: '800', color: '#0f172a', margin: '0 0 16px 0' }}>
-              ⚙️ {isMr ? 'निवडणूक माहिती व EVM प्रात्यक्षिक सेटिंग्ज' : 'Election & EVM Simulation Configuration'}
+              ⚙️ {isMr ? 'निवडणूक माहिती व प्रात्यक्षिक सेटिंग्ज' : 'Election & Simulation Configuration'}
             </h2>
 
             <form onSubmit={handleSaveElection} style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxWidth: '600px' }}>
@@ -2255,7 +2255,7 @@ function KarkartaEvmVotingSystem({ user, isMr = true, isAdmin: isAdminProp }) {
                 <p style={{ fontSize: '13px', color: '#64748b', margin: '4px 0 0 0' }}>
                   {isMr
                     ? 'येथून तुम्ही या निवडणुकीसाठी उमेदवार जोडू शकता, त्यांचे नाव, चिन्ह, फोटो, अनुक्रमांक व पद व्यवस्थापित करू शकता.'
-                    : 'Manage candidates on EVM ballot paper with photos, party symbols, serial numbers, and positions.'}
+                    : 'Manage candidates on ballot paper with photos, party symbols, serial numbers, and positions.'}
                 </p>
               </div>
 
@@ -2466,11 +2466,11 @@ function KarkartaEvmVotingSystem({ user, isMr = true, isAdmin: isAdminProp }) {
               }}>
                 <span style={{ fontSize: '36px' }}>👥</span>
                 <div style={{ fontSize: '14px', fontWeight: '750', color: '#334155' }}>
-                  {isMr ? 'या निवडणुकीसाठी अद्याप उमेदवार जोडलेले नाहीत' : 'No candidates added to this election yet'}
+                  {isMr ? 'निवडणुकीसाठी अद्याप उमेदवार जोडलेले नाहीत' : 'No candidates added to this election yet'}
                 </div>
                 <div style={{ fontSize: '12px', color: '#64748b' }}>
                   {isMr
-                    ? 'मतदारांसाठी EVM बॅलेटवर दिसणारा पहिला उमेदवार जोडण्यासाठी खालील बटणावर क्लिक करा.'
+                    ? 'मतदारांसाठी बॅलेटवर दिसणारा पहिला उमेदवार जोडण्यासाठी खालील बटणावर क्लिक करा.'
                     : 'Click the button below to add candidates to this election ballot.'}
                 </div>
                 <button
@@ -2537,7 +2537,7 @@ function KarkartaEvmVotingSystem({ user, isMr = true, isAdmin: isAdminProp }) {
                 <span>
                   {editingCandidate
                     ? (isMr ? 'उमेदवार माहिती संपादित करा' : 'Edit Candidate')
-                    : (isMr ? 'EVM बॅलेटवर नवीन उमेदवार तयार करा' : 'Create & Add Candidate to EVM')}
+                    : (isMr ? 'बॅलेटवर नवीन उमेदवार तयार करा' : 'Create & Add Candidate')}
                 </span>
               </h3>
               <button

@@ -23,14 +23,16 @@
   --admin-danger: #ef4444;
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
 /* Outer Atmosphere - Deep Midnight Abyss with Starlight Micro-depth */
 .admin-phone-root {
-  min-height: 100vh;
-  min-height: 100dvh;
+  height: 100vh;
+  height: 100dvh;
   width: 100%;
   max-width: 440px;
   margin: 0 auto;
@@ -41,33 +43,38 @@
   display: flex;
   flex-direction: column;
   box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.5);
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 @media (min-width: 480px) {
   body {
     background-color: var(--admin-navy-abyss);
-    background-image: 
+    background-image:
       radial-gradient(circle at 15% 20%, rgba(255, 255, 255, 0.12) 1px, transparent 1px),
       radial-gradient(circle at 85% 15%, rgba(255, 255, 255, 0.1) 1.5px, transparent 1.5px),
       radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
     background-size: 180px 180px;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    overflow: hidden;
   }
 
   .admin-phone-root {
-    margin: 20px auto;
+    margin: 16px auto;
     border-radius: 36px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 30px 70px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.08);
+    height: calc(100vh - 32px);
+    max-height: calc(100vh - 32px);
     overflow: hidden;
-    max-height: 96vh;
   }
 }
 
 /* ================= 1. PREMIUM APP HEADER (DEEP NAVY GRADIENT) ================= */
 .admin-phone-header {
-  position: sticky;
-  top: 0;
+  position: relative;
+  flex-shrink: 0;
   z-index: 40;
   background: linear-gradient(180deg, var(--admin-navy-header-start) 0%, var(--admin-navy-header-end) 100%);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -217,6 +224,9 @@
 
 /* ================= 2. MIDNIGHT SUB-BAR (CLOCK & SERVER) ================= */
 .admin-subbar {
+  flex-shrink: 0;
+  position: relative;
+  z-index: 39;
   background: var(--admin-navy-abyss);
   color: #e2e8f0;
   padding: 7px 16px;
@@ -257,18 +267,57 @@
 }
 
 @keyframes pulseGreen {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(0.85); }
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.5;
+    transform: scale(0.85);
+  }
 }
 
-/* ================= 3. CONTENT CANVAS ================= */
+/* ================= 3. CONTENT CANVAS (SMOOTH INNER PHONE SCROLLING) ================= */
 .admin-phone-content {
-  flex: 1;
-  padding: 14px 14px 92px 14px; /* bottom padding for docked navigation */
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  padding: 14px 14px 88px 14px;
+  /* bottom padding so content scrolls above 62px bottom bar */
   display: flex;
   flex-direction: column;
   gap: 14px;
   width: 100%;
+  box-sizing: border-box;
+}
+
+/* Custom sleek scrollbar matching phone aesthetics */
+.admin-phone-content::-webkit-scrollbar {
+  width: 4px;
+}
+
+.admin-phone-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.admin-phone-content::-webkit-scrollbar-thumb {
+  background: rgba(15, 23, 42, 0.18);
+  border-radius: 999px;
+}
+
+.admin-phone-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 82, 0, 0.5);
+}
+
+.admin-phone-content {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(15, 23, 42, 0.18) transparent;
 }
 
 /* ================= 4. METRIC GRID (2-COLUMN CARDS) ================= */
@@ -625,13 +674,23 @@
 }
 
 @keyframes slideInLeft {
-  from { transform: translateX(-100%); }
-  to { transform: translateX(0); }
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .admin-drawer-header {
@@ -756,7 +815,7 @@
 .admin-responsive-tab-pane {
   width: 100%;
   max-width: 100%;
-  overflow-x: hidden;
+  overflow-x: auto;
   box-sizing: border-box;
 }
 
@@ -819,12 +878,11 @@
 
 /* ================= 10. DOCKED BOTTOM NAVIGATION ================= */
 .admin-bottom-nav {
-  position: fixed;
+  position: absolute;
   bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
   width: 100%;
-  max-width: 440px;
   height: 62px;
   background: #ffffff;
   border-top: 1px solid var(--admin-border-subtle);
@@ -889,9 +947,9 @@
 
 /* ================= 11. FLOATING AI ASSISTANT (ORANGE SPARK) ================= */
 .admin-ai-floating-btn {
-  position: fixed;
+  position: absolute;
   bottom: 74px;
-  right: calc(50% - 205px);
+  right: 14px;
   z-index: 44;
   background: linear-gradient(135deg, var(--admin-orange-start) 0%, var(--admin-orange-end) 100%);
   color: #ffffff;
@@ -916,9 +974,20 @@
 }
 
 @keyframes pulseAiOrange {
-  0% { transform: scale(1); box-shadow: 0 6px 20px var(--admin-orange-glow); }
-  50% { transform: scale(1.05); box-shadow: 0 8px 28px rgba(255, 82, 0, 0.55); }
-  100% { transform: scale(1); box-shadow: 0 6px 20px var(--admin-orange-glow); }
+  0% {
+    transform: scale(1);
+    box-shadow: 0 6px 20px var(--admin-orange-glow);
+  }
+
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 8px 28px rgba(255, 82, 0, 0.55);
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow: 0 6px 20px var(--admin-orange-glow);
+  }
 }
 
 /* ================= 12. CHATBOT MODAL OVERLAY ================= */
@@ -948,8 +1017,13 @@
 }
 
 @keyframes slideUpModal {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
+  from {
+    transform: translateY(100%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
 }
 
 .admin-spin {
@@ -957,8 +1031,13 @@
 }
 
 @keyframes adminSpin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ================= 13. COLORFUL DASHBOARD 6 CONTAINERS ================= */
@@ -1237,7 +1316,8 @@
   box-shadow: 0 2px 8px rgba(255, 82, 0, 0.28);
 }
 
-.admin-picker-select, .admin-picker-input {
+.admin-picker-select,
+.admin-picker-input {
   width: 100%;
   padding: 10px 12px;
   border-radius: 10px;
@@ -1263,7 +1343,8 @@
   padding-right: 28px;
 }
 
-.admin-picker-select:focus, .admin-picker-input:focus {
+.admin-picker-select:focus,
+.admin-picker-input:focus {
   border-color: #ff5200;
   box-shadow: 0 0 0 3px rgba(255, 82, 0, 0.14);
   background-color: #ffffff;
@@ -1410,8 +1491,13 @@
 }
 
 @keyframes slideUpModal {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
+  from {
+    transform: translateY(100%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
 }
 
 .admin-picker-modal-header {

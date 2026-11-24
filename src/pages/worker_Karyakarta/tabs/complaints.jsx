@@ -523,13 +523,26 @@ export default function ComplaintsTab({
                   value={complaintFormData.category}
                   onChange={(val) => setComplaintFormData({ ...complaintFormData, category: val })}
                   options={[
-                    { value: 'पाणी पुरवठा (Water Supply)', label: isMr ? '💧 पाणी पुरवठा' : '💧 Water Supply' },
-                    { value: 'स्ट्रीट लाईट (Street Light)', label: isMr ? '💡 स्ट्रीट लाईट' : '💡 Street Lights' },
-                    { value: 'कचरा व्यवस्थापन (Garbage Management)', label: isMr ? '🧹 कचरा व्यवस्थापन' : '🧹 Garbage & Sanitation' },
-                    { value: 'रस्ता डांबरीकरण (Road Repair)', label: isMr ? '🛣️ रस्ता डांबरीकरण' : '🛣️ Roads & Repair' },
-                    { value: 'आरोग्य व रुग्णालय (Healthcare)', label: isMr ? '🏥 आरोग्य / रुग्णालय' : '🏥 Healthcare' },
-                    { value: 'शासकीय योजना (Schemes)', label: isMr ? '📄 शासकीय योजना' : '📄 Government Schemes' },
-                    { value: 'इतर समस्या (Others)', label: isMr ? '📌 इतर समस्या (Others)' : '📌 Other Civic Issues' },
+                    { value: 'पाणीपुरवठा विभाग', label: isMr ? '💧 १. पाणीपुरवठा विभाग' : '💧 1. Water Supply' },
+                    { value: 'स्वच्छता विभाग', label: isMr ? '🧹 २. स्वच्छता विभाग' : '🧹 2. Sanitation' },
+                    { value: 'आरोग्य विभाग', label: isMr ? '❤️ ३. आरोग्य विभाग' : '❤️ 3. Health & Medical' },
+                    { value: 'शिक्षण विभाग', label: isMr ? '🎓 ४. शिक्षण विभाग' : '🎓 4. Education' },
+                    { value: 'रस्ते व वाहतूक विभाग', label: isMr ? '🛣️ ५. रस्ते व वाहतूक विभाग' : '🛣️ 5. Roads & Transport' },
+                    { value: 'वीजपुरवठा विभाग', label: isMr ? '⚡ ६. वीजपुरवठा विभाग' : '⚡ 6. Electricity Supply' },
+                    { value: 'ड्रेनेज व मलनिस्सारण विभाग', label: isMr ? '🚰 ७. ड्रेनेज व मलनिस्सारण विभाग' : '🚰 7. Drainage & Sewage' },
+                    { value: 'पथदिवे विभाग', label: isMr ? '💡 ८. पथदिवे विभाग' : '💡 8. Streetlights' },
+                    { value: 'कचरा व्यवस्थापन विभाग', label: isMr ? '♻️ ९. कचरा व्यवस्थापन विभाग' : '♻️ 9. Waste Management' },
+                    { value: 'बांधकाम विभाग', label: isMr ? '🏢 १०. बांधकाम विभाग' : '🏢 10. Construction' },
+                    { value: 'मालमत्ता कर विभाग', label: isMr ? '📑 ११. मालमत्ता कर विभाग' : '📑 11. Property Tax' },
+                    { value: 'अतिक्रमण निर्मूलन विभाग', label: isMr ? '🚜 १२. अतिक्रमण निर्मूलन विभाग' : '🚜 12. Encroachment Removal' },
+                    { value: 'महिला व बालकल्याण विभाग', label: isMr ? '👩‍👧 १३. महिला व बालकल्याण विभाग' : '👩‍👧 13. Women & Child Welfare' },
+                    { value: 'सामाजिक न्याय विभाग', label: isMr ? '⚖️ १४. सामाजिक न्याय विभाग' : '⚖️ 14. Social Justice' },
+                    { value: 'सार्वजनिक बांधकाम विभाग', label: isMr ? '🏗️ १५. सार्वजनिक बांधकाम विभाग' : '🏗️ 15. Public Works (PWD)' },
+                    { value: 'उद्यान व पर्यावरण विभाग', label: isMr ? '🌳 १६. उद्यान व पर्यावरण विभाग' : '🌳 16. Gardens & Environment' },
+                    { value: 'पोलीस व कायदा-सुव्यवस्था विभाग', label: isMr ? '🛡️ १७. पोलीस व कायदा-सुव्यवस्था विभाग' : '🛡️ 17. Police & Law & Order' },
+                    { value: 'नागरी सुविधा विभाग', label: isMr ? '🏛️ १८. नागरी सुविधा विभाग' : '🏛️ 18. Civic Amenities' },
+                    { value: 'रेशन व अन्नपुरवठा विभाग', label: isMr ? '🌾 १९. रेशन व अन्नपुरवठा विभाग' : '🌾 19. Ration & Food Supply' },
+                    { value: 'इतर तक्रारी', label: isMr ? '••• २०. इतर तक्रारी' : '••• 20. Other Grievances' },
                   ]}
                   placeholder={isMr ? "समस्येचा वर्ग निवडा" : "Select Category"}
                 />

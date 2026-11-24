@@ -64,6 +64,230 @@ const POPULAR_PARTIES = [
   { name: 'इतर पक्ष (Other Party)', color: '#84cc16', alliance: 'इतर' }
 ];
 
+// 16 Standard Recognized Political Parties (Exact Official Sequence)
+export const STANDARD_16_PARTIES_DATA = [
+  {
+    id: 'p1',
+    name: 'भारतीय जनता पक्ष (BJP)',
+    candidate: 'सुधीर गाडगीळ',
+    alliance: 'महायुती',
+    previousVotes: 93659,
+    currentVotes: 98200,
+    voteShare: 43.5,
+    seatsWon: 1,
+    strengths: 'मजबूत पक्ष संघटना, पारंपरिक व्यापारी व मध्यमवर्गीय मतपेढी, विकासकामांचा प्रचार',
+    challenges: 'स्थानिक बंडखोरीचा संभाव्य धोका, वाढती महागाई व पायाभूत सुविधांबाबत नाराजी'
+  },
+  {
+    id: 'p2',
+    name: 'भारतीय राष्ट्रीय काँग्रेस (INC)',
+    candidate: 'पृथ्वीराज पाटील',
+    alliance: 'महाविकास आघाडी',
+    previousVotes: 86720,
+    currentVotes: 91400,
+    voteShare: 40.5,
+    seatsWon: 0,
+    strengths: 'जुना काँग्रेस पारंपरिक मतदार वर्ग, अल्पसंख्याक व मागासवर्गीय मते, सतत ग्राउंडवर संपर्क',
+    challenges: 'मित्रपक्षातील स्थानिक नेत्यांची छुपी बंडखोरी, निधी व प्रचाराची आक्रमकता कमी'
+  },
+  {
+    id: 'p3',
+    name: 'आम आदमी पार्टी (AAP)',
+    candidate: '',
+    alliance: 'स्वबळ',
+    previousVotes: 0,
+    currentVotes: 0,
+    voteShare: 0,
+    seatsWon: 0,
+    strengths: 'शिक्षण, आरोग्य व मूलभूत सुविधांचे मॉडेल, तरुणांमध्ये आकर्षण',
+    challenges: 'स्थानिक प्रभाग व बूथ स्तरावर केडरची मर्यादा'
+  },
+  {
+    id: 'p4',
+    name: 'बहुजन समाज पक्ष (BSP)',
+    candidate: 'सचिन पवार',
+    alliance: 'स्वबळ',
+    previousVotes: 1850,
+    currentVotes: 2400,
+    voteShare: 1.1,
+    seatsWon: 0,
+    strengths: 'दलित व बहुजन घटकांमधील निष्ठावंत मते',
+    challenges: 'मर्यादित प्रचार रसद व प्रमुख लढतीपासून मतदारांची परावृत्ती'
+  },
+  {
+    id: 'p5',
+    name: 'भारतीय कम्युनिस्ट पक्ष (मार्क्सवादी) (CPI-M)',
+    candidate: '',
+    alliance: 'डावी आघाडी',
+    previousVotes: 0,
+    currentVotes: 0,
+    voteShare: 0,
+    seatsWon: 0,
+    strengths: 'कामगार, कष्टकरी व शेतकरी चळवळीतील सक्रियता',
+    challenges: 'शहरी भागात मर्यादित जनाधार'
+  },
+  {
+    id: 'p6',
+    name: 'नॅशनल पीपल्स पार्टी (NPP)',
+    candidate: '',
+    alliance: 'स्वबळ',
+    previousVotes: 0,
+    currentVotes: 0,
+    voteShare: 0,
+    seatsWon: 0,
+    strengths: 'राष्ट्रीय पक्षाचा दर्जा',
+    challenges: 'स्थानिक पातळीवर संघटनात्मक उपस्थिती मर्यादित'
+  },
+  {
+    id: 'p7',
+    name: 'शिवसेना',
+    candidate: '',
+    alliance: 'महायुती',
+    previousVotes: 0,
+    currentVotes: 0,
+    voteShare: 0,
+    seatsWon: 0,
+    strengths: 'धनुष्यबाण चिन्ह, सत्ताधारी युतीचे पाठबळ, हिंदुत्ववादी मतदार',
+    challenges: 'पारंपरिक कार्यकर्त्यांमधील मतविभागणी'
+  },
+  {
+    id: 'p8',
+    name: 'शिवसेना (उद्धव बाळासाहेब ठाकरे)',
+    candidate: '',
+    alliance: 'महाविकास आघाडी',
+    previousVotes: 0,
+    currentVotes: 0,
+    voteShare: 0,
+    seatsWon: 0,
+    strengths: 'मशाल चिन्ह, ठाकरे घराण्याविषयी सहानुभूती, मराठी अस्मिता',
+    challenges: 'संघटनात्मक पुनर्बांधणी व साधनसामग्रीची कमतरता'
+  },
+  {
+    id: 'p9',
+    name: 'राष्ट्रवादी काँग्रेस पक्ष (NCP)',
+    candidate: '',
+    alliance: 'महायुती',
+    previousVotes: 0,
+    currentVotes: 0,
+    voteShare: 0,
+    seatsWon: 0,
+    strengths: 'घड्याळ चिन्ह, सहकार क्षेत्रावरील पकड, विकासकामांचे नेटवर्क',
+    challenges: 'पक्ष फुटीनंतर निष्ठावंतांमधील संभ्रम'
+  },
+  {
+    id: 'p10',
+    name: 'राष्ट्रवादी काँग्रेस पक्ष – शरदचंद्र पवार (NCP-SP)',
+    candidate: '',
+    alliance: 'महाविकास आघाडी',
+    previousVotes: 0,
+    currentVotes: 0,
+    voteShare: 0,
+    seatsWon: 0,
+    strengths: 'तुतारी चिन्ह, शरद पवार यांच्याविषयी आदर, मराठा व ग्रामीण जनाधार',
+    challenges: 'स्थानिक स्तरावरील बूथ यंत्रणेचे पुनर्गठन'
+  },
+  {
+    id: 'p11',
+    name: 'महाराष्ट्र नवनिर्माण सेना (MNS)',
+    candidate: '',
+    alliance: 'स्वबळ',
+    previousVotes: 0,
+    currentVotes: 0,
+    voteShare: 0,
+    seatsWon: 0,
+    strengths: 'राज ठाकरे यांचा करिष्मा, मराठी तरुणांमधील प्रभाव',
+    challenges: 'सातत्यपूर्ण स्थानिक प्रचार यंत्रणेचा अभाव'
+  },
+  {
+    id: 'p12',
+    name: 'वंचित बहुजन आघाडी (VBA)',
+    candidate: 'प्रा. विकास कांबळे',
+    alliance: 'स्वबळ',
+    previousVotes: 8200,
+    currentVotes: 9400,
+    voteShare: 4.2,
+    seatsWon: 0,
+    strengths: 'दलित व वंचित घटकांमध्ये वैचारिक निष्ठा, स्पष्ट स्थानिक अजेंडा',
+    challenges: 'कमी वित्तीय रसद, प्रमुख लढतीपासून मतदारांची परावृत्ती'
+  },
+  {
+    id: 'p13',
+    name: 'ऑल इंडिया मजलिस-ए-इत्तेहादुल मुस्लिमीन (AIMIM)',
+    candidate: '',
+    alliance: 'स्वबळ',
+    previousVotes: 0,
+    currentVotes: 0,
+    voteShare: 0,
+    seatsWon: 0,
+    strengths: 'अल्पसंख्याक व मुस्लिम मतदारांमध्ये आक्रमक नेतृत्व',
+    challenges: 'इतर समाजघटकांमध्ये मर्यादित स्वीकृती'
+  },
+  {
+    id: 'p14',
+    name: 'समाजवादी पक्ष (SP)',
+    candidate: '',
+    alliance: 'महाविकास आघाडी',
+    previousVotes: 0,
+    currentVotes: 0,
+    voteShare: 0,
+    seatsWon: 0,
+    strengths: 'शहरी कामगार व अल्पसंख्याक वस्त्यांमध्ये पकड',
+    challenges: 'काही मोजक्या प्रभागांपुरता मर्यादित प्रभाव'
+  },
+  {
+    id: 'p15',
+    name: 'भारतीय कम्युनिस्ट पक्ष (CPI)',
+    candidate: '',
+    alliance: 'डावी आघाडी',
+    previousVotes: 0,
+    currentVotes: 0,
+    voteShare: 0,
+    seatsWon: 0,
+    strengths: 'ट्रेड युनियन, लाल बावटा पारंपरिक मते',
+    challenges: 'नवीन तरुण मतदारांमध्ये मर्यादित संपर्क'
+  },
+  {
+    id: 'p16',
+    name: 'तृणमूल काँग्रेस (TMC)',
+    candidate: '',
+    alliance: 'स्वबळ',
+    previousVotes: 0,
+    currentVotes: 0,
+    voteShare: 0,
+    seatsWon: 0,
+    strengths: 'राष्ट्रीय स्तरावरील आक्रमक विरोधी पक्ष ओळख',
+    challenges: 'महाराष्ट्र स्थानिक पातळीवर कार्यकर्त्यांचे जाळे मर्यादित'
+  }
+];
+
+// Default 1, 2, 3 Ranked Results for Previous Election Winner & Margins
+export const DEFAULT_PREVIOUS_WINNERS = [
+  {
+    rank: 1,
+    label: 'विजेता',
+    candidate: 'सुधीर गाडगीळ',
+    party: 'भारतीय जनता पक्ष (BJP)',
+    votes: '93,659',
+    lead: '६,९३९ मतांची आघाडी (Lead)'
+  },
+  {
+    rank: 2,
+    label: 'उपविजेता',
+    candidate: 'पृथ्वीराज पाटील',
+    party: 'भारतीय राष्ट्रीय काँग्रेस (INC)',
+    votes: '86,720',
+    lead: 'दुसऱ्या क्रमांकावर (-६,९३९ मते)'
+  },
+  {
+    rank: 3,
+    label: 'तृतीय क्रमांक',
+    candidate: 'सचिन पवार / इतर',
+    party: 'बहुजन समाज पक्ष (BSP)',
+    votes: '1,850',
+    lead: 'तिसऱ्या क्रमांकावर'
+  }
+];
+
 // Pre-filled Templates for instant exploration
 const TEMPLATES = {
   sangli_assembly: {
@@ -74,65 +298,22 @@ const TEMPLATES = {
     state: 'महाराष्ट्र',
     district: 'सांगली',
     taluka: 'मिरज',
+    cityName: 'सांगली शहर',
+    villageName: 'सांगलीवाडी',
+    wardName: 'प्रभाग क्र. १२',
+    boothName: 'शासकीय कन्या शाळा, सांगली',
+    boothNumber: '१०४',
     cityOrVillage: 'सांगली शहर व प्रभाग',
     constituency: '282 - सांगली विधानसभा मतदारसंघ',
     totalRegisteredVoters: '348500',
     votingPercentage: '64.8',
     previousElectionDate: '21 ऑक्टोबर 2019',
     previousResults: 'भाजप विजयी (सुधीर गाडगीळ - 93,659 मते, काँग्रेस पृथ्वीराज पाटील - 86,720 मते, मताधिक्य: 6,939)',
+    previousWinners: DEFAULT_PREVIOUS_WINNERS,
     additionalNotes: 'शहरी व उपनगरीय मतदारांचा प्रभाव, अंतर्गत व्यापारी वर्ग व बहुजन मतांची विभागणी निर्णायक ठरते.',
     assemblySegments: 'सांगली शहर, विश्रामबाग, कुपवाड, माधवनगर, सांगलीवाडी',
     boothCount: '342',
-    parties: [
-      {
-        id: 'p1',
-        name: 'भारतीय जनता पक्ष (BJP)',
-        candidate: 'सुधीर गाडगीळ',
-        alliance: 'महायुती',
-        previousVotes: 93659,
-        currentVotes: 98200,
-        voteShare: 43.5,
-        seatsWon: 1,
-        strengths: 'मजबूत पक्ष संघटना, पारंपरिक व्यापारी व मध्यमवर्गीय मतपेढी, विकासकामांचा प्रचार',
-        challenges: 'स्थानिक बंडखोरीचा संभाव्य धोका, वाढती महागाई व पायाभूत सुविधांबाबत नाराजी'
-      },
-      {
-        id: 'p2',
-        name: 'भारतीय राष्ट्रीय काँग्रेस (INC)',
-        candidate: 'पृथ्वीराज पाटील',
-        alliance: 'महाविकास आघाडी',
-        previousVotes: 86720,
-        currentVotes: 91400,
-        voteShare: 40.5,
-        seatsWon: 0,
-        strengths: 'जुना काँग्रेस पारंपरिक मतदार वर्ग, अल्पसंख्याक व मागासवर्गीय मते, सतत ग्राउंडवर संपर्क',
-        challenges: 'मित्रपक्षातील स्थानिक नेत्यांची छुपी बंडखोरी, निधी व प्रचाराची आक्रमकता कमी'
-      },
-      {
-        id: 'p3',
-        name: 'अपक्ष (Independent)',
-        candidate: 'जयश्री पाटील / बंडखोर उमेदवार',
-        alliance: 'अपक्ष / अपक्ष आघाडी',
-        previousVotes: 12500,
-        currentVotes: 24800,
-        voteShare: 11.0,
-        seatsWon: 0,
-        strengths: 'स्थानिक सहकार क्षेत्रातील वैयक्तिक संपर्क, वसंतदादा घराण्याविषयी निष्ठावंत गट',
-        challenges: 'पक्ष चिन्हाचा अभाव, मर्यादित प्रचार यंत्रणा'
-      },
-      {
-        id: 'p4',
-        name: 'वंचित बहुजन आघाडी (VBA)',
-        candidate: 'प्रा. विकास कांबळे',
-        alliance: 'स्वबळ',
-        previousVotes: 8200,
-        currentVotes: 9400,
-        voteShare: 4.2,
-        seatsWon: 0,
-        strengths: 'दलित व वंचित घटकांमध्ये वैचारिक निष्ठा, स्पष्ट स्थानिक अजेंडा',
-        challenges: 'कमी वित्तीय रसद, प्रमुख लढतीपासून मतदारांची परावृत्ती'
-      }
-    ],
+    parties: STANDARD_16_PARTIES_DATA,
     otherCandidates: [
       { name: 'सचिन पवार (बसपा)', votes: '1850', remarks: 'कौटुंबिक प्रभाव' },
       { name: 'नोटा (NOTA)', votes: '2150', remarks: 'नाराज मतदार' }
@@ -183,19 +364,34 @@ export default function ElectionAnalysisWorkbench({ isMr = true, language = 'mr'
     fetchSavedAnalyses();
   }, []);
 
-  // Form Fields
+  // Form Fields - 9 Core Geographical & Locus Components
   const [electionName, setElectionName] = useState(TEMPLATES.sangli_assembly.name);
   const [electionYear, setElectionYear] = useState(TEMPLATES.sangli_assembly.year);
   const [stateName, setStateName] = useState(TEMPLATES.sangli_assembly.state);
   const [districtName, setDistrictName] = useState(TEMPLATES.sangli_assembly.district);
   const [talukaName, setTalukaName] = useState(TEMPLATES.sangli_assembly.taluka);
-  const [cityOrVillage, setCityOrVillage] = useState(TEMPLATES.sangli_assembly.cityOrVillage);
+  const [cityName, setCityName] = useState(TEMPLATES.sangli_assembly.cityName || 'सांगली शहर');
+  const [villageName, setVillageName] = useState(TEMPLATES.sangli_assembly.villageName || 'सांगलीवाडी');
+  const [wardName, setWardName] = useState(TEMPLATES.sangli_assembly.wardName || 'प्रभाग क्र. १२');
   const [constituency, setConstituency] = useState(TEMPLATES.sangli_assembly.constituency);
+  const [boothName, setBoothName] = useState(TEMPLATES.sangli_assembly.boothName || 'शासकीय कन्या शाळा, सांगली');
+  const [boothNumber, setBoothNumber] = useState(TEMPLATES.sangli_assembly.boothNumber || '१०४');
+  const [cityOrVillage, setCityOrVillage] = useState(TEMPLATES.sangli_assembly.cityOrVillage);
   const [totalRegisteredVoters, setTotalRegisteredVoters] = useState(TEMPLATES.sangli_assembly.totalRegisteredVoters);
   const [votingPercentage, setVotingPercentage] = useState(TEMPLATES.sangli_assembly.votingPercentage);
   const [previousElectionDate, setPreviousElectionDate] = useState(TEMPLATES.sangli_assembly.previousElectionDate);
   const [previousResults, setPreviousResults] = useState(TEMPLATES.sangli_assembly.previousResults);
+  const [previousWinners, setPreviousWinners] = useState(TEMPLATES.sangli_assembly.previousWinners || DEFAULT_PREVIOUS_WINNERS);
   const [additionalNotes, setAdditionalNotes] = useState(TEMPLATES.sangli_assembly.additionalNotes);
+
+  const handleUpdateWinner = (index, field, value) => {
+    const updated = previousWinners.map((w, i) => (i === index ? { ...w, [field]: value } : w));
+    setPreviousWinners(updated);
+    const w1 = updated[0];
+    const w2 = updated[1];
+    const summaryStr = `${w1?.party || ''} विजयी (${w1?.candidate || ''} - ${w1?.votes || ''} मते, ${w2?.party || ''} ${w2?.candidate || ''} - ${w2?.votes || ''} मते, मताधिक्य: ${w1?.lead || ''})`;
+    setPreviousResults(summaryStr);
+  };
 
   // Dynamic Type-Specific Fields
   const [assemblySegments, setAssemblySegments] = useState(TEMPLATES.sangli_assembly.assemblySegments);
@@ -224,15 +420,21 @@ export default function ElectionAnalysisWorkbench({ isMr = true, language = 'mr'
     setCustomElectionName(t.customElectionName);
     setElectionName(t.name);
     setElectionYear(t.year);
-    setStateName(t.state);
-    setDistrictName(t.district);
-    setTalukaName(t.taluka);
-    setCityOrVillage(t.cityOrVillage);
-    setConstituency(t.constituency);
+    setStateName(t.state || 'महाराष्ट्र');
+    setDistrictName(t.district || '');
+    setTalukaName(t.taluka || '');
+    setCityName(t.cityName || t.cityOrVillage || '');
+    setVillageName(t.villageName || '');
+    setWardName(t.wardName || '');
+    setConstituency(t.constituency || '');
+    setBoothName(t.boothName || '');
+    setBoothNumber(t.boothNumber || '');
+    setCityOrVillage(t.cityOrVillage || '');
     setTotalRegisteredVoters(t.totalRegisteredVoters);
     setVotingPercentage(t.votingPercentage);
     setPreviousElectionDate(t.previousElectionDate);
     setPreviousResults(t.previousResults);
+    setPreviousWinners(t.previousWinners || DEFAULT_PREVIOUS_WINNERS);
     setAdditionalNotes(t.additionalNotes);
     setAssemblySegments(t.assemblySegments);
     setBoothCount(t.boothCount);
@@ -252,16 +454,22 @@ export default function ElectionAnalysisWorkbench({ isMr = true, language = 'mr'
     setStateName('महाराष्ट्र');
     setDistrictName('');
     setTalukaName('');
-    setCityOrVillage('');
+    setCityName('');
+    setVillageName('');
+    setWardName('');
     setConstituency('');
+    setBoothName('');
+    setBoothNumber('');
+    setCityOrVillage('');
     setTotalRegisteredVoters('');
     setVotingPercentage('');
     setPreviousElectionDate('');
     setPreviousResults('');
+    setPreviousWinners(DEFAULT_PREVIOUS_WINNERS);
     setAdditionalNotes('');
     setAssemblySegments('');
     setBoothCount('');
-    setParties([]);
+    setParties(STANDARD_16_PARTIES_DATA);
     setOtherCandidates([]);
     setPoliticalEquations('');
     setDevelopmentIssues([]);
@@ -358,12 +566,22 @@ export default function ElectionAnalysisWorkbench({ isMr = true, language = 'mr'
     setStateName(item.state || 'महाराष्ट्र');
     setDistrictName(item.district || '');
     setTalukaName(item.taluka || '');
-    setCityOrVillage(item.city_or_village || '');
+    setCityName(item.city_name || item.cityName || item.city_or_village || '');
+    setVillageName(item.village_name || item.villageName || '');
+    setWardName(item.ward_name || item.wardName || item.ward_reservation || '');
     setConstituency(item.constituency || '');
+    setBoothName(item.booth_name || item.boothName || '');
+    setBoothNumber(item.booth_number || item.boothNumber || item.booth_count || '');
+    setCityOrVillage(item.city_or_village || '');
     setTotalRegisteredVoters(item.total_registered_voters ? item.total_registered_voters.toString() : '');
     setVotingPercentage(item.voting_percentage ? item.voting_percentage.toString() : '');
     setPreviousElectionDate(item.previous_election_date || '');
     setPreviousResults(item.previous_results || '');
+    if (item.previous_winners && Array.isArray(item.previous_winners)) {
+      setPreviousWinners(item.previous_winners);
+    } else {
+      setPreviousWinners(DEFAULT_PREVIOUS_WINNERS);
+    }
     setAdditionalNotes(item.additional_notes || '');
     setAssemblySegments(item.assembly_segments || '');
     setBoothCount(item.booth_count || '');
@@ -424,16 +642,22 @@ export default function ElectionAnalysisWorkbench({ isMr = true, language = 'mr'
       state: stateName,
       district: districtName,
       taluka: talukaName,
-      city_or_village: cityOrVillage,
+      city_name: cityName,
+      village_name: villageName,
+      ward_name: wardName,
+      city_or_village: [cityName, villageName].filter(Boolean).join(', ') || cityOrVillage,
       constituency: constituency,
+      booth_name: boothName,
+      booth_number: boothNumber,
       total_registered_voters: Number(totalRegisteredVoters) || 0,
       voting_percentage: parseFloat(votingPercentage) || 0,
       calculated_votes_polled: calculatedVotesPolled,
       previous_election_date: previousElectionDate,
       previous_results: previousResults,
+      previous_winners: previousWinners,
       additional_notes: additionalNotes,
       assembly_segments: assemblySegments,
-      booth_count: boothCount,
+      booth_count: boothNumber ? `${boothNumber} (${boothName || ''})` : boothCount,
       zp_gat_name: zpGatName,
       ward_reservation: wardReservation,
       parties: parties,
@@ -472,7 +696,15 @@ export default function ElectionAnalysisWorkbench({ isMr = true, language = 'mr'
   const handleCopySummary = () => {
     const text = `
 === ${electionName} (${electionYear}) निवडणूक विश्लेषण अहवाल ===
-मतदारसंघ: ${constituency || cityOrVillage || districtName} (${districtName})
+१. राज्य: ${stateName || '-'}
+२. जिल्हा: ${districtName || '-'}
+३. तालुका: ${talukaName || '-'}
+४. शहर: ${cityName || '-'}
+५. गाव: ${villageName || '-'}
+६. प्रभाग / वार्ड: ${wardName || '-'}
+७. विधानसभा मतदारसंघ: ${constituency || '-'}
+८. मतदान केंद्र: ${boothName || '-'}
+९. मतदान केंद्र क्रमांक: ${boothNumber || '-'}
 एकूण नोंदणीकृत मतदार: ${Number(totalRegisteredVoters).toLocaleString('en-IN') || '-'}
 मतदान टक्केवारी: ${votingPercentage}% (एकूण मतदान: ${calculatedVotesPolled.toLocaleString('en-IN')})
 
@@ -731,7 +963,7 @@ ${groundObservations || 'नोंद नाही'}
           }}
         >
           <BarChart3 size={16} />
-          <span>{isMr ? '📊 क्रॉस-टॅब्युलेशन मॅट्रिक्स (Cross-Tab)' : '📊 Cross-Tabulation Matrix'}</span>
+          <span>{isMr ? '📊 घटकनिहाय तुलनात्मक विश्लेषण' : '📊 Comparative Analysis by Components'}</span>
         </button>
 
         {activeTab === 'report' && (
@@ -877,66 +1109,128 @@ ${groundObservations || 'नोंद नाही'}
                 />
               </div>
 
+              {/* १. राज्य */}
               <div>
                 <label style={{ display: 'block', fontSize: '12px', fontWeight: '750', color: '#334155', marginBottom: '5px' }}>
-                  {isMr ? 'राज्य' : 'State'}
+                  १. {isMr ? 'राज्य:' : 'State:'}
                 </label>
                 <input
                   type="text"
                   value={stateName}
                   onChange={(e) => setStateName(e.target.value)}
+                  placeholder={isMr ? 'उदा. महाराष्ट्र' : 'e.g. Maharashtra'}
                   style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
                 />
               </div>
 
+              {/* २. जिल्हा */}
               <div>
                 <label style={{ display: 'block', fontSize: '12px', fontWeight: '750', color: '#334155', marginBottom: '5px' }}>
-                  {isMr ? 'जिल्हा' : 'District'} <span style={{ color: '#ef4444' }}>*</span>
+                  २. {isMr ? 'जिल्हा:' : 'District:'} <span style={{ color: '#ef4444' }}>*</span>
                 </label>
                 <input
                   type="text"
                   value={districtName}
                   onChange={(e) => setDistrictName(e.target.value)}
-                  placeholder="सांगली"
+                  placeholder={isMr ? 'उदा. सांगली' : 'e.g. Sangli'}
                   style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
                 />
               </div>
 
+              {/* ३. तालुका */}
               <div>
                 <label style={{ display: 'block', fontSize: '12px', fontWeight: '750', color: '#334155', marginBottom: '5px' }}>
-                  {isMr ? 'तालुका' : 'Taluka'}
+                  ३. {isMr ? 'तालुका:' : 'Taluka:'}
                 </label>
                 <input
                   type="text"
                   value={talukaName}
                   onChange={(e) => setTalukaName(e.target.value)}
-                  placeholder="मिरज"
+                  placeholder={isMr ? 'उदा. मिरज' : 'e.g. Miraj'}
                   style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
                 />
               </div>
 
+              {/* ४. शहर */}
               <div>
                 <label style={{ display: 'block', fontSize: '12px', fontWeight: '750', color: '#334155', marginBottom: '5px' }}>
-                  {isMr ? 'मतदारसंघ / प्रभाग नाव व क्र.' : 'Constituency / Ward Name & No.'}
+                  ४. {isMr ? 'शहर:' : 'City:'}
+                </label>
+                <input
+                  type="text"
+                  value={cityName}
+                  onChange={(e) => setCityName(e.target.value)}
+                  placeholder={isMr ? 'उदा. सांगली शहर' : 'e.g. Sangli City'}
+                  style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              {/* ५. गाव */}
+              <div>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: '750', color: '#334155', marginBottom: '5px' }}>
+                  ५. {isMr ? 'गाव:' : 'Village:'}
+                </label>
+                <input
+                  type="text"
+                  value={villageName}
+                  onChange={(e) => setVillageName(e.target.value)}
+                  placeholder={isMr ? 'उदा. सांगलीवाडी' : 'e.g. Sangliwadi'}
+                  style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              {/* ६. प्रभाग / वार्ड */}
+              <div>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: '750', color: '#334155', marginBottom: '5px' }}>
+                  ६. {isMr ? 'प्रभाग / वार्ड:' : 'Ward / Prabhag:'}
+                </label>
+                <input
+                  type="text"
+                  value={wardName}
+                  onChange={(e) => setWardName(e.target.value)}
+                  placeholder={isMr ? 'उदा. प्रभाग क्र. १२' : 'e.g. Ward No. 12'}
+                  style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              {/* ७. विधानसभा मतदारसंघ */}
+              <div>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: '750', color: '#334155', marginBottom: '5px' }}>
+                  ७. {isMr ? 'विधानसभा मतदारसंघ:' : 'Assembly Constituency:'}
                 </label>
                 <input
                   type="text"
                   value={constituency}
                   onChange={(e) => setConstituency(e.target.value)}
-                  placeholder="282 - सांगली विधानसभा"
+                  placeholder={isMr ? 'उदा. २८२ - सांगली विधानसभा' : 'e.g. 282 - Sangli Assembly'}
                   style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
                 />
               </div>
 
+              {/* ८. मतदान केंद्र */}
               <div>
                 <label style={{ display: 'block', fontSize: '12px', fontWeight: '750', color: '#334155', marginBottom: '5px' }}>
-                  {isMr ? 'गाव / शहर / परिसर' : 'Village / City / Area'}
+                  ८. {isMr ? 'मतदान केंद्र:' : 'Polling Station / Booth:'}
                 </label>
                 <input
                   type="text"
-                  value={cityOrVillage}
-                  onChange={(e) => setCityOrVillage(e.target.value)}
-                  placeholder="सांगली शहर"
+                  value={boothName}
+                  onChange={(e) => setBoothName(e.target.value)}
+                  placeholder={isMr ? 'उदा. शासकीय कन्या शाळा' : 'e.g. Govt Girls School'}
+                  style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              {/* ९. मतदान केंद्र क्रमांक */}
+              <div>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: '750', color: '#334155', marginBottom: '5px' }}>
+                  ९. {isMr ? 'मतदान केंद्र क्रमांक:' : 'Polling Booth Number:'}
+                </label>
+                <input
+                  type="text"
+                  value={boothNumber}
+                  onChange={(e) => setBoothNumber(e.target.value)}
+                  placeholder={isMr ? 'उदा. १०४' : 'e.g. 104'}
                   style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
                 />
               </div>
@@ -1061,8 +1355,8 @@ ${groundObservations || 'नोंद नाही'}
             </div>
 
             {/* Previous Election Results & Date */}
-            <div style={{ marginTop: '16px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap: '14px', width: '100%', boxSizing: 'border-box' }}>
-              <div>
+            <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '14px', width: '100%', boxSizing: 'border-box' }}>
+              <div style={{ maxWidth: '340px' }}>
                 <label style={{ display: 'block', fontSize: '12px', fontWeight: '750', color: '#334155', marginBottom: '5px' }}>
                   {isMr ? 'मागील निवडणुकीची तारीख' : 'Previous Election Date'}
                 </label>
@@ -1075,17 +1369,150 @@ ${groundObservations || 'नोंद नाही'}
                 />
               </div>
 
-              <div>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: '750', color: '#334155', marginBottom: '5px' }}>
-                  {isMr ? 'मागील निकाल व मताधिक्य' : 'Previous Election Result & Margin'}
-                </label>
-                <input
-                  type="text"
-                  value={previousResults}
-                  onChange={(e) => setPreviousResults(e.target.value)}
-                  placeholder="उदा. भाजप विजयी (मताधिक्य ६,९३९)"
-                  style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
-                />
+              {/* मागील विजेता (Rank 1, 2, 3 निकाल, पक्ष व मताधिक्य / Lead) */}
+              <div style={{ background: '#f8fafc', border: '1.5px solid #cbd5e1', borderRadius: '12px', padding: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' }}>
+                  <div>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14px', fontWeight: '850', color: '#0f172a' }}>
+                      <span>🏆</span>
+                      <span>{isMr ? 'मागील विजेता' : 'Previous Winner'}</span>
+                    </label>
+                    <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#64748b' }}>
+                      {isMr ? 'मागील निवडणुकीतील १, २, ३ निकाल, संबंधित पक्ष, मते व विजयाचे मताधिक्य (Lead):' : 'Rank 1, 2, 3 results, political parties, votes and lead margin:'}
+                    </p>
+                  </div>
+
+                  <span style={{ fontSize: '11.5px', background: '#dcfce7', color: '#15803d', fontWeight: '800', padding: '4px 10px', borderRadius: '20px', border: '1px solid #bbf7d0', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <span>✓</span> {isMr ? '१, २, ३ निकाल व मताधिक्य (Lead)' : 'Rank 1, 2, 3 & Lead'}
+                  </span>
+                </div>
+
+                {/* 1, 2, 3 Rank Cards */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '12px' }}>
+                  {previousWinners.map((winner, idx) => {
+                    const isFirst = winner.rank === 1;
+                    const isSecond = winner.rank === 2;
+                    const borderColor = isFirst ? '#86efac' : isSecond ? '#bfdbfe' : '#e2e8f0';
+                    const bgColor = isFirst ? '#f0fdf4' : isSecond ? '#eff6ff' : '#ffffff';
+                    const badgeBg = isFirst ? '#16a34a' : isSecond ? '#2563eb' : '#64748b';
+                    const rankEmoji = isFirst ? '🥇' : isSecond ? '🥈' : '🥉';
+                    const rankTitle = isFirst
+                      ? (isMr ? '१. विजेता (Rank 1 - Winner)' : 'Rank 1 - Winner')
+                      : isSecond
+                      ? (isMr ? '२. उपविजेता (Rank 2 - Runner-up)' : 'Rank 2 - Runner-up')
+                      : (isMr ? '३. तृतीय क्रमांक (Rank 3)' : 'Rank 3');
+
+                    return (
+                      <div
+                        key={winner.rank || idx}
+                        style={{
+                          background: bgColor,
+                          border: `1.5px solid ${borderColor}`,
+                          borderRadius: '10px',
+                          padding: '14px',
+                          boxShadow: '0 2px 6px rgba(0,0,0,0.02)',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '10px'
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <span style={{ fontSize: '13px', fontWeight: '850', color: isFirst ? '#15803d' : isSecond ? '#1d4ed8' : '#334155', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                            <span>{rankEmoji}</span>
+                            <span>{rankTitle}</span>
+                          </span>
+                          <span style={{ fontSize: '11px', background: badgeBg, color: '#ffffff', fontWeight: '800', padding: '2px 8px', borderRadius: '6px' }}>
+                            {winner.rank}
+                          </span>
+                        </div>
+
+                        {/* Candidate Name */}
+                        <div>
+                          <label style={{ display: 'block', fontSize: '11px', fontWeight: '750', color: '#475569', marginBottom: '3px' }}>
+                            {isMr ? 'उमेदवाराचे नाव' : 'Candidate Name'}
+                          </label>
+                          <input
+                            type="text"
+                            value={winner.candidate || ''}
+                            onChange={(e) => handleUpdateWinner(idx, 'candidate', e.target.value)}
+                            placeholder={isFirst ? 'सुधीर गाडगीळ' : isSecond ? 'पृथ्वीराज पाटील' : 'सचिन पवार'}
+                            style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '12.5px', fontWeight: '700', color: '#0f172a', background: '#ffffff', boxSizing: 'border-box' }}
+                          />
+                        </div>
+
+                        {/* Political Party */}
+                        <div>
+                          <label style={{ display: 'block', fontSize: '11px', fontWeight: '750', color: '#475569', marginBottom: '3px' }}>
+                            {isMr ? 'राजकीय पक्ष (Party)' : 'Political Party'}
+                          </label>
+                          <input
+                            type="text"
+                            value={winner.party || ''}
+                            onChange={(e) => handleUpdateWinner(idx, 'party', e.target.value)}
+                            placeholder={isFirst ? 'भारतीय जनता पक्ष (BJP)' : isSecond ? 'भारतीय राष्ट्रीय काँग्रेस (INC)' : 'बहुजन समाज पक्ष (BSP)'}
+                            style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '12.5px', fontWeight: '600', color: '#0f172a', background: '#ffffff', boxSizing: 'border-box' }}
+                          />
+                        </div>
+
+                        {/* Votes & Lead (मताधिक्य) */}
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                          <div>
+                            <label style={{ display: 'block', fontSize: '11px', fontWeight: '750', color: '#475569', marginBottom: '3px' }}>
+                              {isMr ? 'मिळालेली मते' : 'Votes'}
+                            </label>
+                            <input
+                              type="text"
+                              value={winner.votes || ''}
+                              onChange={(e) => handleUpdateWinner(idx, 'votes', e.target.value)}
+                              placeholder={isFirst ? '93,659' : isSecond ? '86,720' : '1,850'}
+                              style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '12.5px', color: '#0f172a', background: '#ffffff', boxSizing: 'border-box' }}
+                            />
+                          </div>
+
+                          <div>
+                            <label style={{ display: 'block', fontSize: '11px', fontWeight: '750', color: isFirst ? '#15803d' : '#475569', marginBottom: '3px' }}>
+                              {isFirst ? (isMr ? 'मताधिक्य (Lead)' : 'Lead Margin') : (isMr ? 'फरक / स्थिती' : 'Status/Diff')}
+                            </label>
+                            <input
+                              type="text"
+                              value={winner.lead || ''}
+                              onChange={(e) => handleUpdateWinner(idx, 'lead', e.target.value)}
+                              placeholder={isFirst ? '६,९३९ मते' : '-'}
+                              style={{
+                                width: '100%',
+                                padding: '7px 10px',
+                                borderRadius: '6px',
+                                border: isFirst ? '1.5px solid #86efac' : '1px solid #cbd5e1',
+                                fontSize: '12.5px',
+                                fontWeight: isFirst ? '800' : '500',
+                                color: isFirst ? '#15803d' : '#0f172a',
+                                background: isFirst ? '#f0fdf4' : '#ffffff',
+                                boxSizing: 'border-box'
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Lead Summary Bar */}
+                <div style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '8px', padding: '10px 14px', marginTop: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', fontSize: '12px', color: '#1e293b' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '16px' }}>⚡</span>
+                    <span>
+                      <strong>{isMr ? 'विजयाची आघाडी (Lead):' : 'Victory Lead:'}</strong>{' '}
+                      <span style={{ color: '#16a34a', fontWeight: '800' }}>
+                        {previousWinners[0]?.lead || '६,९३९ मतांची आघाडी'}
+                      </span>{' '}
+                      ({previousWinners[0]?.party || 'भाजप'} चे {previousWinners[0]?.candidate || 'सुधीर गाडगीळ'})
+                    </span>
+                  </div>
+                  <span style={{ color: '#64748b', fontSize: '11.5px' }}>
+                    {isMr ? '२ऱ्या क्रमांकापेक्षा आघाडीने विजयी' : 'Won with clear lead margin'}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -1103,27 +1530,51 @@ ${groundObservations || 'नोंद नाही'}
                 </p>
               </div>
 
-              <button
-                type="button"
-                onClick={handleAddParty}
-                style={{
-                  background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
-                  color: '#ffffff',
-                  border: 'none',
-                  borderRadius: '10px',
-                  padding: '9px 16px',
-                  fontSize: '13px',
-                  fontWeight: '800',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)'
-                }}
-              >
-                <Plus size={16} />
-                <span>{isMr ? 'नवीन पक्ष जोडा (Add Party)' : 'Add Party'}</span>
-              </button>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  onClick={() => setParties(STANDARD_16_PARTIES_DATA)}
+                  style={{
+                    background: '#eff6ff',
+                    color: '#1d4ed8',
+                    border: '1px solid #bfdbfe',
+                    borderRadius: '10px',
+                    padding: '8px 14px',
+                    fontSize: '12.5px',
+                    fontWeight: '800',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '5px'
+                  }}
+                  title="१६ अधिकृत पक्ष मूळ क्रमाने रिसेट करा"
+                >
+                  <RefreshCw size={14} />
+                  <span>{isMr ? '१६ पक्ष क्रमाने रिसेट करा' : 'Reset 16 Parties'}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleAddParty}
+                  style={{
+                    background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: '10px',
+                    padding: '9px 16px',
+                    fontSize: '13px',
+                    fontWeight: '800',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)'
+                  }}
+                >
+                  <Plus size={16} />
+                  <span>{isMr ? 'नवीन पक्ष जोडा (Add Party)' : 'Add Party'}</span>
+                </button>
+              </div>
             </div>
 
             {/* Parties List */}
@@ -1189,7 +1640,8 @@ ${groundObservations || 'नोंद नाही'}
                             type="text"
                             value={party.name}
                             onChange={(e) => handleUpdateParty(party.id, 'name', e.target.value)}
-                            placeholder={isMr ? 'उदा. भाजप / काँग्रेस' : 'e.g. BJP / Congress'}
+                            list="standard-16-parties-list"
+                            placeholder={isMr ? 'पक्षाचे नाव निवडा किंवा टाईप करा' : 'Select or type party name'}
                             style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '12.5px', boxSizing: 'border-box' }}
                           />
                         </div>
@@ -1219,6 +1671,7 @@ ${groundObservations || 'नोंद नाही'}
                             <option value="महायुती">महायुती (Mahayuti)</option>
                             <option value="महाविकास आघाडी">महाविकास आघाडी (MVA)</option>
                             <option value="तिसरी आघाडी">तिसरी आघाडी (Third Front)</option>
+                            <option value="डावी आघाडी">डावी आघाडी (Left Front)</option>
                             <option value="स्थानिक आघाडी">स्थानिक आघाडी (Local Alliance)</option>
                             <option value="स्वबळ">स्वबळ (Independent / Solo)</option>
                             <option value="अपक्ष">अपक्ष (Independent)</option>
@@ -1295,6 +1748,13 @@ ${groundObservations || 'नोंद नाही'}
                 })}
               </div>
             )}
+
+            {/* Standard 16 Parties Datalist */}
+            <datalist id="standard-16-parties-list">
+              {STANDARD_16_PARTIES_DATA.map((p) => (
+                <option key={p.id} value={p.name} />
+              ))}
+            </datalist>
           </div>
 
           {/* 4. Local Issues & Ground Observations */}
@@ -1837,6 +2297,25 @@ ${groundObservations || 'नोंद नाही'}
             <span style={{ background: '#fef3c7', color: '#92400e', padding: '2px 8px', borderRadius: '6px', fontWeight: '800' }}>📊 सांख्यिकीय अंदाज (अंतिम निकाल नव्हे)</span>
           </div>
 
+          {/* Election Geographic & Booth Details Strip */}
+          <div style={{ background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0', padding: '14px 18px', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
+            <div style={{ fontSize: '13px', fontWeight: '850', color: '#1e3a8a', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <MapPin size={15} color="#2563eb" />
+              <span>{isMr ? 'निवडणूक भौगोलिक व मतदारसंघ तपशील:' : 'Election Geography & Booth Details:'}</span>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '8px 16px', fontSize: '12px', color: '#334155' }}>
+              <div><strong>१. राज्य:</strong> {stateName || '-'}</div>
+              <div><strong>२. जिल्हा:</strong> {districtName || '-'}</div>
+              <div><strong>३. तालुका:</strong> {talukaName || '-'}</div>
+              <div><strong>४. शहर:</strong> {cityName || '-'}</div>
+              <div><strong>५. गाव:</strong> {villageName || '-'}</div>
+              <div><strong>६. प्रभाग / वार्ड:</strong> {wardName || '-'}</div>
+              <div><strong>७. विधानसभा:</strong> {constituency || '-'}</div>
+              <div><strong>८. मतदान केंद्र:</strong> {boothName || '-'}</div>
+              <div><strong>९. केंद्र क्रमांक:</strong> {boothNumber || '-'}</div>
+            </div>
+          </div>
+
           {/* 1. Executive Summary Cards */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px' }}>
             <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderTop: '4px solid #2563eb', borderRadius: '14px', padding: '16px', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
@@ -2114,7 +2593,7 @@ ${groundObservations || 'नोंद नाही'}
                 <span>{isMr ? 'प्रगत निवडणूक सर्वेक्षण व डेटा विश्लेषण' : 'Advanced Survey & Data Analytics'}</span>
               </div>
               <h2 style={{ margin: '6px 0 4px', fontSize: '22px', fontWeight: '900' }}>
-                {isMr ? 'क्रॉस-टॅब्युलेशन मॅट्रिक्स विश्लेषण (Cross-Tabulation Matrix)' : 'Cross-Tabulation Matrix Builder'}
+                {isMr ? 'घटकनिहाय तुलनात्मक विश्लेषण' : 'Comparative Analysis by Components'}
               </h2>
               <p style={{ margin: 0, fontSize: '13px', opacity: 0.9 }}>
                 {isMr

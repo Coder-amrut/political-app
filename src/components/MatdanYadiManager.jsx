@@ -391,7 +391,7 @@ export const MASTER_GEOGRAPHY = {
 };
 
 // Default initial dataset representing authentic Maharashtra Election Voter List covering all Talukas & Villages
-const INITIAL_VOTERS = [
+const RAW_INITIAL_VOTERS = [
   // सांगली - मिरज
   { id: 1, epic_no: 'MT/44/282/001001', name_mr: 'रमेश पांडुरंग पाटील', name_en: 'Ramesh Pandurang Patil', relative_mr: 'पांडुरंग पाटील (वडील)', age: 52, gender: 'male', house_no: '१४२/अ', village: 'माधवनगर', taluka: 'मिरज', district: 'सांगली', booth_no: '१', booth_name: 'जिल्हा परिषद प्राथमिक शाळा, माधवनगर खोली क्र. १' },
   { id: 2, epic_no: 'MT/44/282/001002', name_mr: 'सुनिता रमेश पाटील', name_en: 'Sunita Ramesh Patil', relative_mr: 'रमेश पाटील (पती)', age: 48, gender: 'female', house_no: '१४२/अ', village: 'माधवनगर', taluka: 'मिरज', district: 'सांगली', booth_no: '१', booth_name: 'जिल्हा परिषद प्राथमिक शाळा, माधवनगर खोली क्र. १' },
@@ -474,6 +474,125 @@ const INITIAL_VOTERS = [
   { id: 53, epic_no: 'MT/48/252/001001', name_mr: 'ज्ञानेश्वर पांडुरंग बडवे', name_en: 'Dnyaneshwar Pandurang Badve', relative_mr: 'पांडुरंग बडवे (वडील)', age: 49, gender: 'male', house_no: '७२', village: 'पंढरपूर शहर', taluka: 'पंढरपूर', district: 'सोलापूर', booth_no: '१', booth_name: 'कर्मवीर भाऊराव पाटील शाळा, पंढरपूर' },
 ];
 
+export const SURNAME_CASTE_MAP = {
+  'पाटील': 'मराठा',
+  'कदम': 'मराठा',
+  'जाधव': 'मराठा',
+  'भोसले': 'मराठा',
+  'चव्हाण': 'मराठा',
+  'सावंत': 'मराठा',
+  'थोरात': 'मराठा',
+  'मोरे': 'मराठा',
+  'यादव': 'मराठा',
+  'शिंदे': 'मराठा',
+  'बाबर': 'मराठा',
+  'मोहिते': 'मराठा',
+  'देशमुख': 'मराठा',
+  'नाईक': 'मराठा',
+  'साळुंखे': 'मराठा',
+  'तावरे': 'मराठा',
+  'माने': 'मराठा',
+  'पवार': 'मराठा',
+  'सूर्यवंशी': 'बौद्ध (SC)',
+  'गायकवाड': 'बौद्ध (SC)',
+  'कांबळे': 'बौद्ध (SC)',
+  'वाघमारे': 'बौद्ध (SC)',
+  'आवळे': 'मातंग (SC)',
+  'साठे': 'मातंग (SC)',
+  'कोळी': 'कोळी (SBC)',
+  'गुरव': 'गुरव (OBC)',
+  'माळी': 'माळी (OBC)',
+  'सुतार': 'सुतार (OBC)',
+  'कुंभार': 'कुंभार (OBC)',
+  'मेटकरी': 'धनगर (NT-C)',
+  'कोळेकर': 'धनगर (NT-C)',
+  'खोत': 'जैन',
+  'चौगुले': 'जैन',
+  'बिरादार': 'लिंगायत',
+  'जोशी': 'ब्राह्मण',
+  'बडवे': 'ब्राह्मण',
+  'कुलकर्णी': 'ब्राह्मण',
+  'देशपांडे': 'ब्राह्मण',
+  'गाडगीळ': 'ब्राह्मण',
+};
+
+export const getVoterCaste = (voter) => {
+  if (voter?.caste) return voter.caste;
+  if (voter?.cast) return voter.cast;
+  const fullName = voter?.name_mr || voter?.name_en || '';
+  const parts = fullName.trim().split(/\s+/).filter(Boolean);
+  const surname = parts.length > 0 ? parts[parts.length - 1] : '';
+  for (const [key, val] of Object.entries(SURNAME_CASTE_MAP)) {
+    if (surname.includes(key) || key.includes(surname)) {
+      return val;
+    }
+  }
+  return 'मराठा';
+};
+
+export const getVoterNameParts = (fullName = '') => {
+  const parts = fullName.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return { firstName: '', surname: '' };
+  if (parts.length === 1) return { firstName: parts[0], surname: parts[0] };
+  return {
+    firstName: parts[0],
+    surname: parts[parts.length - 1],
+  };
+};
+
+export const getSearchPlaceholder = (type, isMr) => {
+  switch (type) {
+    case 'caste':
+      return isMr
+        ? 'जात किंवा प्रवर्गाने शोधा (उदा. मराठा, बौद्ध, कोळी, धनगर, ब्राह्मण, जैन, लिंगायत...)'
+        : 'Search specifically by caste (e.g. Maratha, OBC, SC, Dhangar, Jain...)...';
+    case 'name':
+      return isMr
+        ? 'मतदाराच्या नावाने शोधा (उदा. रमेश, विकास, सचिन, दीपक, किरण...)'
+        : 'Search specifically by voter name (e.g. Ramesh, Vikas, Sachin...)...';
+    case 'surname':
+      return isMr
+        ? 'आडनावाने शोधा (उदा. पाटील, कदम, सूर्यवंशी, जाधव, भोसले, चव्हाण...)'
+        : 'Search specifically by surname (e.g. Patil, Kadam, Suryavanshi...)...';
+    case 'village':
+      return isMr
+        ? 'गावाच्या नावाने शोधा (उदा. माधवनगर, बुधगाव, कुपवाड, हरिपूर...)'
+        : 'Search specifically by village (e.g. Madhavnagar, Budhgaon...)...';
+    case 'area':
+      return isMr
+        ? 'परिसराच्या नावाने शोधा (उदा. स्टेशन रोड, विश्रामबाग...)'
+        : 'Search specifically by area (e.g. Station Area, Vishrambag...)...';
+    case 'ward':
+      return isMr
+        ? 'वॉर्ड किंवा प्रभागाने शोधा (उदा. प्रभाग क्र. ३, वॉर्ड १२...)'
+        : 'Search specifically by ward / prabhag (e.g. Ward 3, Prabhag 12...)...';
+    case 'booth':
+      return isMr
+        ? 'बूथ क्रमांक किंवा केंद्राने शोधा (उदा. ३, १०४, शासकीय कन्या शाळा...)'
+        : 'Search specifically by booth number or center (e.g. Booth 3, 104...)...';
+    default:
+      return isMr
+        ? 'मतदाराचे नाव, ओळखपत्र क्र. (EPIC), तालुका किंवा गावाचे नाव शोधा...'
+        : 'Search by voter name, EPIC no, taluka or village...';
+  }
+};
+
+const INITIAL_VOTERS = RAW_INITIAL_VOTERS.map((v, i) => {
+  const parts = getVoterNameParts(v.name_mr);
+  const partsEn = getVoterNameParts(v.name_en);
+  const caste = getVoterCaste(v);
+  return {
+    ...v,
+    first_name: parts.firstName,
+    surname: parts.surname,
+    first_name_en: partsEn.firstName,
+    surname_en: partsEn.surname,
+    caste: caste,
+    city: v.city || (v.village?.includes('शहर') ? v.village : `${v.taluka} शहर`),
+    prabhag: v.prabhag || `प्रभाग क्र. ${(i % 10) + 1}`,
+  };
+});
+
 export default function MatdanYadiManager({ lang = 'mr', title = null }) {
   const isMr = lang === 'mr';
   const fileInputRef = useRef(null);
@@ -484,7 +603,23 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
       const saved = localStorage.getItem('matdan_yadi_voters_db_v3');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length >= 30) return parsed;
+        if (Array.isArray(parsed) && parsed.length >= 30) {
+          return parsed.map((v, i) => {
+            const parts = getVoterNameParts(v.name_mr || '');
+            const partsEn = getVoterNameParts(v.name_en || '');
+            const caste = v.caste || v.cast || getVoterCaste(v);
+            return {
+              ...v,
+              first_name: v.first_name || parts.firstName,
+              surname: v.surname || parts.surname,
+              first_name_en: v.first_name_en || partsEn.firstName,
+              surname_en: v.surname_en || partsEn.surname,
+              caste: caste,
+              city: v.city || (v.village?.includes('शहर') ? v.village : (v.taluka ? `${v.taluka} शहर` : 'सांगली शहर')),
+              prabhag: v.prabhag || `प्रभाग क्र. ${(i % 10) + 1}`,
+            };
+          });
+        }
       }
     } catch {
       // fallback
@@ -515,16 +650,21 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
   const [boothsLoading, setBoothsLoading] = useState(false);
 
   // -------------------------------------------------------------
-  // Filter States: District -> Taluka -> Village -> Booth
+  // Filter States (7-Level Hierarchy): 1. District -> 2. Taluka -> 3. Village -> 4. City -> 5. Prabhag -> 6. Booth No -> 7. Polling Station
   const [selectedDistrict, setSelectedDistrict] = useState(''); // Initially unselected for clean simple UI
   const [selectedTaluka, setSelectedTaluka] = useState('');
   const [selectedVillage, setSelectedVillage] = useState('');
+  const [selectedCity, setSelectedCity] = useState('');
+  const [selectedPrabhag, setSelectedPrabhag] = useState('all');
   const [selectedBooth, setSelectedBooth] = useState('all');
+  const [selectedCenter, setSelectedCenter] = useState('all');
   const [showAllDistrictVoters, setShowAllDistrictVoters] = useState(false);
   const [isSearched, setIsSearched] = useState(false); // Controls table rendering on user search
-  const [genderFilter, setGenderFilter] = useState('all'); // all, male, female
-  const [ageGroupFilter, setAgeGroupFilter] = useState('all'); // all, 18-25, 26-40, 41-60, 60+
+  const [genderFilter, setGenderFilter] = useState('all'); // all, male, female, other
+  const [ageGroupFilter, setAgeGroupFilter] = useState('all'); // all, 18-25, 26-40, 41-60, 60+, custom
+  const [customAge, setCustomAge] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchType, setSearchType] = useState('all'); // 'all' | 'caste' | 'name' | 'surname' | 'village' | 'area'
 
   // Dynamic Geography States directly from DB
   const [dbDistricts, setDbDistricts] = useState([]);
@@ -579,6 +719,8 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
     gender: 'male',
     house_no: '',
     village: 'माधवनगर',
+    city: 'सांगली शहर',
+    prabhag: 'प्रभाग क्र. १',
     taluka: 'मिरज',
     district: 'सांगली',
     booth_no: '१',
@@ -747,13 +889,72 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
     return Array.from(new Set([...list, ...fromVoters])).sort();
   }, [selectedDistrict, selectedTaluka, dbVillages, voters]);
 
-  // Booths computed directly from Database + Loaded Voters
+  // 4. Cities (शहर) computed for the selected District/Taluka
+  const availableCities = useMemo(() => {
+    if (!selectedDistrict) return [];
+    const list = [];
+    if (selectedTaluka && selectedTaluka !== 'all') {
+      const places = MASTER_GEOGRAPHY[selectedDistrict]?.[selectedTaluka] || [];
+      places.forEach((p) => {
+        if (p.includes('शहर') && !list.includes(p)) list.push(p);
+      });
+      list.push(`${selectedTaluka} शहर`);
+    } else if (MASTER_GEOGRAPHY[selectedDistrict]) {
+      Object.keys(MASTER_GEOGRAPHY[selectedDistrict]).forEach((tal) => {
+        list.push(`${tal} शहर`);
+        const places = MASTER_GEOGRAPHY[selectedDistrict][tal] || [];
+        places.forEach((p) => {
+          if (p.includes('शहर') && !list.includes(p)) list.push(p);
+        });
+      });
+    }
+    voters
+      .filter((v) => v.district === selectedDistrict && (!selectedTaluka || selectedTaluka === 'all' || v.taluka === selectedTaluka))
+      .forEach((v) => {
+        if (v.city && !list.includes(v.city)) list.push(v.city);
+        if (v.village && v.village.includes('शहर') && !list.includes(v.village)) list.push(v.village);
+      });
+    return Array.from(new Set(list)).sort();
+  }, [selectedDistrict, selectedTaluka, voters]);
+
+  // 5. Area / Prabhag (परिसर / प्रभाग) computed for District/Taluka/Village
+  const availablePrabhags = useMemo(() => {
+    if (!selectedDistrict) return [];
+    const list = [];
+    voters
+      .filter((v) => {
+        if (v.district !== selectedDistrict) return false;
+        if (selectedTaluka && selectedTaluka !== 'all' && v.taluka !== selectedTaluka) return false;
+        if (selectedVillage && selectedVillage !== 'all' && v.village !== selectedVillage) return false;
+        return true;
+      })
+      .forEach((v) => {
+        if (v.prabhag && !list.includes(v.prabhag)) list.push(v.prabhag);
+        if (v.area && !list.includes(v.area)) list.push(v.area);
+      });
+    for (let i = 1; i <= 20; i++) {
+      const dev = String(i).replace(/\d/g, (d) => '०१२३४५६७८९'[d]);
+      const pName = `प्रभाग क्र. ${dev}`;
+      if (!list.includes(pName) && !list.includes(`प्रभाग क्र. ${i}`)) {
+        list.push(pName);
+      }
+    }
+    return Array.from(new Set(list));
+  }, [selectedDistrict, selectedTaluka, selectedVillage, voters]);
+
+  // 6. Booths (बूथ क्रमांक) computed from Database + Loaded Voters
   const availableBooths = useMemo(() => {
     if (!selectedDistrict) return [];
     const fromDb = (dbBooths || []).map((b) => (b.booth_no || '').replace('बूथ क्र. ', '').trim()).filter(Boolean);
     let list = voters.filter((v) => v.district === selectedDistrict);
     if (selectedTaluka && selectedTaluka !== 'all') list = list.filter((v) => v.taluka === selectedTaluka);
     if (selectedVillage && selectedVillage !== 'all') list = list.filter((v) => v.village === selectedVillage);
+    if (selectedCity && selectedCity !== 'all') {
+      list = list.filter((v) => v.city === selectedCity || v.village === selectedCity);
+    }
+    if (selectedPrabhag && selectedPrabhag !== 'all') {
+      list = list.filter((v) => v.prabhag === selectedPrabhag || v.area === selectedPrabhag);
+    }
     const fromVoters = list.map((v) => String(v.booth_no || '').replace('बूथ क्र. ', '').trim()).filter(Boolean);
     const combined = Array.from(new Set([...fromDb, ...fromVoters]))
       .filter(Boolean)
@@ -763,7 +964,25 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
         return numA - numB;
       });
     return combined.length > 0 ? combined : ['१', '२', '३', '४', '५', '६', '७', '८', '९', '१०'];
-  }, [dbBooths, voters, selectedDistrict, selectedTaluka, selectedVillage]);
+  }, [dbBooths, voters, selectedDistrict, selectedTaluka, selectedVillage, selectedCity, selectedPrabhag]);
+
+  // 7. Polling Centers (मतदान केंद्र) computed from Loaded Voters + Booths Directory
+  const availableCenters = useMemo(() => {
+    if (!selectedDistrict) return [];
+    let list = voters.filter((v) => v.district === selectedDistrict);
+    if (selectedTaluka && selectedTaluka !== 'all') list = list.filter((v) => v.taluka === selectedTaluka);
+    if (selectedVillage && selectedVillage !== 'all') list = list.filter((v) => v.village === selectedVillage);
+    if (selectedBooth && selectedBooth !== 'all') list = list.filter((v) => String(v.booth_no) === String(selectedBooth));
+    const centersFromVoters = list.map((v) => v.booth_name).filter(Boolean);
+    const centersFromDb = (boothsList || []).map((b) => b.booth_name || b.name_mr).filter(Boolean);
+    const combined = Array.from(new Set([...centersFromVoters, ...centersFromDb]));
+    return combined.length > 0 ? combined : [
+      'जिल्हा परिषद प्राथमिक शाळा',
+      'नगरपरिषद प्राथमिक शाळा क्र. १',
+      'शासकीय हायस्कूल',
+      'ग्रामपंचायत प्राथमिक शाळा'
+    ];
+  }, [voters, boothsList, selectedDistrict, selectedTaluka, selectedVillage, selectedBooth]);
 
   // Helper to extract booths for given taluka and village from DB
   const getBoothsForLocation = (taluka, village) => {
@@ -839,6 +1058,7 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
       const vil = overrideParams.village !== undefined ? overrideParams.village : selectedVillage;
       const booth = overrideParams.booth !== undefined ? overrideParams.booth : selectedBooth;
       const q = overrideParams.search !== undefined ? overrideParams.search : searchQuery;
+      const sType = overrideParams.search_type !== undefined ? overrideParams.search_type : searchType;
 
       const params = {
         district: dist,
@@ -848,6 +1068,7 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
         gender: genderFilter,
         age_group: ageGroupFilter,
         search: q,
+        search_type: sType,
       };
 
       const res = await apiClient.get('/voters-list', { params });
@@ -938,7 +1159,10 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
     setSelectedDistrict(val);
     setSelectedTaluka('');
     setSelectedVillage('');
+    setSelectedCity('');
+    setSelectedPrabhag('all');
     setSelectedBooth('all');
+    setSelectedCenter('all');
     setDbTalukas([]);
     setDbVillages([]);
     setShowAllDistrictVoters(false);
@@ -951,7 +1175,10 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
     const val = typeof valOrEvent === 'string' ? valOrEvent : valOrEvent?.target?.value || '';
     setSelectedTaluka(val);
     setSelectedVillage('');
+    setSelectedCity('');
+    setSelectedPrabhag('all');
     setSelectedBooth('all');
+    setSelectedCenter('all');
     setDbVillages([]);
     setShowAllDistrictVoters(false);
     setIsSearched(true);
@@ -963,12 +1190,38 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
   const handleVillageChange = (valOrEvent) => {
     const val = typeof valOrEvent === 'string' ? valOrEvent : valOrEvent?.target?.value || '';
     setSelectedVillage(val);
+    setSelectedPrabhag('all');
     setSelectedBooth('all');
+    setSelectedCenter('all');
     setShowAllDistrictVoters(false);
     setIsSearched(true);
     fetchVotersFromDb({ village: val });
     fetchVillageStats({ search: val });
     fetchBoothsDirectory({ village: val });
+  };
+
+  const handleCityChange = (valOrEvent) => {
+    const val = typeof valOrEvent === 'string' ? valOrEvent : valOrEvent?.target?.value || '';
+    setSelectedCity(val);
+    setIsSearched(true);
+  };
+
+  const handlePrabhagChange = (valOrEvent) => {
+    const val = typeof valOrEvent === 'string' ? valOrEvent : valOrEvent?.target?.value || '';
+    setSelectedPrabhag(val);
+    setIsSearched(true);
+  };
+
+  const handleBoothChange = (valOrEvent) => {
+    const val = typeof valOrEvent === 'string' ? valOrEvent : valOrEvent?.target?.value || '';
+    setSelectedBooth(val);
+    setIsSearched(true);
+  };
+
+  const handleCenterChange = (valOrEvent) => {
+    const val = typeof valOrEvent === 'string' ? valOrEvent : valOrEvent?.target?.value || '';
+    setSelectedCenter(val);
+    setIsSearched(true);
   };
 
   const handleSearch = () => {
@@ -983,66 +1236,164 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
     setSelectedDistrict('');
     setSelectedTaluka('');
     setSelectedVillage('');
+    setSelectedCity('');
+    setSelectedPrabhag('all');
     setSelectedBooth('all');
+    setSelectedCenter('all');
     setGenderFilter('all');
     setAgeGroupFilter('all');
+    setCustomAge('');
     setSearchQuery('');
+    setSearchType('all');
     setShowAllDistrictVoters(false);
     setIsSearched(false);
-    fetchVotersFromDb({ district: '', taluka: '', village: '', booth_no: '', search: '' });
+    fetchVotersFromDb({ district: '', taluka: '', village: '', booth_no: '', search: '', search_type: 'all' });
     fetchVillageStats({ district: '', taluka: '', search: '' });
     fetchBoothsDirectory({ district: '', taluka: '', village: '', search: '' });
     showToast(isMr ? 'सर्व फिल्टर्स पूर्ववत केले.' : 'All filters reset.');
   };
 
   // -------------------------------------------------------------
-  // Filtered Voters Output
+  // Filtered Voters Output (7-Level Hierarchy Matching + Targeted Search)
   // -------------------------------------------------------------
   const filteredVoters = useMemo(() => {
-    if (!selectedDistrict) return [];
+    if (!selectedDistrict && !searchQuery.trim() && !showAllDistrictVoters) return [];
     return voters.filter((v) => {
-      // 1. District
-      if (v.district !== selectedDistrict) return false;
-      // 2. Taluka
+      // 1. जिल्हा (District)
+      if (selectedDistrict && v.district !== selectedDistrict) return false;
+      // 2. तालुका (Taluka)
       if (selectedTaluka && selectedTaluka !== 'all' && v.taluka !== selectedTaluka) return false;
-      // 3. Village
+      // 3. गाव (Village)
       if (selectedVillage && selectedVillage !== 'all' && v.village !== selectedVillage) return false;
-      // 4. Booth
-      if (selectedBooth !== 'all' && String(v.booth_no) !== String(selectedBooth)) return false;
-      // 5. Gender
-      if (genderFilter !== 'all' && v.gender !== genderFilter) return false;
-      // 6. Age Group
-      if (ageGroupFilter === '18-25' && (v.age < 18 || v.age > 25)) return false;
-      if (ageGroupFilter === '26-40' && (v.age < 26 || v.age > 40)) return false;
-      if (ageGroupFilter === '41-60' && (v.age < 41 || v.age > 60)) return false;
-      if (ageGroupFilter === '60+' && v.age < 61) return false;
+      // 4. शहर (City)
+      if (selectedCity && selectedCity !== 'all') {
+        const vCity = v.city || (v.village?.includes('शहर') ? v.village : '');
+        const match = vCity === selectedCity || v.village?.includes(selectedCity) || v.city?.includes(selectedCity);
+        if (!match) return false;
+      }
+      // 5. परिसर / प्रभाग (Area / Prabhag)
+      if (selectedPrabhag && selectedPrabhag !== 'all') {
+        const vPrabhag = v.prabhag || v.area || '';
+        const match = vPrabhag === selectedPrabhag || v.village?.includes(selectedPrabhag) || v.booth_name?.includes(selectedPrabhag);
+        if (!match) return false;
+      }
+      // 6. बूथ क्रमांक (Booth No)
+      if (selectedBooth && selectedBooth !== 'all') {
+        const cleanV = String(v.booth_no || '').replace(/[^\d]/g, '');
+        const cleanS = String(selectedBooth).replace(/[^\d]/g, '');
+        if (cleanV && cleanS ? cleanV !== cleanS : String(v.booth_no) !== String(selectedBooth)) {
+          return false;
+        }
+      }
+      // 7. मतदान केंद्र (Polling Station / Center)
+      if (selectedCenter && selectedCenter !== 'all' && v.booth_name !== selectedCenter) return false;
 
-      // 7. Search query (matches EPIC, Marathi name, English name, House No, Village, Taluka)
+      // 8. Gender
+      if (genderFilter !== 'all') {
+        if (genderFilter === 'other') {
+          if (v.gender === 'male' || v.gender === 'female') return false;
+        } else if (v.gender !== genderFilter) {
+          return false;
+        }
+      }
+      // 9. Age Group & Custom Editable Age Filter
+      const vAge = Number(v.age);
+      const trimmedCustom = customAge.trim();
+      if (trimmedCustom) {
+        if (trimmedCustom.includes('-')) {
+          const parts = trimmedCustom.split('-').map((s) => parseInt(s.trim(), 10));
+          if (!isNaN(parts[0]) && !isNaN(parts[1])) {
+            if (vAge < parts[0] || vAge > parts[1]) return false;
+          } else if (!isNaN(parts[0])) {
+            if (vAge < parts[0]) return false;
+          }
+        } else if (trimmedCustom.endsWith('+')) {
+          const min = parseInt(trimmedCustom, 10);
+          if (!isNaN(min) && vAge < min) return false;
+        } else {
+          const exact = parseInt(trimmedCustom, 10);
+          if (!isNaN(exact) && vAge !== exact) return false;
+        }
+      } else {
+        if (ageGroupFilter === '18-25' && (v.age < 18 || v.age > 25)) return false;
+        if (ageGroupFilter === '26-40' && (v.age < 26 || v.age > 40)) return false;
+        if (ageGroupFilter === '41-60' && (v.age < 41 || v.age > 60)) return false;
+        if (ageGroupFilter === '60+' && v.age < 61) return false;
+      }
+
+      // 10. Search query with specific Search Type filter (cast, name, surname, gav, area, all)
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase().trim();
-        const epicMatch = v.epic_no?.toLowerCase().includes(q);
-        const nameMrMatch = v.name_mr?.toLowerCase().includes(q);
-        const nameEnMatch = v.name_en?.toLowerCase().includes(q);
-        const houseMatch = String(v.house_no || '').toLowerCase().includes(q);
-        const boothMatch = String(v.booth_no || '').includes(q);
-        const villageMatch = v.village?.toLowerCase().includes(q);
-        const talukaMatch = v.taluka?.toLowerCase().includes(q);
-        if (!epicMatch && !nameMrMatch && !nameEnMatch && !houseMatch && !boothMatch && !villageMatch && !talukaMatch) {
-          return false;
+        const voterCaste = (v.caste || v.cast || getVoterCaste(v)).toLowerCase();
+        const partsMr = getVoterNameParts(v.name_mr || '');
+        const partsEn = getVoterNameParts(v.name_en || '');
+        const fNameMr = (v.first_name || partsMr.firstName || '').toLowerCase();
+        const fNameEn = (v.first_name_en || partsEn.firstName || '').toLowerCase();
+        const sNameMr = (v.surname || partsMr.surname || '').toLowerCase();
+        const sNameEn = (v.surname_en || partsEn.surname || '').toLowerCase();
+        const vName = (v.village || '').toLowerCase();
+        const aName = (v.prabhag || v.area || v.area_name || '').toLowerCase();
+        const cName = (v.city || '').toLowerCase();
+
+        if (searchType === 'caste') {
+          if (!voterCaste.includes(q)) return false;
+        } else if (searchType === 'name') {
+          const mrMatch = (v.name_mr || '').toLowerCase().includes(q) || fNameMr.includes(q);
+          const enMatch = (v.name_en || '').toLowerCase().includes(q) || fNameEn.includes(q);
+          if (!mrMatch && !enMatch) return false;
+        } else if (searchType === 'surname') {
+          const sMatchMr = sNameMr.includes(q);
+          const sMatchEn = sNameEn.includes(q);
+          if (!sMatchMr && !sMatchEn) return false;
+        } else if (searchType === 'village') {
+          if (!vName.includes(q)) return false;
+        } else if (searchType === 'area') {
+          if (!aName.includes(q) && !cName.includes(q)) return false;
+        } else if (searchType === 'ward') {
+          const wMatch = (v.ward || v.ward_no || v.prabhag || v.prabhag_no || aName || '').toLowerCase().includes(q);
+          if (!wMatch) return false;
+        } else if (searchType === 'booth') {
+          const bNo = String(v.booth_no || v.booth || '').toLowerCase();
+          const bCenter = (v.booth_name || v.polling_center || '').toLowerCase();
+          if (!bNo.includes(q) && !bCenter.includes(q)) return false;
+        } else {
+          // 'all'
+          const epicMatch = v.epic_no?.toLowerCase().includes(q);
+          const nameMrMatch = v.name_mr?.toLowerCase().includes(q);
+          const nameEnMatch = v.name_en?.toLowerCase().includes(q);
+          const casteMatch = voterCaste.includes(q);
+          const houseMatch = String(v.house_no || '').toLowerCase().includes(q);
+          const boothMatch = String(v.booth_no || '').includes(q);
+          const villageMatch = vName.includes(q);
+          const talukaMatch = v.taluka?.toLowerCase().includes(q);
+          const cityMatch = cName.includes(q);
+          const prabhagMatch = aName.includes(q);
+          const centerMatch = v.booth_name?.toLowerCase().includes(q);
+
+          if (!epicMatch && !nameMrMatch && !nameEnMatch && !casteMatch && !houseMatch && !boothMatch && !villageMatch && !talukaMatch && !cityMatch && !prabhagMatch && !centerMatch) {
+            return false;
+          }
         }
       }
 
       return true;
     });
-  }, [voters, selectedDistrict, selectedTaluka, selectedVillage, selectedBooth, genderFilter, ageGroupFilter, searchQuery]);
+  }, [voters, selectedDistrict, selectedTaluka, selectedVillage, selectedCity, selectedPrabhag, selectedBooth, selectedCenter, genderFilter, ageGroupFilter, customAge, searchQuery, searchType, showAllDistrictVoters]);
 
   // Statistics
-    const hasActiveSearchOrFilter = Boolean(
+  const hasActiveSearchOrFilter = Boolean(
     isSearched ||
     searchQuery.trim().length > 0 ||
+    genderFilter !== 'all' ||
+    ageGroupFilter !== 'all' ||
+    customAge.trim().length > 0 ||
     showAllDistrictVoters ||
     (selectedDistrict && selectedTaluka && selectedTaluka !== '' && selectedTaluka !== 'all') ||
-    (selectedDistrict && selectedVillage && selectedVillage !== '' && selectedVillage !== 'all')
+    (selectedDistrict && selectedVillage && selectedVillage !== '' && selectedVillage !== 'all') ||
+    (selectedCity && selectedCity !== 'all') ||
+    (selectedPrabhag && selectedPrabhag !== 'all') ||
+    (selectedBooth && selectedBooth !== 'all') ||
+    (selectedCenter && selectedCenter !== 'all')
   );
 
   const stats = useMemo(() => {
@@ -1050,9 +1401,10 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
     const total = baseList.length;
     const male = baseList.filter((v) => v.gender === 'male').length;
     const female = baseList.filter((v) => v.gender === 'female').length;
+    const other = baseList.filter((v) => v.gender !== 'male' && v.gender !== 'female').length;
     const boothsCount = new Set(baseList.map((v) => v.booth_no)).size;
     const villagesCount = new Set(baseList.map((v) => v.village)).size;
-    return { total, male, female, boothsCount, villagesCount };
+    return { total, male, female, other, boothsCount, villagesCount };
   }, [filteredVoters, voters, selectedDistrict]);
 
   // -------------------------------------------------------------
@@ -1179,9 +1531,17 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
       // Save directly into database table (neta_citizens) via API
       await apiClient.post('/voters-list', newVoter);
 
+      const parts = getVoterNameParts(newVoter.name_mr);
+      const partsEn = getVoterNameParts(newVoter.name_en || newVoter.name_mr);
+      const caste = newVoter.caste || getVoterCaste(newVoter);
       const created = {
         ...newVoter,
         id: Date.now(),
+        first_name: parts.firstName,
+        surname: parts.surname,
+        first_name_en: partsEn.firstName,
+        surname_en: partsEn.surname,
+        caste: caste,
         name_en: newVoter.name_en || newVoter.name_mr,
         booth_name: newVoter.booth_name || `बूथ क्र. ${newVoter.booth_no}`,
       };
@@ -1206,6 +1566,7 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
         name_mr: '',
         name_en: '',
         relative_mr: '',
+        caste: '',
         age: 30,
         gender: 'male',
         house_no: '',
@@ -1218,9 +1579,17 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
       showToast(isMr ? '✓ नवीन मतदार यशस्वीरीत्या डेटाबेसमध्ये नोंदवला गेला!' : '✓ Voter saved to database successfully!');
     } catch (err) {
       console.error('Store voter error:', err);
+      const parts = getVoterNameParts(newVoter.name_mr);
+      const partsEn = getVoterNameParts(newVoter.name_en || newVoter.name_mr);
+      const caste = newVoter.caste || getVoterCaste(newVoter);
       const created = {
         ...newVoter,
         id: Date.now(),
+        first_name: parts.firstName,
+        surname: parts.surname,
+        first_name_en: partsEn.firstName,
+        surname_en: partsEn.surname,
+        caste: caste,
         name_en: newVoter.name_en || newVoter.name_mr,
         booth_name: newVoter.booth_name || `बूथ क्र. ${newVoter.booth_no}`,
       };
@@ -1237,7 +1606,23 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
       return;
     }
 
-    const headers = ['अ.क्र.', 'मतदार ओळखपत्र (EPIC)', 'नाव (मराठी)', 'नाव (English)', 'नातेवाईक', 'वय', 'लिंग', 'घर क्र.', 'गाव', 'तालुका', 'जिल्हा', 'बूथ क्र.', 'बूथ नाव'];
+    const headers = [
+      'अ.क्र.',
+      'मतदार ओळखपत्र (EPIC)',
+      'नाव (मराठी)',
+      'नाव (English)',
+      'नातेवाईक',
+      'वय',
+      'लिंग',
+      'घर क्र.',
+      'जिल्हा',
+      'तालुका',
+      'गाव',
+      'शहर',
+      'परिसर / प्रभाग',
+      'बूथ क्र.',
+      'मतदान केंद्र'
+    ];
     const rows = filteredVoters.map((v, idx) => [
       idx + 1,
       v.epic_no,
@@ -1245,11 +1630,13 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
       `"${v.name_en}"`,
       `"${v.relative_mr || ''}"`,
       v.age,
-      v.gender === 'male' ? 'पुरुष' : 'महिला',
+      v.gender === 'male' ? 'पुरुष' : v.gender === 'female' ? 'महिला' : 'इतर',
       `"${v.house_no || ''}"`,
-      `"${v.village}"`,
-      `"${v.taluka}"`,
-      `"${v.district}"`,
+      `"${v.district || ''}"`,
+      `"${v.taluka || ''}"`,
+      `"${v.village || ''}"`,
+      `"${v.city || (v.village?.includes('शहर') ? v.village : (v.taluka ? `${v.taluka} शहर` : ''))}"`,
+      `"${v.prabhag || 'प्रभाग क्र. १'}"`,
       v.booth_no,
       `"${v.booth_name || ''}"`
     ]);
@@ -1449,7 +1836,7 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
               transition: 'all 0.15s ease',
             }}
           >
-            <Upload size={16} />
+            <Download size={16} />
             <span>{isMr ? 'मतदान यादी अपलोड करा' : 'Upload Voter List'}</span>
           </button>
 
@@ -1524,7 +1911,7 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
             }}
             title={isMr ? 'सध्याची यादी CSV मध्ये डाऊनलोड करा' : 'Export current filtered view to CSV'}
           >
-            <Download size={16} />
+            <Upload size={16} />
             <span>{isMr ? 'CSV एक्सपोर्ट' : 'Export'}</span>
           </button>
         </div>
@@ -1550,7 +1937,7 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Filter size={18} color="#2563eb" />
                 <span style={{ fontSize: '14px', fontWeight: '800', color: '#0f172a' }}>
-                  {isMr ? 'मतदान यादी फिल्टर्स (जिल्हा ➔ तालुका ➔ गाव ➔ बूथ)' : 'Voter List Geographic Filters'}
+                  {isMr ? 'मतदान यादी फिल्टर्स (जिल्हा ➔ तालुका ➔ गाव ➔ शहर ➔ परिसर / प्रभाग ➔ बूथ क्रमांक ➔ मतदान केंद्र)' : 'Voter List Geographic Filters'}
                 </span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -1573,9 +1960,9 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
               </div>
             </div>
 
-            {/* 4-Column Dropdowns with Step-by-Step Cascading */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
-              {/* 1. District */}
+            {/* 7-Level Geographic Hierarchy Filters in Requested Sequence */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
+              {/* १. जिल्हा (District) */}
               <div>
                 <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#334155', marginBottom: '5px' }}>
                   १. {isMr ? 'जिल्हा निवडा (District)' : '1. District'}
@@ -1588,21 +1975,21 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
                     padding: '9px 12px',
                     borderRadius: '8px',
                     border: selectedDistrict ? '2px solid #2563eb' : '1.5px solid #cbd5e1',
-                    fontSize: '13.5px',
+                    fontSize: '13px',
                     fontWeight: '700',
                     color: selectedDistrict ? '#1e3a8a' : '#64748b',
                     background: selectedDistrict ? '#eff6ff' : '#ffffff',
                     outline: 'none',
                   }}
                 >
-                  <option value="">{isMr ? '-- प्रथम जिल्हा निवडा --' : '-- 1. Select District --'}</option>
+                  <option value="">{isMr ? '-- १. जिल्हा निवडा --' : '-- 1. Select District --'}</option>
                   {availableDistricts.map((d) => (
                     <option key={d} value={d}>🏛️ {d}</option>
                   ))}
                 </select>
               </div>
 
-              {/* 2. Taluka (disabled until district is selected) */}
+              {/* २. तालुका (Taluka) */}
               <div>
                 <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#334155', marginBottom: '5px' }}>
                   २. {isMr ? 'तालुका निवडा (Taluka)' : '2. Taluka'}
@@ -1616,7 +2003,7 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
                     padding: '9px 12px',
                     borderRadius: '8px',
                     border: selectedTaluka && selectedTaluka !== 'all' ? '2px solid #059669' : '1.5px solid #cbd5e1',
-                    fontSize: '13.5px',
+                    fontSize: '13px',
                     fontWeight: '600',
                     color: !selectedDistrict ? '#94a3b8' : selectedTaluka && selectedTaluka !== 'all' ? '#065f46' : '#0f172a',
                     background: !selectedDistrict ? '#f1f5f9' : selectedTaluka && selectedTaluka !== 'all' ? '#f0fdf4' : '#ffffff',
@@ -1627,7 +2014,7 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
                   <option value="">
                     {!selectedDistrict
                       ? (isMr ? '🔒 आधी जिल्हा निवडा' : '🔒 Select District First')
-                      : (isMr ? '-- २. सर्व तालुके (किंवा तालुका निवडा) --' : '-- 2. Select Taluka --')}
+                      : (isMr ? '-- २. सर्व तालुके (किंवा निवडा) --' : '-- 2. Select Taluka --')}
                   </option>
                   {selectedDistrict && <option value="all">{isMr ? 'सर्व तालुके (All Talukas)' : 'All Talukas'}</option>}
                   {selectedDistrict &&
@@ -1637,71 +2024,162 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
                 </select>
               </div>
 
-              {/* 3. Village (disabled until taluka is selected) */}
+              {/* ३. गाव (Village) */}
               <div>
                 <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#334155', marginBottom: '5px' }}>
-                  ३. {isMr ? 'गाव / परिसर निवडा (Village)' : '3. Village/Area'}
+                  ३. {isMr ? 'गाव निवडा (Village)' : '3. Village'}
                 </label>
                 <select
                   value={selectedVillage}
                   onChange={handleVillageChange}
-                  disabled={!selectedDistrict || !selectedTaluka || selectedTaluka === 'all'}
+                  disabled={!selectedDistrict}
                   style={{
                     width: '100%',
                     padding: '9px 12px',
                     borderRadius: '8px',
                     border: selectedVillage && selectedVillage !== 'all' ? '2px solid #d97706' : '1.5px solid #cbd5e1',
-                    fontSize: '13.5px',
+                    fontSize: '13px',
                     fontWeight: '600',
-                    color: (!selectedDistrict || !selectedTaluka || selectedTaluka === 'all') ? '#94a3b8' : selectedVillage && selectedVillage !== 'all' ? '#92400e' : '#0f172a',
-                    background: (!selectedDistrict || !selectedTaluka || selectedTaluka === 'all') ? '#f1f5f9' : selectedVillage && selectedVillage !== 'all' ? '#fffbeb' : '#ffffff',
-                    cursor: (!selectedDistrict || !selectedTaluka || selectedTaluka === 'all') ? 'not-allowed' : 'pointer',
+                    color: !selectedDistrict ? '#94a3b8' : selectedVillage && selectedVillage !== 'all' ? '#92400e' : '#0f172a',
+                    background: !selectedDistrict ? '#f1f5f9' : selectedVillage && selectedVillage !== 'all' ? '#fffbeb' : '#ffffff',
+                    cursor: !selectedDistrict ? 'not-allowed' : 'pointer',
                     outline: 'none',
                   }}
                 >
                   <option value="">
-                    {!selectedTaluka || selectedTaluka === 'all'
-                      ? (isMr ? '🔒 आधी तालुका निवडा' : '🔒 Select Taluka First')
-                      : (isMr ? '-- ३. सर्व गावे (किंवा गाव निवडा) --' : '-- 3. Select Village --')}
+                    {!selectedDistrict
+                      ? (isMr ? '🔒 आधी जिल्हा निवडा' : '🔒 Select District First')
+                      : (isMr ? '-- ३. सर्व गावे (किंवा निवडा) --' : '-- 3. Select Village --')}
                   </option>
-                  {selectedTaluka && selectedTaluka !== 'all' && (
-                    <option value="all">{isMr ? 'सर्व गावे (All Villages)' : 'All Villages'}</option>
-                  )}
-                  {selectedTaluka &&
-                    selectedTaluka !== 'all' &&
+                  {selectedDistrict && <option value="all">{isMr ? 'सर्व गावे (All Villages)' : 'All Villages'}</option>}
+                  {selectedDistrict &&
                     availableVillages.map((v) => (
                       <option key={v} value={v}>🏡 {v}</option>
                     ))}
                 </select>
               </div>
 
-              {/* 4. Booth (disabled until village is selected) */}
+              {/* ४. शहर (City) */}
               <div>
                 <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#334155', marginBottom: '5px' }}>
-                  ४. {isMr ? 'बूथ क्र. निवडा (Booth No)' : '4. Booth No'}
+                  ४. {isMr ? 'शहर निवडा (City)' : '4. City'}
+                </label>
+                <select
+                  value={selectedCity}
+                  onChange={handleCityChange}
+                  disabled={!selectedDistrict}
+                  style={{
+                    width: '100%',
+                    padding: '9px 12px',
+                    borderRadius: '8px',
+                    border: selectedCity && selectedCity !== 'all' ? '2px solid #0891b2' : '1.5px solid #cbd5e1',
+                    fontSize: '13px',
+                    fontWeight: '600',
+                    color: !selectedDistrict ? '#94a3b8' : selectedCity && selectedCity !== 'all' ? '#0e7490' : '#0f172a',
+                    background: !selectedDistrict ? '#f1f5f9' : selectedCity && selectedCity !== 'all' ? '#ecfeff' : '#ffffff',
+                    cursor: !selectedDistrict ? 'not-allowed' : 'pointer',
+                    outline: 'none',
+                  }}
+                >
+                  <option value="">
+                    {!selectedDistrict
+                      ? (isMr ? '🔒 आधी जिल्हा निवडा' : '🔒 Select District First')
+                      : (isMr ? '-- ४. सर्व शहरे (किंवा निवडा) --' : '-- 4. Select City --')}
+                  </option>
+                  {selectedDistrict && <option value="all">{isMr ? 'सर्व शहरे (All Cities)' : 'All Cities'}</option>}
+                  {selectedDistrict &&
+                    availableCities.map((c) => (
+                      <option key={c} value={c}>🏙️ {c}</option>
+                    ))}
+                </select>
+              </div>
+
+              {/* ५. परिसर / प्रभाग (Area / Prabhag) */}
+              <div>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#334155', marginBottom: '5px' }}>
+                  ५. {isMr ? 'परिसर / प्रभाग निवडा' : '5. Area / Prabhag'}
+                </label>
+                <select
+                  value={selectedPrabhag}
+                  onChange={handlePrabhagChange}
+                  disabled={!selectedDistrict}
+                  style={{
+                    width: '100%',
+                    padding: '9px 12px',
+                    borderRadius: '8px',
+                    border: selectedPrabhag !== 'all' ? '2px solid #e11d48' : '1.5px solid #cbd5e1',
+                    fontSize: '13px',
+                    fontWeight: '600',
+                    color: !selectedDistrict ? '#94a3b8' : selectedPrabhag !== 'all' ? '#be123c' : '#0f172a',
+                    background: !selectedDistrict ? '#f1f5f9' : selectedPrabhag !== 'all' ? '#fff1f2' : '#ffffff',
+                    cursor: !selectedDistrict ? 'not-allowed' : 'pointer',
+                    outline: 'none',
+                  }}
+                >
+                  <option value="all">{isMr ? 'सर्व परिसर / प्रभाग (All)' : 'All Areas / Wards'}</option>
+                  {selectedDistrict &&
+                    availablePrabhags.map((p) => (
+                      <option key={p} value={p}>🏘️ {p}</option>
+                    ))}
+                </select>
+              </div>
+
+              {/* ६. बूथ क्रमांक (Booth Number) */}
+              <div>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#334155', marginBottom: '5px' }}>
+                  ६. {isMr ? 'बूथ क्रमांक निवडा (Booth No)' : '6. Booth No'}
                 </label>
                 <select
                   value={selectedBooth}
-                  onChange={(e) => setSelectedBooth(e.target.value)}
-                  disabled={!selectedVillage || selectedVillage === 'all'}
+                  onChange={handleBoothChange}
+                  disabled={!selectedDistrict}
                   style={{
                     width: '100%',
                     padding: '9px 12px',
                     borderRadius: '8px',
                     border: selectedBooth !== 'all' ? '2px solid #7c3aed' : '1.5px solid #cbd5e1',
-                    fontSize: '13.5px',
+                    fontSize: '13px',
                     fontWeight: '600',
-                    color: (!selectedVillage || selectedVillage === 'all') ? '#94a3b8' : selectedBooth !== 'all' ? '#5b21b6' : '#0f172a',
-                    background: (!selectedVillage || selectedVillage === 'all') ? '#f1f5f9' : selectedBooth !== 'all' ? '#f5f3ff' : '#ffffff',
-                    cursor: (!selectedVillage || selectedVillage === 'all') ? 'not-allowed' : 'pointer',
+                    color: !selectedDistrict ? '#94a3b8' : selectedBooth !== 'all' ? '#5b21b6' : '#0f172a',
+                    background: !selectedDistrict ? '#f1f5f9' : selectedBooth !== 'all' ? '#f5f3ff' : '#ffffff',
+                    cursor: !selectedDistrict ? 'not-allowed' : 'pointer',
                     outline: 'none',
                   }}
                 >
-                  <option value="all">{isMr ? 'सर्व बूथ (All Booths)' : 'All Booths'}</option>
-                  {selectedVillage &&
-                    selectedVillage !== 'all' &&
+                  <option value="all">{isMr ? 'सर्व बूथ क्रमांक (All Booths)' : 'All Booths'}</option>
+                  {selectedDistrict &&
                     availableBooths.map((b) => (
-                      <option key={b} value={b}>बूथ क्र. {b}</option>
+                      <option key={b} value={b}>🗳️ बूथ क्र. {b}</option>
+                    ))}
+                </select>
+              </div>
+
+              {/* ७. मतदान केंद्र (Polling Station / Center) */}
+              <div>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: '700', color: '#334155', marginBottom: '5px' }}>
+                  ७. {isMr ? 'मतदान केंद्र निवडा (Center)' : '7. Polling Center'}
+                </label>
+                <select
+                  value={selectedCenter}
+                  onChange={handleCenterChange}
+                  disabled={!selectedDistrict}
+                  style={{
+                    width: '100%',
+                    padding: '9px 12px',
+                    borderRadius: '8px',
+                    border: selectedCenter !== 'all' ? '2px solid #4f46e5' : '1.5px solid #cbd5e1',
+                    fontSize: '13px',
+                    fontWeight: '600',
+                    color: !selectedDistrict ? '#94a3b8' : selectedCenter !== 'all' ? '#3730a3' : '#0f172a',
+                    background: !selectedDistrict ? '#f1f5f9' : selectedCenter !== 'all' ? '#eef2ff' : '#ffffff',
+                    cursor: !selectedDistrict ? 'not-allowed' : 'pointer',
+                    outline: 'none',
+                  }}
+                >
+                  <option value="all">{isMr ? 'सर्व मतदान केंद्रे (All)' : 'All Polling Centers'}</option>
+                  {selectedDistrict &&
+                    availableCenters.map((c) => (
+                      <option key={c} value={c}>🏢 {c}</option>
                     ))}
                 </select>
               </div>
@@ -1709,34 +2187,80 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
 
             {/* Second Row: Real-time Search + Quick Demographic Filters */}
             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center', paddingTop: '4px' }}>
-              {/* Search Box */}
-              <div style={{ position: 'relative', flex: 1, minWidth: '260px' }}>
-                <Search size={17} color="#94a3b8" style={{ position: 'absolute', left: '12px', top: '11px' }} />
-                <input
-                  type="text"
-                  placeholder={isMr ? 'मतदाराचे नाव, ओळखपत्र क्र. (EPIC), तालुका किंवा गावाचे नाव शोधा...' : 'Search by voter name, EPIC no, taluka or village...'}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === "Enter") handleSearch(); }}
+              {/* Search Criteria Dropdown + Search Box */}
+              <div
+                style={{
+                  display: 'flex',
+                  flex: 1,
+                  minWidth: '280px',
+                  borderRadius: '8px',
+                  border: '1.5px solid #cbd5e1',
+                  background: '#ffffff',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+                }}
+              >
+                {/* Search Type Selector Dropdown (जात, नाव, आडनाव, गाव, परिसर / प्रभाग) */}
+                <select
+                  value={searchType}
+                  onChange={(e) => setSearchType(e.target.value)}
+                  title={isMr ? 'शोध प्रकार निवडा (Search By)' : 'Select Search Field'}
                   style={{
-                    width: '100%',
-                    boxSizing: 'border-box',
-                    padding: '9px 12px 9px 38px',
-                    borderRadius: '8px',
-                    border: '1.5px solid #cbd5e1',
-                    fontSize: '13.5px',
+                    padding: '9px 12px',
+                    border: 'none',
+                    borderRight: '1.5px solid #e2e8f0',
+                    background: '#f8fafc',
+                    color: '#1e293b',
+                    fontSize: '13px',
+                    fontWeight: '700',
                     outline: 'none',
+                    cursor: 'pointer',
+                    borderTopLeftRadius: '7px',
+                    borderBottomLeftRadius: '7px',
+                    minWidth: '135px',
                   }}
-                />
-                {searchQuery && (
-                  <button
-                    type="button"
-                    onClick={() => setSearchQuery('')}
-                    style={{ position: 'absolute', right: '10px', top: '9px', background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8' }}
-                  >
-                    <X size={16} />
-                  </button>
-                )}
+                >
+                  <option value="all">{isMr ? '🔍 सर्व (All)' : '🔍 All Fields'}</option>
+                  <option value="caste">{isMr ? '🏷️ जात (Cast)' : '🏷️ Cast'}</option>
+                  <option value="name">{isMr ? '👤 नाव (Name)' : '👤 Name'}</option>
+                  <option value="surname">{isMr ? '👥 आडनाव (Surname)' : '👥 Surname'}</option>
+                  <option value="village">{isMr ? '🏡 गाव (Gav)' : '🏡 Gav'}</option>
+                  <option value="area">{isMr ? '🏘️ परिसर (Area)' : '🏘️ Area'}</option>
+                  <option value="ward">{isMr ? '🏛️ वॉर्ड (Ward)' : '🏛️ Ward'}</option>
+                  <option value="booth">{isMr ? '🗳️ बूथ (Booth)' : '🗳️ Booth'}</option>
+                </select>
+
+                {/* Input Box */}
+                <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center' }}>
+                  <Search size={16} color="#94a3b8" style={{ position: 'absolute', left: '12px' }} />
+                  <input
+                    type="text"
+                    placeholder={getSearchPlaceholder(searchType, isMr)}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter") handleSearch(); }}
+                    style={{
+                      width: '100%',
+                      boxSizing: 'border-box',
+                      padding: '9px 34px 9px 36px',
+                      border: 'none',
+                      fontSize: '13.5px',
+                      outline: 'none',
+                      background: 'transparent',
+                      borderTopRightRadius: '7px',
+                      borderBottomRightRadius: '7px',
+                    }}
+                  />
+                  {searchQuery && (
+                    <button
+                      type="button"
+                      onClick={() => setSearchQuery('')}
+                      style={{ position: 'absolute', right: '10px', background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8' }}
+                      title={isMr ? 'साफ करा' : 'Clear'}
+                    >
+                      <X size={16} />
+                    </button>
+                  )}
+                </div>
               </div>
 
               {/* Gender Filter */}
@@ -1756,28 +2280,101 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
                 <option value="all">{isMr ? 'लिंग: सर्व (Gender: All)' : 'Gender: All'}</option>
                 <option value="male">{isMr ? '👨 फक्त पुरुष (Male)' : 'Male Only'}</option>
                 <option value="female">{isMr ? '👩 फक्त महिला (Female)' : 'Female Only'}</option>
+                <option value="other">{isMr ? '⚧️ फक्त इतर (Other)' : 'Other Only'}</option>
               </select>
 
-              {/* Age Group */}
-              <select
-                value={ageGroupFilter}
-                onChange={(e) => setAgeGroupFilter(e.target.value)}
-                style={{
-                  padding: '9px 12px',
-                  borderRadius: '8px',
-                  border: '1.5px solid #cbd5e1',
-                  fontSize: '13px',
-                  fontWeight: '600',
-                  color: '#334155',
-                  background: '#ffffff',
-                }}
-              >
-                <option value="all">{isMr ? 'वयोगट: सर्व (Age: All)' : 'Age: All'}</option>
-                <option value="18-25">{isMr ? '१८ - २५ वर्षे (युवा)' : '18-25 Years'}</option>
-                <option value="26-40">{isMr ? '२६ - ४० वर्षे' : '26-40 Years'}</option>
-                <option value="41-60">{isMr ? '४१ - ६० वर्षे' : '41-60 Years'}</option>
-                <option value="60+">{isMr ? '६०+ वर्षे (ज्येष्ठ)' : '60+ Years'}</option>
-              </select>
+              {/* Age Filter: Dropdown + Editable Input */}
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                <select
+                  value={ageGroupFilter}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setAgeGroupFilter(val);
+                    if (val === 'all') {
+                      setCustomAge('');
+                    } else if (val === '18-25' || val === '26-40' || val === '41-60' || val === '60+') {
+                      setCustomAge(val);
+                    }
+                  }}
+                  title={isMr ? 'वयोगट निवडा' : 'Select Age Group'}
+                  style={{
+                    padding: '9px 12px',
+                    borderRadius: '8px',
+                    border: '1.5px solid #cbd5e1',
+                    fontSize: '13px',
+                    fontWeight: '600',
+                    color: '#334155',
+                    background: '#ffffff',
+                    outline: 'none',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <option value="all">{isMr ? 'वयोगट: सर्व (Age: All)' : 'Age: All'}</option>
+                  <option value="18-25">{isMr ? '१८ - २५ वर्षे (युवा)' : '18-25 Years'}</option>
+                  <option value="26-40">{isMr ? '२६ - ४० वर्षे' : '26-40 Years'}</option>
+                  <option value="41-60">{isMr ? '४१ - ६० वर्षे' : '41-60 Years'}</option>
+                  <option value="60+">{isMr ? '६०+ वर्षे (ज्येष्ठ)' : '60+ Years'}</option>
+                  <option value="custom">{isMr ? '✏️ सानुकूल वय (Custom Age)' : '✏️ Custom Age'}</option>
+                </select>
+
+                {/* Editable Age Input */}
+                <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
+                  <input
+                    type="text"
+                    value={customAge}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setCustomAge(val);
+                      if (val.trim()) {
+                        if (['18-25', '26-40', '41-60', '60+'].includes(val.trim())) {
+                          setAgeGroupFilter(val.trim());
+                        } else {
+                          setAgeGroupFilter('custom');
+                        }
+                      } else {
+                        setAgeGroupFilter('all');
+                      }
+                    }}
+                    placeholder={isMr ? 'वय टाका (उदा. २५, ३०-४५)' : 'Age (e.g. 25, 30-45)'}
+                    title={isMr ? 'थेट वय किंवा वयोगट टाका' : 'Type exact age or custom range'}
+                    style={{
+                      padding: '9px 28px 9px 12px',
+                      borderRadius: '8px',
+                      border: customAge.trim() ? '1.5px solid #3b82f6' : '1.5px solid #cbd5e1',
+                      background: customAge.trim() ? '#eff6ff' : '#ffffff',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      color: '#0f172a',
+                      outline: 'none',
+                      width: '145px',
+                      boxSizing: 'border-box',
+                    }}
+                  />
+                  {customAge && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCustomAge('');
+                        setAgeGroupFilter('all');
+                      }}
+                      style={{
+                        position: 'absolute',
+                        right: '8px',
+                        background: 'none',
+                        border: 'none',
+                        color: '#94a3b8',
+                        cursor: 'pointer',
+                        fontSize: '12px',
+                        padding: '2px',
+                        lineHeight: 1,
+                      }}
+                      title={isMr ? 'वय साफ करा' : 'Clear Age'}
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+              </div>
 
               {/* Primary Search Button */}
               <button
@@ -1971,9 +2568,34 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
                       🏡 गाव: {selectedVillage}
                     </span>
                   )}
+                  {selectedCity && selectedCity !== 'all' && (
+                    <span style={{ background: '#ecfeff', color: '#0e7490', padding: '2px 8px', borderRadius: '4px' }}>
+                      🏙️ शहर: {selectedCity}
+                    </span>
+                  )}
+                  {selectedPrabhag && selectedPrabhag !== 'all' && (
+                    <span style={{ background: '#fff1f2', color: '#be123c', padding: '2px 8px', borderRadius: '4px' }}>
+                      🏘️ परिसर/प्रभाग: {selectedPrabhag}
+                    </span>
+                  )}
                   {selectedBooth !== 'all' && (
                     <span style={{ background: '#f3e8ff', color: '#6b21a8', padding: '2px 8px', borderRadius: '4px' }}>
                       🗳️ बूथ क्र. {selectedBooth}
+                    </span>
+                  )}
+                  {selectedCenter && selectedCenter !== 'all' && (
+                    <span style={{ background: '#eef2ff', color: '#3730a3', padding: '2px 8px', borderRadius: '4px' }}>
+                      🏢 केंद्र: {selectedCenter}
+                    </span>
+                  )}
+                  {searchQuery.trim() && (
+                    <span style={{ background: '#fef3c7', color: '#92400e', padding: '2px 8px', borderRadius: '4px', border: '1px solid #fde68a', fontWeight: '800' }}>
+                      🔍 {searchType === 'caste' ? 'जात' : searchType === 'name' ? 'नाव' : searchType === 'surname' ? 'आडनाव' : searchType === 'village' ? 'गाव' : searchType === 'area' ? 'परिसर' : searchType === 'ward' ? 'वॉर्ड' : searchType === 'booth' ? 'बूथ' : 'शोध'}: "{searchQuery}"
+                    </span>
+                  )}
+                  {(ageGroupFilter !== 'all' || customAge.trim()) && (
+                    <span style={{ background: '#fef3c7', color: '#92400e', padding: '2px 8px', borderRadius: '4px', border: '1px solid #fde68a', fontWeight: '800' }}>
+                      🎂 {isMr ? 'वय' : 'Age'}: {customAge || (ageGroupFilter === '18-25' ? '१८-२५' : ageGroupFilter === '26-40' ? '२६-४०' : ageGroupFilter === '41-60' ? '४१-६०' : ageGroupFilter === '60+' ? '६०+' : ageGroupFilter)}
                     </span>
                   )}
                 </div>
@@ -1984,23 +2606,27 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
                   <thead>
                     <tr style={{ background: '#f1f5f9', color: '#475569', borderBottom: '1px solid #cbd5e1', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                      <th style={{ padding: '12px 14px', width: '50px' }}>{isMr ? 'क्र.' : 'Sr.'}</th>
+                      <th style={{ padding: '12px 14px', width: '45px' }}>{isMr ? 'क्र.' : 'Sr.'}</th>
                       <th style={{ padding: '12px 14px' }}>{isMr ? 'ओळखपत्र क्र. (EPIC)' : 'EPIC No.'}</th>
                       <th style={{ padding: '12px 14px' }}>{isMr ? 'मतदाराचे नाव' : 'Voter Name'}</th>
                       <th style={{ padding: '12px 14px' }}>{isMr ? 'नातेवाईक / कुटुंबप्रमुख' : 'Relative / Head'}</th>
-                      <th style={{ padding: '12px 14px', width: '80px' }}>{isMr ? 'वय/लिंग' : 'Age/Sex'}</th>
-                      <th style={{ padding: '12px 14px', width: '80px' }}>{isMr ? 'घर क्र.' : 'House No.'}</th>
-                      <th style={{ padding: '12px 14px' }}>{isMr ? 'गाव / परिसर' : 'Village'}</th>
-                      <th style={{ padding: '12px 14px' }}>{isMr ? 'तालुका' : 'Taluka'}</th>
+                      <th style={{ padding: '12px 14px', width: '65px' }}>{isMr ? 'वय' : 'Age'}</th>
+                      <th style={{ padding: '12px 14px', width: '85px' }}>{isMr ? 'लिंग' : 'Gender'}</th>
+                      <th style={{ padding: '12px 14px', width: '70px' }}>{isMr ? 'घर क्र.' : 'House No.'}</th>
                       <th style={{ padding: '12px 14px' }}>{isMr ? 'जिल्हा' : 'District'}</th>
-                      <th style={{ padding: '12px 14px' }}>{isMr ? 'बूथ क्रमांक व केंद्र' : 'Booth Details'}</th>
-                      <th style={{ padding: '12px 14px', textAlign: 'center' }}>{isMr ? 'कृती' : 'Action'}</th>
+                      <th style={{ padding: '12px 14px' }}>{isMr ? 'तालुका' : 'Taluka'}</th>
+                      <th style={{ padding: '12px 14px' }}>{isMr ? 'गाव' : 'Village'}</th>
+                      <th style={{ padding: '12px 14px' }}>{isMr ? 'शहर' : 'City'}</th>
+                      <th style={{ padding: '12px 14px' }}>{isMr ? 'परिसर / प्रभाग' : 'Area / Prabhag'}</th>
+                      <th style={{ padding: '12px 14px', width: '90px' }}>{isMr ? 'बूथ क्रमांक' : 'Booth No.'}</th>
+                      <th style={{ padding: '12px 14px' }}>{isMr ? 'मतदान केंद्र' : 'Polling Station'}</th>
+                      <th style={{ padding: '12px 14px', textAlign: 'center' }}>{isMr ? 'Remarks / निरीक्षण' : 'Remarks / Action'}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {filteredVoters.length === 0 ? (
                       <tr>
-                        <td colSpan={11} style={{ padding: '40px 20px', textAlign: 'center', color: '#94a3b8' }}>
+                        <td colSpan={15} style={{ padding: '40px 20px', textAlign: 'center', color: '#94a3b8' }}>
                           <div style={{ fontSize: '36px', marginBottom: '8px' }}>🔍</div>
                           <div style={{ fontSize: '15px', fontWeight: '700', color: '#475569' }}>
                             {isMr ? 'निवडलेल्या निकषानुसार एकही मतदार सापडला नाही' : 'No voters found matching your filters'}
@@ -2047,48 +2673,103 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
                           </td>
                           <td style={{ padding: '12px 14px' }}>
                             <div style={{ fontWeight: '800', color: '#0f172a' }}>{v.name_mr}</div>
-                            <div style={{ fontSize: '11.5px', color: '#64748b' }}>{v.name_en}</div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '3px', flexWrap: 'wrap' }}>
+                              <span style={{ fontSize: '11.5px', color: '#64748b' }}>{v.name_en}</span>
+                              <span
+                                style={{
+                                  fontSize: '10.5px',
+                                  fontWeight: '700',
+                                  padding: '1px 6px',
+                                  borderRadius: '4px',
+                                  background: '#fef3c7',
+                                  color: '#92400e',
+                                  border: '1px solid #fde68a',
+                                }}
+                                title={isMr ? 'जात / प्रवर्ग' : 'Caste'}
+                              >
+                                🏷️ {v.caste || getVoterCaste(v)}
+                              </span>
+                            </div>
                           </td>
                           <td style={{ padding: '12px 14px', color: '#475569' }}>{v.relative_mr || '—'}</td>
+                          {/* वय (Age) */}
+                          <td style={{ padding: '12px 14px', fontWeight: '750', color: '#1e293b' }}>
+                            <span
+                              style={{
+                                display: 'inline-block',
+                                padding: '2px 8px',
+                                borderRadius: '6px',
+                                background: '#f8fafc',
+                                border: '1px solid #cbd5e1',
+                                fontSize: '12px',
+                                fontWeight: '800',
+                              }}
+                            >
+                              {v.age ? `${v.age} वर्षे` : '—'}
+                            </span>
+                          </td>
+                          {/* लिंग (Gender) */}
                           <td style={{ padding: '12px 14px' }}>
                             <span
                               style={{
                                 display: 'inline-flex',
                                 alignItems: 'center',
                                 gap: '3px',
-                                padding: '2px 7px',
+                                padding: '2px 8px',
                                 borderRadius: '12px',
                                 fontSize: '11px',
-                                fontWeight: '700',
-                                background: v.gender === 'male' ? '#e0f2fe' : '#fce7f3',
-                                color: v.gender === 'male' ? '#0369a1' : '#be185d',
+                                fontWeight: '750',
+                                background: v.gender === 'male' ? '#e0f2fe' : v.gender === 'female' ? '#fce7f3' : '#f3e8ff',
+                                color: v.gender === 'male' ? '#0369a1' : v.gender === 'female' ? '#be185d' : '#7e22ce',
                               }}
                             >
-                              {v.gender === 'male' ? '👨' : '👩'} {v.age} वर्षे
+                              {v.gender === 'male' ? '👨 पुरुष' : v.gender === 'female' ? '👩 महिला' : '⚧️ इतर'}
                             </span>
                           </td>
                           <td style={{ padding: '12px 14px', fontWeight: '700', color: '#334155' }}>{v.house_no || '—'}</td>
+                          {/* 1. जिल्हा (District) */}
                           <td style={{ padding: '12px 14px' }}>
-                            <span style={{ fontWeight: '700', color: '#047857', background: '#ecfdf5', padding: '3px 8px', borderRadius: '6px', border: '1px solid #a7f3d0' }}>
-                              📍 {v.village}
+                            <span style={{ fontWeight: '700', color: '#1e3a8a', background: '#eff6ff', padding: '3px 8px', borderRadius: '6px', border: '1px solid #bfdbfe' }}>
+                              🏛️ {v.district}
                             </span>
                           </td>
+                          {/* 2. तालुका (Taluka) */}
                           <td style={{ padding: '12px 14px' }}>
-                            <span style={{ fontWeight: '600', color: '#1e40af', background: '#eff6ff', padding: '3px 8px', borderRadius: '6px', border: '1px solid #bfdbfe' }}>
-                              🏛️ {v.taluka}
+                            <span style={{ fontWeight: '600', color: '#065f46', background: '#f0fdf4', padding: '3px 8px', borderRadius: '6px', border: '1px solid #bbf7d0' }}>
+                              📍 {v.taluka}
                             </span>
                           </td>
+                          {/* 3. गाव (Village) */}
                           <td style={{ padding: '12px 14px' }}>
-                            <span style={{ fontWeight: '600', color: '#475569' }}>
-                              {v.district}
+                            <span style={{ fontWeight: '600', color: '#92400e', background: '#fffbeb', padding: '3px 8px', borderRadius: '6px', border: '1px solid #fde68a' }}>
+                              🏡 {v.village}
                             </span>
                           </td>
+                          {/* 4. शहर (City) */}
                           <td style={{ padding: '12px 14px' }}>
-                            <div style={{ fontWeight: '700', color: '#1d4ed8' }}>बूथ क्र. {v.booth_no}</div>
-                            <div style={{ fontSize: '11px', color: '#64748b', maxWidth: '240px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={v.booth_name}>
-                              {v.booth_name}
+                            <span style={{ fontWeight: '600', color: '#0e7490', background: '#ecfeff', padding: '3px 8px', borderRadius: '6px', border: '1px solid #a5f3fc' }}>
+                              🏙️ {v.city || (v.village?.includes('शहर') ? v.village : (v.taluka ? `${v.taluka} शहर` : '—'))}
+                            </span>
+                          </td>
+                          {/* 5. परिसर / प्रभाग (Area / Prabhag) */}
+                          <td style={{ padding: '12px 14px' }}>
+                            <span style={{ fontWeight: '600', color: '#be123c', background: '#fff1f2', padding: '3px 8px', borderRadius: '6px', border: '1px solid #fecdd3' }}>
+                              🏘️ {v.prabhag || 'प्रभाग क्र. १'}
+                            </span>
+                          </td>
+                          {/* 6. बूथ क्रमांक (Booth No) */}
+                          <td style={{ padding: '12px 14px' }}>
+                            <span style={{ fontWeight: '800', color: '#6d28d9', background: '#f5f3ff', padding: '3px 8px', borderRadius: '6px', border: '1px solid #ddd6fe' }}>
+                              🗳️ बूथ {v.booth_no}
+                            </span>
+                          </td>
+                          {/* 7. मतदान केंद्र (Polling Station / Center) */}
+                          <td style={{ padding: '12px 14px' }}>
+                            <div style={{ fontWeight: '600', color: '#3730a3', maxWidth: '240px', fontSize: '12px' }} title={v.booth_name}>
+                              🏢 {v.booth_name}
                             </div>
                           </td>
+                          {/* Remarks / निरीक्षण */}
                           <td style={{ padding: '12px 14px', textAlign: 'center' }}>
                             <button
                               type="button"
@@ -2104,7 +2785,7 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
                                 cursor: 'pointer',
                               }}
                             >
-                              🔍 {isMr ? 'तपशील' : 'View'}
+                              🔍 {isMr ? 'निरीक्षण / तपशील' : 'Remarks / View'}
                             </button>
                           </td>
                         </tr>
@@ -2894,6 +3575,7 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
                   >
                     <option value="male">{isMr ? 'पुरुष' : 'Male'}</option>
                     <option value="female">{isMr ? 'महिला' : 'Female'}</option>
+                    <option value="other">{isMr ? 'इतर (Other)' : 'Other'}</option>
                   </select>
                 </div>
                 <div>
@@ -2963,7 +3645,7 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '11.5px', fontWeight: '700', color: '#475569', marginBottom: '4px' }}>
-                    {isMr ? 'गाव / परिसर' : 'Village'}
+                    {isMr ? 'गाव' : 'Village'}
                   </label>
                   <select
                     value={newVoter.village}
@@ -2974,6 +3656,33 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
                       <option key={v} value={v}>{v}</option>
                     ))}
                   </select>
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '11.5px', fontWeight: '700', color: '#475569', marginBottom: '4px' }}>
+                    {isMr ? 'शहर' : 'City'}
+                  </label>
+                  <input
+                    type="text"
+                    value={newVoter.city || ''}
+                    placeholder="उदा. सांगली शहर"
+                    onChange={(e) => setNewVoter({ ...newVoter, city: e.target.value })}
+                    style={{ width: '100%', boxSizing: 'border-box', padding: '8px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '11.5px', fontWeight: '700', color: '#475569', marginBottom: '4px' }}>
+                    {isMr ? 'परिसर / प्रभाग' : 'Area / Ward'}
+                  </label>
+                  <input
+                    type="text"
+                    value={newVoter.prabhag || ''}
+                    placeholder="उदा. प्रभाग क्र. १ / स्टेशन परिसर"
+                    onChange={(e) => setNewVoter({ ...newVoter, prabhag: e.target.value })}
+                    style={{ width: '100%', boxSizing: 'border-box', padding: '8px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+                  />
                 </div>
                 <div>
                   <label style={{ display: 'block', fontSize: '11.5px', fontWeight: '700', color: '#475569', marginBottom: '4px' }}>
@@ -3048,7 +3757,7 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '12px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>
-                  {selectedVoter.gender === 'male' ? '👨' : '👩'}
+                  {selectedVoter.gender === 'male' ? '👨' : selectedVoter.gender === 'female' ? '👩' : '⚧️'}
                 </div>
                 <div>
                   <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '800', color: '#0f172a' }}>
@@ -3072,12 +3781,20 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
                 <span style={{ fontWeight: '800', color: '#1e40af', fontFamily: 'monospace' }}>{selectedVoter.epic_no}</span>
               </div>
               <div style={{ background: '#f8fafc', padding: '10px', borderRadius: '8px' }}>
+                <span style={{ fontSize: '11px', color: '#64748b', fontWeight: '700', display: 'block' }}>जात / प्रवर्ग (Caste)</span>
+                <span style={{ fontWeight: '800', color: '#b45309' }}>🏷️ {selectedVoter.caste || getVoterCaste(selectedVoter)}</span>
+              </div>
+              <div style={{ background: '#f8fafc', padding: '10px', borderRadius: '8px' }}>
                 <span style={{ fontSize: '11px', color: '#64748b', fontWeight: '700', display: 'block' }}>वय व लिंग</span>
-                <span style={{ fontWeight: '700', color: '#334155' }}>{selectedVoter.age} वर्षे • {selectedVoter.gender === 'male' ? 'पुरुष' : 'महिला'}</span>
+                <span style={{ fontWeight: '700', color: '#334155' }}>{selectedVoter.age} वर्षे • {selectedVoter.gender === 'male' ? 'पुरुष' : selectedVoter.gender === 'female' ? 'महिला' : 'इतर'}</span>
               </div>
               <div style={{ background: '#f8fafc', padding: '10px', borderRadius: '8px' }}>
                 <span style={{ fontSize: '11px', color: '#64748b', fontWeight: '700', display: 'block' }}>गाव व घर क्र.</span>
                 <span style={{ fontWeight: '700', color: '#047857' }}>{selectedVoter.village} (घर क्र. {selectedVoter.house_no || '—'})</span>
+              </div>
+              <div style={{ background: '#f8fafc', padding: '10px', borderRadius: '8px' }}>
+                <span style={{ fontSize: '11px', color: '#64748b', fontWeight: '700', display: 'block' }}>शहर व परिसर/प्रभाग</span>
+                <span style={{ fontWeight: '700', color: '#0891b2' }}>{selectedVoter.city || '—'} • {selectedVoter.prabhag || '—'}</span>
               </div>
               <div style={{ background: '#f8fafc', padding: '10px', borderRadius: '8px' }}>
                 <span style={{ fontSize: '11px', color: '#64748b', fontWeight: '700', display: 'block' }}>तालुका व जिल्हा</span>

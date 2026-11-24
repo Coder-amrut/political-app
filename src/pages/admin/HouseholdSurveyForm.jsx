@@ -75,7 +75,7 @@ function HouseholdSurveyForm({ user, language: appLang = 'en' }) {
   const [editingPublishedForm, setEditingPublishedForm] = useState(null);
   const [isNewForm, setIsNewForm] = useState(false);
   const [geographicScope, setGeographicScope] = useState('GENERAL');
-  const [campaignName, setCampaignName] = useState('सांगली मोहीम');
+  const [campaignName, setCampaignName] = useState('कोल्हापूर मोहीम');
   const [targetHouseholds, setTargetHouseholds] = useState(100);
   const [assignAllWorkers, setAssignAllWorkers] = useState(true);
   const [deletingFormId, setDeletingFormId] = useState(null);
@@ -296,7 +296,7 @@ function HouseholdSurveyForm({ user, language: appLang = 'en' }) {
   const handleSelectProject = (project, targetView = 'builder') => {
     setSelectedProject(project);
     setIsNewForm(false);
-    setCampaignName(project.name || 'सांगली मोहीम');
+    setCampaignName(project.name || 'कोल्हापूर मोहीम');
     setGeographicScope(project.geographic_scope || 'GENERAL');
     loadProjectFormConfig(project);
     setActiveView(targetView);
@@ -309,7 +309,7 @@ function HouseholdSurveyForm({ user, language: appLang = 'en' }) {
     setFormTitleEn('');
     setFormTitleMr('');
     setGeographicScope('GENERAL');
-    setCampaignName('सांगली मोहीम');
+    setCampaignName('कोल्हापूर मोहीम');
     setTargetHouseholds(100);
     setAssignAllWorkers(true);
     setCustomQuestions([]);
@@ -325,7 +325,7 @@ function HouseholdSurveyForm({ user, language: appLang = 'en' }) {
     setFormTitleEn(pForm.form_title || '');
     setFormTitleMr(pForm.form_title_mr || '');
     setGeographicScope(pForm.geographic_scope || 'GENERAL');
-    setCampaignName(pForm.project_name || 'सांगली मोहीम');
+    setCampaignName(pForm.project_name || 'कोल्हापूर मोहीम');
 
     let format = {};
     if (pForm.form_format) {
@@ -373,7 +373,7 @@ function HouseholdSurveyForm({ user, language: appLang = 'en' }) {
     const finalTitleMr = (formTitleMr && formTitleMr.trim()) ? formTitleMr.trim() : (formTitleEn || `${finalTitleEn} सर्व्हे फॉर्म`);
     const finalProjectName = (campaignName && campaignName.trim())
       ? campaignName.trim()
-      : (selectedProject?.name || finalTitleEn || 'सांगली मोहीम');
+      : (selectedProject?.name || finalTitleEn || 'कोल्हापूर मोहीम');
 
     try {
       const payload = {
@@ -419,7 +419,7 @@ function HouseholdSurveyForm({ user, language: appLang = 'en' }) {
     const finalTitleMr = (formTitleMr && formTitleMr.trim()) ? formTitleMr.trim() : (formTitleEn || `${finalTitleEn} सर्व्हे फॉर्म`);
     const finalProjectName = (campaignName && campaignName.trim())
       ? campaignName.trim()
-      : (selectedProject?.name || finalTitleEn || 'सांगली मोहीम');
+      : (selectedProject?.name || finalTitleEn || 'कोल्हापूर मोहीम');
 
     try {
       const payload = {
@@ -948,7 +948,7 @@ function HouseholdSurveyForm({ user, language: appLang = 'en' }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <span style={{ fontSize: '26px' }}>📋</span>
             <h1 style={{ margin: 0, fontSize: '20px', fontWeight: '850', color: '#0f172a', letterSpacing: '-0.3px' }}>
-              {isMr ? 'फॉर्म बिल्डर व ॲक्सेस व्यवस्थापन' : 'Field Survey Form Builder & User Access'}
+              {isMr ? 'सर्व्हे व्यवस्थापन' : 'Survey Management'}
             </h1>
           </div>
           <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#64748b' }}>
@@ -2018,7 +2018,7 @@ function HouseholdSurveyForm({ user, language: appLang = 'en' }) {
                       type="text"
                       value={formTitleEn}
                       onChange={(e) => setFormTitleEn(e.target.value)}
-                      placeholder={isMr ? 'उदा. Sangli Ward 10 Survey Form' : 'e.g. Sangli Ward 10 Survey Form'}
+                      placeholder={isMr ? 'उदा. Kolhapur Ward 10 Survey Form' : 'e.g. Kolhapur Ward 10 Survey Form'}
                       style={{
                         width: '100%',
                         boxSizing: 'border-box',
@@ -2046,7 +2046,7 @@ function HouseholdSurveyForm({ user, language: appLang = 'en' }) {
                       type="text"
                       value={formTitleMr}
                       onChange={(e) => setFormTitleMr(e.target.value)}
-                      placeholder={isMr ? 'उदा. सांगली प्रभाग १० सर्व्हे फॉर्म' : 'e.g. सांगली प्रभाग १० सर्व्हे फॉर्म'}
+                      placeholder={isMr ? 'उदा. कोल्हापूर प्रभाग १० सर्व्हे फॉर्म' : 'e.g. कोल्हापूर प्रभाग १० सर्व्हे फॉर्म'}
                       style={{
                         width: '100%',
                         boxSizing: 'border-box',
@@ -2074,7 +2074,7 @@ function HouseholdSurveyForm({ user, language: appLang = 'en' }) {
                       type="text"
                       value={campaignName}
                       onChange={(e) => setCampaignName(e.target.value)}
-                      placeholder={isMr ? 'उदा. सांगली मोहीम, प्रभाग १०' : 'e.g. Sangli Ward 10 Campaign'}
+                      placeholder={isMr ? 'उदा. कोल्हापूर मोहीम, प्रभाग १०' : 'e.g. Kolhapur Ward 10 Campaign'}
                       style={{
                         width: '100%',
                         boxSizing: 'border-box',
@@ -2126,10 +2126,10 @@ function HouseholdSurveyForm({ user, language: appLang = 'en' }) {
                     </span>
                   </div>
 
-                  {/* Target Households Quota */}
+                  {/* Target Voters / Population Quota */}
                   <div>
                     <label style={{ display: 'block', fontSize: '13px', fontWeight: '800', color: '#1e293b', marginBottom: '6px' }}>
-                      {isMr ? 'लक्ष्य कुटुंब संख्या (Target Households Quota)' : 'Target Households Quota'}
+                      {isMr ? 'मतदार संख्या / लोकसंख्या (Voters / Population Quota)' : 'Voters / Population Quota'}
                     </label>
                     <input
                       type="number"
@@ -2151,7 +2151,7 @@ function HouseholdSurveyForm({ user, language: appLang = 'en' }) {
                       }}
                     />
                     <span style={{ fontSize: '11.5px', color: '#64748b', marginTop: '4px', display: 'block' }}>
-                      {isMr ? 'कार्यकर्त्यांना allocated कुटुंब संख्या' : 'Household target allocated for workers'}
+                      {isMr ? 'कार्यकर्त्यांना allocated मतदार संख्या / लोकसंख्या' : 'Voters / population target allocated for workers'}
                     </span>
                   </div>
                 </div>
@@ -2189,7 +2189,7 @@ function HouseholdSurveyForm({ user, language: appLang = 'en' }) {
                     <span style={{ fontSize: '20px' }}>🏠</span>
                     <div>
                       <h2 style={{ margin: 0, fontSize: '16px', fontWeight: '850', color: '#0f172a' }}>
-                        {isMr ? '१. डीफॉल्ट मतदार सर्व्हे माहिती (Default Form Fields)' : '1. Standard Voter Survey Fields'}
+                        {isMr ? 'मतदार सर्वेक्षण मूलभूत माहिती' : 'Basic Voter Survey Information'}
                       </h2>
                       <p style={{ margin: '2px 0 0', fontSize: '12.5px', color: '#64748b' }}>
                         {isMr
@@ -2292,7 +2292,7 @@ function HouseholdSurveyForm({ user, language: appLang = 'en' }) {
                     <span style={{ fontSize: '20px' }}>❓</span>
                     <div>
                       <h2 style={{ margin: 0, fontSize: '16px', fontWeight: '850', color: '#0f172a' }}>
-                        {isMr ? '२. अतिरिक्त सानुकूल प्रश्न (Custom Questions)' : '2. Additional Survey Questions'}
+                        {isMr ? 'अतिरिक्त प्रश्नावली (Custom Questions)' : 'Additional Questionnaire (Custom Questions)'}
                       </h2>
                       <p style={{ margin: '2px 0 0', fontSize: '12.5px', color: '#64748b' }}>
                         {isMr
@@ -3442,7 +3442,7 @@ function HouseholdSurveyForm({ user, language: appLang = 'en' }) {
               {/* Default Voter Fields */}
               <div>
                 <h4 style={{ margin: '0 0 10px', fontSize: '14px', fontWeight: '800', color: '#1e3a8a' }}>
-                  🏠 १. डीफॉल्ट मतदार नोंदणी फील्ड्स (Mandatory Voter Fields):
+                  🏠 {isMr ? 'मतदार सर्वेक्षण मूलभूत माहिती' : 'Basic Voter Survey Information'}:
                 </h4>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '8px' }}>
                   <div style={{ background: '#f8fafc', padding: '10px 12px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '12.5px' }}>
@@ -3469,7 +3469,7 @@ function HouseholdSurveyForm({ user, language: appLang = 'en' }) {
               {/* Custom Questions */}
               <div>
                 <h4 style={{ margin: '0 0 10px', fontSize: '14px', fontWeight: '800', color: '#1e3a8a' }}>
-                  ❓ २. अतिरिक्त सानुकूल प्रश्न (Custom Questions) ({formatModalForm.custom_questions?.length || 0}):
+                  ❓ {isMr ? 'अतिरिक्त प्रश्नावली (Custom Questions)' : 'Additional Questionnaire (Custom Questions)'} ({formatModalForm.custom_questions?.length || 0}):
                 </h4>
                 {(!formatModalForm.custom_questions || formatModalForm.custom_questions.length === 0) ? (
                   <div style={{ padding: '14px', background: '#f8fafc', borderRadius: '8px', color: '#64748b', fontSize: '13px' }}>

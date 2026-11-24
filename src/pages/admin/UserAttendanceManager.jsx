@@ -254,7 +254,7 @@ export default function UserAttendanceManager({ language = 'mr' }) {
       if (res.data?.success) {
         setPolicy(res.data.data);
         showNotification(
-          res.data.message || (isMr ? 'उपस्थिती स्थान धोरण सर्व कर्मचाऱ्यांसाठी यशस्वीरीत्या जतन केले!' : 'Location policy saved for all users!'),
+          res.data.message || (isMr ? 'उपस्थिती स्थान धोरण सर्व कार्यकर्ते / पदाधिकाऱ्यांसाठी यशस्वीरीत्या जतन केले!' : 'Location policy saved for all workers / officials!'),
           'success'
         );
         setShowLocationSettings(false);
@@ -1008,9 +1008,9 @@ export default function UserAttendanceManager({ language = 'mr' }) {
                 {roleFilter === 'all'
                   ? (isMr ? 'सर्व भूमिका (All Roles)' : 'All Roles')
                   : roleFilter === 'WORKER'
-                  ? (isMr ? 'कार्यकर्ता (WORKER)' : 'Worker')
+                  ? (isMr ? 'कार्यकर्ता (Social Worker)' : 'Social Worker')
                   : roleFilter === 'OFFICER'
-                  ? (isMr ? 'अधिकारी / नेता (OFFICER)' : 'Officer')
+                  ? (isMr ? 'अधिकारी / नेता (Officer / Leader)' : 'Officer / Leader')
                   : (isMr ? 'प्रशासक (ADMIN)' : 'Admin')}
               </span>
               <ChevronDown size={14} style={{ transform: openFilterMenu === 'role' ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }} />
@@ -1036,8 +1036,8 @@ export default function UserAttendanceManager({ language = 'mr' }) {
               >
                 {[
                   { value: 'all', label: isMr ? 'सर्व भूमिका (All Roles)' : 'All Roles' },
-                  { value: 'WORKER', label: isMr ? 'कार्यकर्ता (WORKER)' : 'Worker' },
-                  { value: 'OFFICER', label: isMr ? 'अधिकारी / नेता (OFFICER)' : 'Officer' },
+                  { value: 'WORKER', label: isMr ? 'कार्यकर्ता (Social Worker)' : 'Social Worker' },
+                  { value: 'OFFICER', label: isMr ? 'अधिकारी / नेता (Officer / Leader)' : 'Officer / Leader' },
                   { value: 'ADMIN', label: isMr ? 'प्रशासक (ADMIN)' : 'Admin' },
                 ].map((opt) => (
                   <button
@@ -1733,7 +1733,7 @@ export default function UserAttendanceManager({ language = 'mr' }) {
                   </h3>
                 </div>
                 <p style={{ margin: 0, fontSize: '13px', color: '#64748b', fontWeight: 500 }}>
-                  {isMr ? 'कर्मचाऱ्यांसाठी कार्यालयाचे स्थान आणि उपस्थिती नियम सेट करा.' : 'Set office location and attendance rules for employees.'}
+                  {isMr ? 'कार्यकर्ते / पदाधिकाऱ्यांसाठी कार्यालयाचे स्थान आणि उपस्थिती नियम सेट करा.' : 'Set office location and attendance rules for workers / officials.'}
                 </p>
               </div>
               <button
@@ -2069,7 +2069,7 @@ export default function UserAttendanceManager({ language = 'mr' }) {
                 onMouseOut={(e) => (e.currentTarget.style.background = '#2563eb')}
               >
                 <span>💾</span>
-                <span>{savingPolicy ? (isMr ? 'जतन होत आहे...' : 'Saving...') : (isMr ? 'सर्व कर्मचाऱ्यांसाठी सेव्ह करा' : 'Save for all employees')}</span>
+                <span>{savingPolicy ? (isMr ? 'जतन होत आहे...' : 'Saving...') : (isMr ? 'सर्व कार्यकर्ते / पदाधिकाऱ्यांसाठी सेव्ह करा' : 'Save for all workers / officials')}</span>
               </button>
             </div>
           </div>

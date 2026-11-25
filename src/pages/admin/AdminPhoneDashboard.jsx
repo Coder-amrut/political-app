@@ -2290,7 +2290,7 @@ export default function AdminPhoneDashboard() {
       return {
         id: `att-hist-${idx}`,
         date: d,
-        user_name: name || 'कार्यकर्ता',
+        user_name: name || 'अधिकारी',
         user_role: worker.user_role || 'FIELD_WORKER',
         user_phone: phone || '9822456789',
         status: isSunday ? 'साप्ताहिक सुट्टी' : (idx === 4 ? 'अर्धा दिवस' : 'हजर (पूर्ण दिवस)'),
@@ -2477,7 +2477,7 @@ export default function AdminPhoneDashboard() {
             onClick={() => {
               localStorage.setItem('officer_portal_user', JSON.stringify({
                 id: 99,
-                full_name: 'Amrutkiran (फील्ड कार्यकर्ता)',
+                full_name: 'Amrutkiran (फील्ड अधिकारी)',
                 name: 'Amrutkiran',
                 email: 'user@gmail.com',
                 phone: '9284966665',
@@ -2983,7 +2983,7 @@ export default function AdminPhoneDashboard() {
                   <div
                     className="admin-metric-card-colorful admin-card-workers"
                     onClick={() => setSelectedMetricModal('workers')}
-                    title="कार्यकर्ते सविस्तर माहिती"
+                    title="अधिकारी सविस्तर माहिती"
                   >
                     <div className="admin-metric-header">
                       <div className="admin-metric-icon">
@@ -2994,7 +2994,7 @@ export default function AdminPhoneDashboard() {
                       </span>
                     </div>
                     <div className="admin-metric-value">{activeWorkersCount}</div>
-                    <div className="admin-metric-label">{isMr ? 'सक्रिय कार्यकर्ते' : 'Active Field Workers'}</div>
+                    <div className="admin-metric-label">{isMr ? 'सक्रिय अधिकारी' : 'Active Field Officers'}</div>
                     <div className="admin-click-hint">
                       <span>🔍</span> {isMr ? 'सविस्तर माहितीसाठी क्लिक करा' : 'Tap for Full Info'}
                     </div>
@@ -3421,7 +3421,7 @@ export default function AdminPhoneDashboard() {
                       <div className="admin-section-header">
                         <div className="admin-section-title">
                           <Users size={18} style={{ color: '#2563eb' }} />
-                          <span>{isMr ? 'कार्यकर्ते हजेरी नोंदी' : 'Attendance Log Records'}</span>
+                          <span>{isMr ? 'अधिकारी हजेरी नोंदी' : 'Attendance Log Records'}</span>
                         </div>
                       </div>
 
@@ -3450,7 +3450,7 @@ export default function AdminPhoneDashboard() {
                               <div style={{ flex: 1, minWidth: 0, paddingRight: '8px' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                   <span style={{ fontSize: '13px', fontWeight: '850', color: '#0f172a' }}>
-                                    {att.user_name || 'कार्यकर्ता'}
+                                    {att.user_name || 'अधिकारी'}
                                   </span>
                                   <span style={{ fontSize: '9.5px', background: '#e0f2fe', color: '#0369a1', padding: '1px 6px', borderRadius: '4px', fontWeight: '800' }}>
                                     {att.user_role || 'FIELD_WORKER'}
@@ -3655,7 +3655,7 @@ export default function AdminPhoneDashboard() {
                             </div>
 
                             <div style={{ fontSize: '11px', color: '#334155' }}>
-                              कोड: <strong>{app.submission_code}</strong> • कार्यकर्ता: <strong>{app.submitted_by_name || '-'}</strong>
+                              कोड: <strong>{app.submission_code}</strong> • अधिकारी: <strong>{app.submitted_by_name || '-'}</strong>
                             </div>
 
                             <div style={{ fontSize: '11px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px' }}>
@@ -6133,7 +6133,7 @@ export default function AdminPhoneDashboard() {
                     {selectedMetricModal === 'voters' && (isMr ? 'मतदार संख्या सविस्तर विवरण' : 'Total Voters Analytics')}
                     {selectedMetricModal === 'booths' && (isMr ? 'मतदान केंद्र (बूथ) तपशीलवार यादी' : 'Polling Booths Breakdown')}
                     {selectedMetricModal === 'approvals' && (isMr ? 'प्रलंबित सर्व्हे मंजुऱ्या' : 'Pending Approvals')}
-                    {selectedMetricModal === 'workers' && (isMr ? 'सक्रिय कार्यकर्ते उपस्थिती' : 'Active Field Workers')}
+                    {selectedMetricModal === 'workers' && (isMr ? 'सक्रिय अधिकारी उपस्थिती' : 'Active Field Officers')}
                     {selectedMetricModal === 'issues' && (isMr ? 'नागरी तक्रारी सविस्तर माहिती' : 'Civic Grievances Overview')}
                     {selectedMetricModal === 'villages' && (isMr ? 'गावनिहाय लोकसंख्या व मतदार' : 'Villages & Wards')}
                   </h3>
@@ -6281,7 +6281,7 @@ export default function AdminPhoneDashboard() {
                       {activeWorkersCount}
                     </div>
                     <div style={{ fontSize: '11px', fontWeight: '800', color: '#15803d' }}>
-                      {isMr ? 'सक्रिय कार्यकर्ते उपस्थिती' : 'Active Field Workers Today'}
+                      {isMr ? 'सक्रिय अधिकारी उपस्थिती' : 'Active Field Officers Today'}
                     </div>
                   </div>
 
@@ -6301,7 +6301,7 @@ export default function AdminPhoneDashboard() {
                         style={{ padding: '9px 12px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
                       >
                         <div>
-                          <div style={{ fontSize: '12.5px', fontWeight: '800' }}>{att.user_name || 'कार्यकर्ता'}</div>
+                          <div style={{ fontSize: '12.5px', fontWeight: '800' }}>{att.user_name || 'अधिकारी'}</div>
                           <div style={{ fontSize: '10.5px', color: '#64748b' }}>⏱️ {att.punch_in_time || '09:30 AM'} • {att.address || 'सांगली'}</div>
                         </div>
                         <span style={{ fontSize: '10.5px', color: '#ff5200', fontWeight: '800' }}>हजेरी पहा →</span>
@@ -6392,7 +6392,7 @@ export default function AdminPhoneDashboard() {
               <div className="admin-dossier-header-title">
                 <span style={{ fontSize: '24px' }}>📋</span>
                 <div>
-                  <h3>{selectedWorkerForAttendance.user_name || selectedWorkerForAttendance.name || 'कार्यकर्ता हजेरी पत्रक'}</h3>
+                  <h3>{selectedWorkerForAttendance.user_name || selectedWorkerForAttendance.name || 'अधिकारी हजेरी पत्रक'}</h3>
                   <p>{selectedWorkerForAttendance.user_role || 'FIELD_WORKER'} • {selectedWorkerForAttendance.user_phone || 'संपर्क उपलब्ध'}</p>
                 </div>
               </div>
@@ -6592,10 +6592,10 @@ export default function AdminPhoneDashboard() {
 
               {/* Worker Submitter Details */}
               <div style={{ fontSize: '12.5px', fontWeight: '850', color: '#0f172a' }}>
-                ⚡ {isMr ? 'सर्व्हे दाखल करणारा कार्यकर्ता' : 'Field Worker Submitter'}
+                ⚡ {isMr ? 'सर्व्हे दाखल करणारा अधिकारी' : 'Field Officer Submitter'}
               </div>
               <div style={{ background: '#eff6ff', padding: '10px 12px', borderRadius: '10px', border: '1px solid #bfdbfe', fontSize: '11.5px', color: '#1e3a8a' }}>
-                <div>कार्यकर्ता नाव: <strong>{selectedApprovalForDetail.submitted_by_name || 'अमित पवार'}</strong></div>
+                <div>अधिकारी नाव: <strong>{selectedApprovalForDetail.submitted_by_name || 'अमित पवार'}</strong></div>
                 <div>सबमिशन कोड: <strong>{selectedApprovalForDetail.submission_code}</strong></div>
               </div>
 

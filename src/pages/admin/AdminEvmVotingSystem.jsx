@@ -206,7 +206,7 @@ function KarkartaEvmVotingSystem({ user, isMr = true, isAdmin: isAdminProp }) {
     if (isMr) {
       return `🗳️ *${elName}* निवडणूक सुरू झाली आहे!\n\n📍 सर्व मतदार व कार्यकर्त्यांनी खालील अधिकृत लिंकवर जाऊन आपले मत नोंदवा:\n👉 ${votingUrl}\n\n⏱️ मतदानाची उर्वरित वेळ: ${timeText}\n\n🏛️ महाराष्ट्र निवडणूक व राजकीय व्यवस्थापन प्रणाली (Election War Room)`;
     }
-    return `🗳️ *${elName}* is now officially LIVE!\n\n📍 All voters & party workers, please cast your vote using this link:\n👉 ${votingUrl}\n\n⏱️ Time remaining: ${timeText}\n\n🏛️ Election Management Central HQ`;
+    return `🗳️ *${elName}* is now officially LIVE!\n\n📍 All voters & party officers, please cast your vote using this link:\n👉 ${votingUrl}\n\n⏱️ Time remaining: ${timeText}\n\n🏛️ Election Management Central HQ`;
   }, [election?.name, votingUrl, timeLeft, isMr]);
 
   const handleShareWhatsApp = () => {
@@ -1240,7 +1240,7 @@ function KarkartaEvmVotingSystem({ user, isMr = true, isAdmin: isAdminProp }) {
                   <div style={{ fontSize: '12.5px', color: '#047857', marginTop: '2px' }}>
                     {isMr
                       ? 'कृपया खालील यादीतील आपल्या पसंतीच्या उमेदवारासमोरील निळे बटण दाबून आपले मत नोंदवा. (एका फेरीमध्ये फक्त एकदाच मत देता येईल)'
-                      : 'Please press the blue button next to your candidate to vote. (Only one vote allowed per worker).'}
+                      : 'Please press the blue button next to your candidate to vote. (Only one vote allowed per officer).'}
                   </div>
                 </div>
               </div>
@@ -2057,7 +2057,7 @@ function KarkartaEvmVotingSystem({ user, isMr = true, isAdmin: isAdminProp }) {
                           <td style={{ padding: '10px 14px', color: '#475569' }}>
                             <div>{v.voter_phone || '—'}</div>
                             <span style={{ fontSize: '10.5px', color: '#64748b', textTransform: 'capitalize' }}>
-                              {v.voter_role || 'worker'}
+                              {v.voter_role || 'officer'}
                             </span>
                           </td>
                           <td style={{ padding: '10px 14px' }}>

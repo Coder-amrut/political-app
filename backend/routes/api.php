@@ -407,6 +407,55 @@ Route::prefix('worker')->group(function () {
     Route::post('/chatbot/query', [AdminChatbotController::class, 'handleQuery']);
 });
 
+// Officer Alias Group
+Route::prefix('officer')->group(function () {
+    Route::get('/overview', [WorkerDashboardController::class, 'overview']);
+    Route::get('/castes', [WorkerDashboardController::class, 'getCastes']);
+    Route::get('/profile', [WorkerDashboardController::class, 'getProfile']);
+    Route::put('/profile', [WorkerDashboardController::class, 'updateProfile']);
+    Route::get('/tasks', [WorkerDashboardController::class, 'getTasks']);
+    Route::post('/tasks', [WorkerDashboardController::class, 'createTask']);
+    Route::patch('/tasks/{id}/toggle', [WorkerDashboardController::class, 'toggleTask'])->whereNumber('id');
+    Route::get('/follow-ups', [WorkerDashboardController::class, 'getFollowUps']);
+    Route::post('/follow-ups', [WorkerDashboardController::class, 'createFollowUp']);
+    Route::patch('/follow-ups/{id}/status', [WorkerDashboardController::class, 'updateFollowUpStatus'])->whereNumber('id');
+    Route::get('/surveys', [WorkerDashboardController::class, 'getSurveys']);
+    Route::post('/surveys/submit', [WorkerDashboardController::class, 'submitSurvey']);
+    Route::get('/complaints', [WorkerDashboardController::class, 'getComplaints']);
+    Route::post('/complaints', [WorkerDashboardController::class, 'storeComplaint']);
+    Route::patch('/complaints/{id}/status', [WorkerDashboardController::class, 'updateComplaintStatus']);
+    Route::get('/attendance', [WorkerDashboardController::class, 'getAttendance']);
+    Route::get('/attendance-policy', [AdminAttendanceController::class, 'getLocationSetting']);
+    Route::post('/attendance/punch-in', [WorkerDashboardController::class, 'punchIn']);
+    Route::post('/attendance/punch-out', [WorkerDashboardController::class, 'punchOut']);
+    Route::get('/contacts', [WorkerDashboardController::class, 'getContacts']);
+    Route::post('/contacts/visit-log', [WorkerDashboardController::class, 'recordVisitLog']);
+    Route::get('/check-duplicate', [WorkerDashboardController::class, 'checkDuplicate']);
+    Route::get('/geography-hierarchy', [WorkerDashboardController::class, 'getGeographyHierarchy']);
+    Route::get('/meetings', [WorkerDashboardController::class, 'getMeetings']);
+    Route::post('/meetings', [WorkerDashboardController::class, 'scheduleMeeting']);
+    Route::get('/candidates', [WorkerDashboardController::class, 'getCandidates']);
+    Route::post('/vote', [WorkerDashboardController::class, 'castVote']);
+
+    // EVM Demo & Voting System (karkarta_ tables)
+    Route::prefix('evm')->group(function () {
+        Route::get('/election', [KarkartaEvmController::class, 'getElectionData']);
+        Route::post('/vote', [KarkartaEvmController::class, 'castVote']);
+        Route::post('/candidate', [KarkartaEvmController::class, 'addCandidate']);
+        Route::put('/candidate/{id}', [KarkartaEvmController::class, 'updateCandidate'])->whereNumber('id');
+        Route::delete('/candidate/{id}', [KarkartaEvmController::class, 'deleteCandidate'])->whereNumber('id');
+        Route::post('/reset-votes', [KarkartaEvmController::class, 'resetVotes']);
+        Route::put('/settings', [KarkartaEvmController::class, 'updateSettings']);
+        Route::put('/election', [KarkartaEvmController::class, 'updateElection']);
+        Route::post('/start-election', [KarkartaEvmController::class, 'startElection']);
+        Route::post('/end-election', [KarkartaEvmController::class, 'endElection']);
+    });
+
+    // AI Database Chatbot Assistant for Application
+    Route::get('/chatbot/suggestions', [AdminChatbotController::class, 'getSuggestions']);
+    Route::post('/chatbot/query', [AdminChatbotController::class, 'handleQuery']);
+});
+
 // Direct & Dynamic Voter List, Booths and Election Prabhari Routes
 Route::get('/voters-list', [NetaDashboardController::class, 'votersList']);
 Route::post('/voters-list', [NetaDashboardController::class, 'storeVoter']);

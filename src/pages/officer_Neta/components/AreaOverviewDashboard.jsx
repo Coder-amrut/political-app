@@ -662,12 +662,12 @@ export default function AreaOverviewDashboard({ onNavigate, lang = 'mr' }) {
         const modalConfigs = {
           workers: {
             title_mr: '🚩 सक्रिय कार्यकर्ते व ऑन-फील्ड उपस्थिती संपूर्ण माहिती',
-            title_en: '🚩 Field Workers Activity & Attendance Complete Dossier',
+            title_en: '🚩 Field Officers Activity & Attendance Complete Dossier',
             gradient: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
             icon: '🚩',
             navKey: 'workers_performance',
             navLabel_mr: 'कार्यकर्ते व्यवस्थापनात जा →',
-            navLabel_en: 'Go to Workers Management →',
+            navLabel_en: 'Go to Officers Management →',
             stats: [
               { label_mr: 'आज उपस्थित कार्यकर्ते', label_en: 'Active Today', value: profile.active_karyakartas_today, color: '#16a34a' },
               { label_mr: 'एकूण नोंदणीकृत कार्यकर्ते', label_en: 'Total Registered', value: profile.total_karyakartas, color: '#2563eb' },
@@ -676,7 +676,7 @@ export default function AreaOverviewDashboard({ onNavigate, lang = 'mr' }) {
             ],
             details_mr: [
               'सर्व कार्यकर्ते सध्या सांगली शहर, मिरज व कुपवाड महानगरपालिका क्षेत्रात घरोघरी जाऊन मतदार पडताळणी करत आहेत.',
-              'प्रत्येक कार्यकर्त्याने सरासरी २० ते २५ कुटुंबांशी संवाद साधून नागरी समस्या नोंदवल्या आहेत.',
+              'प्रत्येक अधिकाऱ्याने सरासरी २० ते २५ कुटुंबांशी संवाद साधून नागरी समस्या नोंदवल्या आहेत.',
               'GPS हजेरी प्रणालीद्वारे सर्व कार्यकर्त्यांचे लोकेशन व पंच-इन रिअल-टाईम ट्रॅक होत आहे.',
             ],
             details_en: [

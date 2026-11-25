@@ -478,7 +478,7 @@ export default function PendingTasksManager({ lang = 'mr' }) {
                   <input
                     type="text"
                     required
-                    placeholder={isMr ? 'उदा. सचिन पाटील' : 'Name of worker'}
+                    placeholder={isMr ? 'उदा. सचिन पाटील' : 'Name of officer'}
                     value={newTaskForm.assigned_to}
                     onChange={(e) => setNewTaskForm({ ...newTaskForm, assigned_to: e.target.value })}
                     style={{ width: '100%', boxSizing: 'border-box', padding: '9px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}

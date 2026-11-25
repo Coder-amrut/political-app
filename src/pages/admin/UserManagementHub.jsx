@@ -231,8 +231,8 @@ export default function UserManagementHub({ isMr = true, onNavigateToCreate }) {
           </div>
           <p style={{ margin: 0, fontSize: '13.5px', color: '#dbeafe', maxWidth: '750px', lineHeight: 1.5 }}>
             {isMr
-              ? 'मोबाईल ॲप वापरकर्ते (Field Workers), ॲप ॲडमिन (Officers) आणि वेबसाइट ॲडमिन यांचे केंद्रीय वर्गीकरण, उपस्थिती व थेट ॲक्शन्स.'
-              : 'Unified directory and role management for Mobile App Workers, App Officers, and Web Admins.'}
+              ? 'मोबाईल ॲप वापरकर्ते (Field Officers), ॲप ॲडमिन (Officers) आणि वेबसाइट ॲडमिन यांचे केंद्रीय वर्गीकरण, उपस्थिती व थेट ॲक्शन्स.'
+              : 'Unified directory and role management for Mobile App Officers and Web Admins.'}
           </p>
         </div>
 
@@ -345,7 +345,7 @@ export default function UserManagementHub({ isMr = true, onNavigateToCreate }) {
               📱 {isMr ? 'ॲप वापरकर्ते' : 'App Users'}
             </span>
             <span style={{ background: '#eff6ff', color: '#1d4ed8', fontSize: '11px', fontWeight: '700', padding: '3px 8px', borderRadius: '12px' }}>
-              Field Workers
+              Field Officers
             </span>
           </div>
           <div style={{ fontSize: '32px', fontWeight: '800', color: '#0f172a', margin: '10px 0 4px 0' }}>
@@ -472,7 +472,7 @@ export default function UserManagementHub({ isMr = true, onNavigateToCreate }) {
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', borderBottom: '1px solid #f1f5f9', paddingBottom: '12px' }}>
           {[
             { key: 'all', label_mr: `सर्व वापरकर्ते (${counts.total})`, label_en: `All Users (${counts.total})` },
-            { key: 'app_worker', label_mr: `📱 ॲप वापरकर्ते (${counts.app_users})`, label_en: `App Workers (${counts.app_users})` },
+            { key: 'app_worker', label_mr: `📱 ॲप वापरकर्ते (${counts.app_users})`, label_en: `App Officers (${counts.app_users})` },
             { key: 'app_admin', label_mr: `🛡️ ॲप ॲडमिन (${counts.app_admin})`, label_en: `App Admin (${counts.app_admin})` },
             { key: 'web_admin', label_mr: `🌐 वेबसाइट ॲडमिन (${counts.website_admin})`, label_en: `Web Admin (${counts.website_admin})` },
             ...(counts.pending > 0
@@ -726,7 +726,7 @@ export default function UserManagementHub({ isMr = true, onNavigateToCreate }) {
                                 gap: '4px',
                               }}
                             >
-                              📱 {isMr ? 'ॲप कार्यकर्ता' : 'Worker'}
+                              📱 {isMr ? 'ॲप अधिकारी' : 'Officer'}
                             </span>
                           )}
                           {isOfficer && (
@@ -948,7 +948,7 @@ export default function UserManagementHub({ isMr = true, onNavigateToCreate }) {
               {[
                 {
                   key: 'WORKER',
-                  label: isMr ? '📱 ॲप कार्यकर्ता (Field Worker)' : '📱 Field Worker (Mobile App)',
+                  label: isMr ? '📱 ॲप अधिकारी (Field Officer)' : '📱 Field Officer (Mobile App)',
                   desc: isMr ? 'मोबाईल ॲपमध्ये बूथ व नागरिक सर्वेक्षणाची कामे करण्यासाठी' : 'Field work, surveys & booth outreach',
                 },
                 {

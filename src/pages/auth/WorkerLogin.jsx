@@ -509,7 +509,7 @@ export default function WorkerLogin({ onLoginSuccess, initialMode = 'login' }) {
         const isWorkerRole = lowerLogin.includes('user') || lowerLogin.includes('worker') || lowerLogin.includes('karyakarta');
         const demoUser = {
           id: isWorkerRole ? 99 : 1,
-          full_name: isWorkerRole ? 'Amrutkiran (फील्ड कार्यकर्ता)' : (lowerLogin.startsWith('app') ? 'App Administrator' : (lowerLogin.startsWith('web') ? 'Web Administrator' : 'Super Administrator')),
+          full_name: isWorkerRole ? 'Amrutkiran (फील्ड अधिकारी)' : (lowerLogin.startsWith('app') ? 'App Administrator' : (lowerLogin.startsWith('web') ? 'Web Administrator' : 'Super Administrator')),
           name: isWorkerRole ? 'Amrutkiran' : 'Admin',
           email: cleanLogin,
           phone: isWorkerRole ? '9284966665' : '9876543210',
@@ -833,9 +833,9 @@ export default function WorkerLogin({ onLoginSuccess, initialMode = 'login' }) {
                           gap: '4px',
                           boxShadow: '0 1px 3px rgba(5,150,105,0.1)'
                         }}
-                        title={isMr ? 'वापरकर्ता / कार्यकर्ता लॉगिन' : 'User / Field Worker Login'}
+                        title={isMr ? 'वापरकर्ता / अधिकारी लॉगिन' : 'User / Field Officer Login'}
                       >
-                        <span>👤</span> User / Worker (123456)
+                        <span>👤</span> User / Officer (123456)
                       </button>
                       <button
                         type="button"

@@ -14,7 +14,7 @@ const HIERARCHY_TABS = [
   { id: 'taluka_pramukh', label_mr: '४. निवडणूक प्रभारी - तालुका प्रमुख', label_en: '4. Election Prabhari - Taluka Pramukh', icon: '🏛️', color: '#9333ea' },
   { id: 'jilha_pramukh', label_mr: '५. निवडणूक प्रभारी - जिल्हा प्रमुख', label_en: '5. Election Prabhari - Jilha Pramukh', icon: '👑', color: '#dc2626' },
   { id: 'vibhag_pramukh', label_mr: '६. निवडणूक प्रभारी - विभाग प्रमुख', label_en: '6. Election Prabhari - Vibhag Pramukh', icon: '⭐', color: '#0891b2' },
-  { id: 'add_more', label_mr: '➕ अजून जोडा (सर्व निवडणुका)', label_en: '+ Add More (All Elections)', icon: '🗳️', color: '#4f46e5' },
+  { id: 'add_more', label_mr: '➕ जोडा', label_en: '+ Add More', icon: '🗳️', color: '#4f46e5' },
 ];
 
 // Default Prabhari initial mock data covering all 6 hierarchy tiers with full 7-level geography
@@ -381,7 +381,7 @@ export default function ElectionPrabhariManager({ isMr = true, lang = 'mr' }) {
     if (!isRegistered && !selectedAppUser && !editItem) {
       setUserValidationError(
         isMr
-          ? '⚠️ हा युझर ॲपवर नोंदणीकृत नाही! केवळ ॲपवर नोंदणीकृत कार्यकर्त्याचीच निवड करता येईल.'
+          ? '⚠️ हा युझर ॲपवर नोंदणीकृत नाही! केवळ ॲपवर नोंदणीकृत अधिकाऱ्याचीच निवड करता येईल.'
           : '⚠️ This user is not registered on the app! Only registered users can be appointed.'
       );
       showToast(isMr ? 'केवळ ॲप नोंदणीकृत युझरच निवडा!' : 'Only registered users can be appointed!');
@@ -659,7 +659,7 @@ export default function ElectionPrabhariManager({ isMr = true, lang = 'mr' }) {
                 e.stopPropagation();
                 setIsMenuOpen((prev) => !prev);
               }}
-              title={isMr ? 'पद स्तर निवडा (3-Dot Menu)' : 'Choose Hierarchy Level'}
+              title={isMr ? 'पद स्तर निवडा' : 'Choose Hierarchy Level'}
               style={{
                 width: '42px',
                 height: '42px',
@@ -819,7 +819,7 @@ export default function ElectionPrabhariManager({ isMr = true, lang = 'mr' }) {
               outline: 'none',
             }}
           >
-            <option value="ALL">{isMr ? 'सर्व निवडणुका (All 75 Elections)' : 'All 75 Elections'}</option>
+            <option value="ALL">{isMr ? 'सर्व निवडणुका' : 'All Elections'}</option>
             {ELECTIONS_CATEGORIES.map((cat) => {
               const catElections = ELECTIONS_MASTER_DATA.filter((el) => el.cat_id === cat.id);
               return (
@@ -893,7 +893,7 @@ export default function ElectionPrabhariManager({ isMr = true, lang = 'mr' }) {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px', marginBottom: '18px' }}>
             <div>
               <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '800', color: '#0f172a' }}>
-                🗳️ {isMr ? 'डेटाबेसमधील सर्व निवडणुका' : 'All Elections in Database'}
+                🗳️ {isMr ? 'सर्व निवडणुका' : 'All Elections'}
               </h2>
               <p style={{ margin: '3px 0 0 0', fontSize: '13px', color: '#64748b' }}>
                 {isMr
@@ -1037,7 +1037,7 @@ export default function ElectionPrabhariManager({ isMr = true, lang = 'mr' }) {
                       onMouseOut={(e) => (e.currentTarget.style.background = '#ffffff')}
                     >
                       <td style={{ padding: '14px 14px', color: '#94a3b8', fontWeight: '700', whiteSpace: 'nowrap' }}>{idx + 1}</td>
-                      
+
                       {/* नाव व पद */}
                       <td style={{ padding: '14px 14px' }}>
                         <div style={{ fontWeight: '800', color: '#0f172a', fontSize: '13.5px', whiteSpace: 'nowrap' }}>{item.name}</div>
@@ -1282,7 +1282,7 @@ export default function ElectionPrabhariManager({ isMr = true, lang = 'mr' }) {
               {/* Field 1: Election Type Dropdown (75 Elections Master) */}
               <div>
                 <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '700', marginBottom: '4px', color: '#334155' }}>
-                  🗳️ {isMr ? 'निवडणूक निवडा (Election Type)' : 'Select Election'} *
+                  🗳️ {isMr ? 'निवडणूक निवडा' : 'Select Election'} *
                 </label>
                 <select
                   value={formData.election_name}
@@ -1316,7 +1316,7 @@ export default function ElectionPrabhariManager({ isMr = true, lang = 'mr' }) {
               {/* Field 2: Hierarchy Role (Prefixed with 'निवडणूक प्रभारी - ') */}
               <div>
                 <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '700', marginBottom: '4px', color: '#334155' }}>
-                  🎖️ {isMr ? 'प्रभारी पद स्तर (Hierarchy Role)' : 'Hierarchy Role'} *
+                  🎖️ {isMr ? 'प्रभारी पद स्तर' : 'Hierarchy Role'} *
                 </label>
                 <select
                   value={formData.role_type}
@@ -1324,7 +1324,7 @@ export default function ElectionPrabhariManager({ isMr = true, lang = 'mr' }) {
                   style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', background: '#ffffff', boxSizing: 'border-box' }}
                   required
                 >
-                  <option value="booth_karyakarta">{isMr ? '१. निवडणूक प्रभारी - बूथ कार्यकर्ता' : '1. Election Prabhari - Booth Worker'}</option>
+                  <option value="booth_karyakarta">{isMr ? '१. निवडणूक प्रभारी - बूथ अधिकारी' : '1. Election Prabhari - Booth Officer'}</option>
                   <option value="booth_pramukh">{isMr ? '२. निवडणूक प्रभारी - बूथ प्रमुख' : '2. Election Prabhari - Booth Pramukh'}</option>
                   <option value="booth_area_pramukh">{isMr ? '३. निवडणूक प्रभारी - बूथ एरिया प्रमुख' : '3. Election Prabhari - Booth Area Pramukh'}</option>
                   <option value="taluka_pramukh">{isMr ? '४. निवडणूक प्रभारी - तालुका प्रमुख' : '4. Election Prabhari - Taluka Pramukh'}</option>
@@ -1483,7 +1483,7 @@ export default function ElectionPrabhariManager({ isMr = true, lang = 'mr' }) {
               {/* Field 6: District */}
               <div>
                 <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '700', marginBottom: '4px', color: '#334155' }}>
-                  🏛️ {isMr ? '१. जिल्हा (District)' : '1. District'} *
+                  🏛️ {isMr ? '१. जिल्हा' : '1. District'} *
                 </label>
                 <input
                   type="text"
@@ -1497,7 +1497,7 @@ export default function ElectionPrabhariManager({ isMr = true, lang = 'mr' }) {
               {/* Field 7: Taluka */}
               <div>
                 <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '700', marginBottom: '4px', color: '#334155' }}>
-                  📍 {isMr ? '२. तालुका (Taluka)' : '2. Taluka'} *
+                  📍 {isMr ? '२. तालुका' : '2. Taluka'} *
                 </label>
                 <input
                   type="text"
@@ -1512,7 +1512,7 @@ export default function ElectionPrabhariManager({ isMr = true, lang = 'mr' }) {
               {/* Field 8: Village */}
               <div>
                 <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '700', marginBottom: '4px', color: '#334155' }}>
-                  🏡 {isMr ? '३. गाव (Village)' : '3. Village'}
+                  🏡 {isMr ? '३. गाव' : '3. Village'}
                 </label>
                 <input
                   type="text"
@@ -1526,7 +1526,7 @@ export default function ElectionPrabhariManager({ isMr = true, lang = 'mr' }) {
               {/* Field 9: City */}
               <div>
                 <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '700', marginBottom: '4px', color: '#334155' }}>
-                  🏙️ {isMr ? '४. शहर (City)' : '4. City'}
+                  🏙️ {isMr ? '४. शहर' : '4. City'}
                 </label>
                 <input
                   type="text"
@@ -1540,7 +1540,7 @@ export default function ElectionPrabhariManager({ isMr = true, lang = 'mr' }) {
               {/* Field 10: Prabhag / Ward */}
               <div>
                 <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '700', marginBottom: '4px', color: '#334155' }}>
-                  🏘️ {isMr ? '५. परिसर / प्रभाग (Area / Ward)' : '5. Area / Prabhag'}
+                  🏘️ {isMr ? '५. प्रभाग' : '5. Prabhag'}
                 </label>
                 <input
                   type="text"
@@ -1554,7 +1554,7 @@ export default function ElectionPrabhariManager({ isMr = true, lang = 'mr' }) {
               {/* Field 11: Booth Number */}
               <div>
                 <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '700', marginBottom: '4px', color: '#334155' }}>
-                  🗳️ {isMr ? '६. बूथ क्रमांक (Booth No.)' : '6. Booth No.'}
+                  🗳️ {isMr ? '६. बूथ क्रमांक' : '6. Booth No.'}
                 </label>
                 <select
                   value={formData.booth_no}
@@ -1568,7 +1568,7 @@ export default function ElectionPrabhariManager({ isMr = true, lang = 'mr' }) {
                   }}
                   style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', background: '#ffffff', boxSizing: 'border-box' }}
                 >
-                  <option value="सर्व">{isMr ? 'सर्व बूथ (All Booths)' : 'All Booths'}</option>
+                  <option value="सर्व">{isMr ? 'सर्व बूथ' : 'All Booths'}</option>
                   {boothsList.map((b) => {
                     const num = b.booth_no?.replace(/[^\d]/g, '') || b.id;
                     return (
@@ -1583,7 +1583,7 @@ export default function ElectionPrabhariManager({ isMr = true, lang = 'mr' }) {
               {/* Field 12: Polling Station */}
               <div>
                 <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '700', marginBottom: '4px', color: '#334155' }}>
-                  🏫 {isMr ? '७. मतदान केंद्र (Polling Station)' : '7. Polling Station'}
+                  🏫 {isMr ? '७. मतदान केंद्र' : '7. Polling Station'}
                 </label>
                 <input
                   type="text"
@@ -1617,16 +1617,16 @@ export default function ElectionPrabhariManager({ isMr = true, lang = 'mr' }) {
                   onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                   style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', background: '#ffffff', boxSizing: 'border-box' }}
                 >
-                  <option value="active">{isMr ? 'सक्रिय (Active)' : 'Active'}</option>
-                  <option value="training">{isMr ? 'प्रशिक्षणार्थी (Training)' : 'Training'}</option>
-                  <option value="inactive">{isMr ? 'रजेवर / निष्क्रिय (Inactive)' : 'Inactive'}</option>
+                  <option value="active">{isMr ? 'सक्रिय' : 'Active'}</option>
+                  <option value="training">{isMr ? 'प्रशिक्षणार्थी' : 'Training'}</option>
+                  <option value="inactive">{isMr ? 'रजेवर / निष्क्रिय' : 'Inactive'}</option>
                 </select>
               </div>
 
               {/* Field 15: Responsibilities */}
               <div>
                 <label style={{ display: 'block', fontSize: '12.5px', fontWeight: '700', marginBottom: '4px', color: '#334155' }}>
-                  📝 {isMr ? 'विशेष जबाबदारी व कार्यसूचना (Responsibilities)' : 'Responsibilities'}
+                  📝 {isMr ? 'विशेष जबाबदारी व कार्यसूचना' : 'Responsibilities'}
                 </label>
                 <textarea
                   rows="3"
@@ -1743,7 +1743,7 @@ export default function ElectionPrabhariManager({ isMr = true, lang = 'mr' }) {
                           onChange={(e) => handleUpdateAdditionalPrabhari(extra.id, 'role_type', e.target.value)}
                           style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', background: '#ffffff', boxSizing: 'border-box' }}
                         >
-                          <option value="booth_karyakarta">{isMr ? '१. निवडणूक प्रभारी - बूथ कार्यकर्ता' : '1. Election Prabhari - Booth Worker'}</option>
+                          <option value="booth_karyakarta">{isMr ? '१. निवडणूक प्रभारी - बूथ अधिकारी' : '1. Election Prabhari - Booth Officer'}</option>
                           <option value="booth_pramukh">{isMr ? '२. निवडणूक प्रभारी - बूथ प्रमुख' : '2. Election Prabhari - Booth Pramukh'}</option>
                           <option value="booth_area_pramukh">{isMr ? '३. निवडणूक प्रभारी - बूथ एरिया प्रमुख' : '3. Election Prabhari - Booth Area Pramukh'}</option>
                           <option value="taluka_pramukh">{isMr ? '४. निवडणूक प्रभारी - तालुका प्रमुख' : '4. Election Prabhari - Taluka Pramukh'}</option>
@@ -1801,7 +1801,7 @@ export default function ElectionPrabhariManager({ isMr = true, lang = 'mr' }) {
                     boxShadow: '0 4px 12px rgba(37, 99, 235, 0.35)',
                   }}
                 >
-                  ✓ {editItem ? (isMr ? 'अद्ययावत करा' : 'Update') : (isMr ? 'जतन करा (Save to DB)' : 'Save to DB')}
+                  ✓ {editItem ? (isMr ? 'अद्ययावत करा' : 'Update') : (isMr ? 'जतन करा' : 'Save')}
                 </button>
               </div>
             </form>

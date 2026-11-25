@@ -143,7 +143,7 @@ export default function BackupRestoreEngine({ lang = 'mr' }) {
           ])
         },
         {
-          title: isMr ? '५. 🚩 पक्ष कार्यकर्ते व बूथ समन्वयक (Party Workers & Coordinators)' : '5. Party Workers & Booth Coordinators',
+          title: isMr ? '५. 🚩 पक्ष अधिकारी व बूथ समन्वयक (Party Officers & Coordinators)' : '5. Party Workers & Booth Coordinators',
           headers: [
             isMr ? 'नाव' : 'Name',
             isMr ? 'पद / भूमिका' : 'Designation',
@@ -264,7 +264,7 @@ export default function BackupRestoreEngine({ lang = 'mr' }) {
           { label: isMr ? 'वापरकर्ते (Users)' : 'Users', value: users.length, color: '#0369a1' },
           { label: isMr ? 'मतदार CRM' : 'Voters', value: citizens.length, color: '#047857' },
           { label: isMr ? 'बूथ (Booths)' : 'Booths', value: booths.length, color: '#b45309' },
-          { label: isMr ? 'कार्यकर्ते (Workers)' : 'Workers', value: workers.length, color: '#7c3aed' },
+          { label: isMr ? 'अधिकारी (Officers)' : 'Officers', value: workers.length, color: '#7c3aed' },
           { label: isMr ? 'सर्व्हे (Surveys)' : 'Surveys', value: surveys.length, color: '#be185d' },
           { label: isMr ? 'तक्रारी (Grievances)' : 'Grievances', value: issues.length, color: '#dc2626' },
         ],

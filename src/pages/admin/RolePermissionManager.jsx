@@ -138,7 +138,7 @@ const PERMISSION_CONFIG = {
     title_en: 'Meetings & Tours',
     title_mr: 'दौरे, सभा व बैठका',
     desc_en: 'Schedule and manage rallies, leader visits, and cadre meetings.',
-    desc_mr: 'राजकीय सभा, नेत्यांचे क्षेत्रीय दौरे आणि कार्यकर्ता बैठका नियोजन.',
+    desc_mr: 'राजकीय सभा, नेत्यांचे क्षेत्रीय दौरे आणि अधिकारी बैठका नियोजन.',
     Icon: Calendar,
     color: '#7c3aed',
     bgColor: '#faf5ff',
@@ -291,7 +291,7 @@ export default function RolePermissionManager({
     return localRoles.find((r) => r.id === selectedRoleId) || null;
   }, [localRoles, selectedRoleId]);
 
-  // List of Field Workers specifically
+  // List of Field Officers specifically
   const fieldWorkers = useMemo(() => {
     return usersList.filter((u) => u.roles?.some((r) => r.name === 'WORKER'));
   }, [usersList]);
@@ -327,7 +327,7 @@ export default function RolePermissionManager({
           setStagedPermIds(effective);
         } catch (err) {
           console.error('Failed to load worker permissions:', err);
-          showToast(isMr ? 'कार्यकर्त्याच्या परवानग्या लोड करता आल्या नाहीत.' : 'Failed to load worker permissions.', true);
+          showToast(isMr ? 'अधिकाऱ्याच्या परवानग्या लोड करता आल्या नाहीत.' : 'Failed to load officer permissions.', true);
         }
       };
       fetchWorkerPerms();
@@ -404,14 +404,14 @@ export default function RolePermissionManager({
                   : 'Direct permission removed. (Retains access via role)'
               );
             } else {
-              showToast(isMr ? 'कार्यकर्त्याची परवानगी बंद केली.' : 'Worker permission disabled.');
+              showToast(isMr ? 'अधिकाऱ्याची परवानगी बंद केली.' : 'Officer permission disabled.');
             }
           } else if (isInherited) {
             // Cannot remove role permission from single user without changing role
             setStagedPermIds(new Set(stagedPermIds)); // Keep active
             showToast(
               isMr
-                ? 'ही परवानगी "क्षेत्रीय कार्यकर्ता" भूमिकेकडून मिळालेली आहे. ती बदलण्यासाठी वरून "भूमिका" निवडा.'
+                ? 'ही परवानगी "क्षेत्रीय अधिकारी" भूमिकेकडून मिळालेली आहे. ती बदलण्यासाठी वरून "भूमिका" निवडा.'
                 : 'This permission is inherited from the Role. Modify the Role to remove it.',
               true
             );
@@ -434,7 +434,7 @@ export default function RolePermissionManager({
       } catch (err) {
         console.error('Worker toggle failed:', err);
         setStagedPermIds(new Set(stagedPermIds)); // Revert
-        showToast(err.message || (isMr ? 'त्रुटी आली.' : 'Failed to update worker permission.'), true);
+        showToast(err.message || (isMr ? 'त्रुटी आली.' : 'Failed to update officer permission.'), true);
       }
     }
   };
@@ -469,7 +469,7 @@ export default function RolePermissionManager({
     if (actionValue === 'GIVE_WORKER_ROLE' && workerRole) {
       try {
         await apiClient.post(`/admin/roles/${workerRole.id}/permissions/give`, { permission_id: permId });
-        showToast(isMr ? 'क्षेत्रीय कार्यकर्ता भूमिकेस परवानगी दिली.' : 'Assigned to Field Worker role.');
+        showToast(isMr ? 'क्षेत्रीय अधिकारी भूमिकेस परवानगी दिली.' : 'Assigned to Field Officer role.');
         if (targetType === 'ROLE' && selectedRoleId === workerRole.id) {
           const next = new Set(stagedPermIds);
           next.add(permId);
@@ -522,7 +522,7 @@ export default function RolePermissionManager({
         showToast(isMr ? `${targetUser?.full_name} यांना थेट परवानगी दिली.` : `Permission granted to ${targetUser?.full_name}.`);
         await loadUsers();
       } catch (err) {
-        showToast(err.message || 'Failed to assign to worker.', true);
+        showToast(err.message || 'Failed to assign to officer.', true);
       }
     }
   };
@@ -697,7 +697,7 @@ export default function RolePermissionManager({
             >
               {isMr
                 ? 'प्रत्येक भूमिका किंवा क्षेत्रीय कार्यकर्त्यास कोणत्या गोष्टींचा प्रवेश असेल ते ठरवा.'
-                : 'Manage what each role or field worker can access.'}
+                : 'Manage what each role or field officer can access.'}
             </p>
           </div>
         </div>
@@ -721,7 +721,7 @@ export default function RolePermissionManager({
             <>
               <User size={15} color="#059669" />
               <span>
-                {isMr ? 'कार्यकर्ता स्तर: ' : 'Worker View: '}
+                {isMr ? 'अधिकारी स्तर: ' : 'Officer View: '}
                 <strong>{selectedWorker?.full_name || 'निवडला नाही'}</strong>
               </span>
               <button
@@ -756,7 +756,7 @@ export default function RolePermissionManager({
               <Shield size={15} color="#2563eb" />
               <span>
                 {isMr ? 'भूमिका स्तर: ' : 'Role View: '}
-                <strong>{currentRole?.display_name || currentRole?.name || 'Field Worker'}</strong>
+                <strong>{currentRole?.display_name || currentRole?.name || 'Field Officer'}</strong>
               </span>
             </>
           )}
@@ -808,7 +808,7 @@ export default function RolePermissionManager({
                 width: '100%',
               }}
             >
-              {/* 1. Field Worker Card */}
+              {/* 1. Field Officer Card */}
               {workerRole && (() => {
                 const isSelected = targetType === 'ROLE' && selectedRoleId === workerRole.id;
                 return (
@@ -861,7 +861,7 @@ export default function RolePermissionManager({
                           textOverflow: 'ellipsis',
                         }}
                       >
-                        {isMr ? 'क्षेत्रीय कार्यकर्ता' : 'Field Worker'}
+                        {isMr ? 'क्षेत्रीय अधिकारी' : 'Field Officer'}
                       </span>
                     </div>
                     <span
@@ -1029,7 +1029,7 @@ export default function RolePermissionManager({
             </div>
           </div>
 
-          {/* Section 2: 2. Select Field Worker */}
+          {/* Section 2: 2. Select Field Officer */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <div style={{ height: 20, display: 'flex', alignItems: 'center', gap: 6 }}>
               <span
@@ -1041,7 +1041,7 @@ export default function RolePermissionManager({
                 }}
               />
               <span style={{ fontSize: 13, fontWeight: 800, color: '#0f172a' }}>
-                {isMr ? '२. कार्यकर्ता निवडा (2. Select Field Worker)' : '2. Select Field Worker'}
+                {isMr ? '२. अधिकारी निवडा (2. Select Field Officer)' : '2. Select Field Officer'}
               </span>
             </div>
 
@@ -1096,7 +1096,7 @@ export default function RolePermissionManager({
                 }}
               >
                 <option value="">
-                  {isMr ? '👤 येथे क्लिक करून कार्यकर्ता निवडा...' : '👤 Choose a field worker...'}
+                  {isMr ? '👤 येथे क्लिक करून अधिकारी निवडा...' : '👤 Choose a field officer...'}
                 </option>
                 {fieldWorkers.map((u) => (
                   <option key={u.id} value={u.id}>
@@ -1499,7 +1499,7 @@ export default function RolePermissionManager({
                             <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                               {targetType === 'WORKER'
                                 ? isWorkerInherited
-                                  ? `🛡️ ${selectedWorker?.full_name || (isMr ? 'कार्यकर्ता' : 'Worker')}`
+                                  ? `🛡️ ${selectedWorker?.full_name || (isMr ? 'अधिकारी' : 'Officer')}`
                                   : isWorkerDirect
                                     ? `👤 ${selectedWorker?.full_name || (isMr ? 'थेट परवाना' : 'Direct')}`
                                     : (isMr ? '⚪ नियुक्त नाही' : '⚪ Not Assigned')
@@ -1524,7 +1524,7 @@ export default function RolePermissionManager({
                                   border: '1px solid #a7f3d0',
                                 }}
                               >
-                                {isMr ? '👷 कार्यकर्ते' : '👷 Workers'}
+                                {isMr ? '👮 अधिकारी' : '👮 Officers'}
                               </span>
                             )}
                             {hasOfficer && (
@@ -1747,10 +1747,10 @@ export default function RolePermissionManager({
                   background: '#ffffff',
                 }}
               >
-                <optgroup label={isMr ? '👷 क्षेत्रीय कार्यकर्ते (Field Workers)' : 'Field Workers'}>
+                <optgroup label={isMr ? '👮 क्षेत्रीय अधिकारी (Field Officers)' : 'Field Officers'}>
                   {fieldWorkers.map((u) => (
                     <option key={u.id} value={u.id}>
-                      👤 {u.full_name} (Field Worker · 📞 {u.phone || 'N/A'})
+                      👤 {u.full_name} (Field Officer · 📞 {u.phone || 'N/A'})
                     </option>
                   ))}
                 </optgroup>

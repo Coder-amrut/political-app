@@ -257,7 +257,7 @@ export default function UserAttendanceManager({ language = 'mr' }) {
       if (res.data?.success) {
         setPolicy(res.data.data);
         showNotification(
-          res.data.message || (isMr ? 'उपस्थिती स्थान धोरण सर्व कार्यकर्ते / पदाधिकाऱ्यांसाठी यशस्वीरीत्या जतन केले!' : 'Location policy saved for all workers / officials!'),
+          res.data.message || (isMr ? 'उपस्थिती स्थान धोरण सर्व अधिकारी / पदाधिकाऱ्यांसाठी यशस्वीरीत्या जतन केले!' : 'Location policy saved for all workers / officials!'),
           'success'
         );
         setShowLocationSettings(false);
@@ -922,7 +922,7 @@ export default function UserAttendanceManager({ language = 'mr' }) {
             {roleFilter !== 'all' && (
               <span style={{ fontSize: '12px', background: '#fef3c7', color: '#92400e', padding: '3px 10px', borderRadius: '8px', fontWeight: 700, border: '1px solid #fde68a', display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <span>भूमिका:</span>
-                <span>{roleFilter === 'WORKER' ? 'कार्यकर्ता' : roleFilter === 'OFFICER' ? 'अधिकारी' : 'प्रशासक'}</span>
+                <span>{roleFilter === 'WORKER' ? 'अधिकारी' : roleFilter === 'OFFICER' ? 'अधिकारी' : 'प्रशासक'}</span>
               </span>
             )}
             {complianceFilter !== 'all' && (
@@ -1070,7 +1070,7 @@ export default function UserAttendanceManager({ language = 'mr' }) {
                   </div>
                   {[
                     { value: 'all', label: isMr ? 'सर्व भूमिका (All Roles)' : 'All Roles' },
-                    { value: 'WORKER', label: isMr ? '👷 कार्यकर्ता (Social Worker)' : '👷 Social Worker' },
+                    { value: 'WORKER', label: isMr ? '👮 अधिकारी (Field Officer)' : '👮 Field Officer' },
                     { value: 'OFFICER', label: isMr ? '👔 अधिकारी / नेता (Officer / Leader)' : '👔 Officer / Leader' },
                     { value: 'ADMIN', label: isMr ? '🛡️ प्रशासक (Admin)' : '🛡️ Admin' },
                   ].map((opt) => (
@@ -1743,7 +1743,7 @@ export default function UserAttendanceManager({ language = 'mr' }) {
                   </h3>
                 </div>
                 <p style={{ margin: 0, fontSize: '13px', color: '#64748b', fontWeight: 500 }}>
-                  {isMr ? 'कार्यकर्ते / पदाधिकाऱ्यांसाठी कार्यालयाचे स्थान आणि उपस्थिती नियम सेट करा.' : 'Set office location and attendance rules for workers / officials.'}
+                  {isMr ? 'अधिकारी / पदाधिकाऱ्यांसाठी कार्यालयाचे स्थान आणि उपस्थिती नियम सेट करा.' : 'Set office location and attendance rules for workers / officials.'}
                 </p>
               </div>
               <button
@@ -2079,7 +2079,7 @@ export default function UserAttendanceManager({ language = 'mr' }) {
                 onMouseOut={(e) => (e.currentTarget.style.background = '#2563eb')}
               >
                 <span>💾</span>
-                <span>{savingPolicy ? (isMr ? 'जतन होत आहे...' : 'Saving...') : (isMr ? 'सर्व कार्यकर्ते / पदाधिकाऱ्यांसाठी सेव्ह करा' : 'Save for all workers / officials')}</span>
+                <span>{savingPolicy ? (isMr ? 'जतन होत आहे...' : 'Saving...') : (isMr ? 'सर्व अधिकारी / पदाधिकाऱ्यांसाठी सेव्ह करा' : 'Save for all workers / officials')}</span>
               </button>
             </div>
           </div>
@@ -2479,7 +2479,7 @@ function ManualAttendanceModal({ isMr, users, onClose, onSuccess }) {
               {isMr ? 'मॅन्युअल हजेरी नोंदणी व दुरुस्ती' : 'Manual Attendance Mark & Override'}
             </h3>
             <span style={{ fontSize: '12px', color: '#64748b' }}>
-              {isMr ? 'अधिकृत कामासाठी किंवा ऑफलाइन कर्मचाऱ्यांची हजेरी' : 'For duty exemption or offline workers'}
+              {isMr ? 'अधिकृत कामासाठी किंवा ऑफलाइन कर्मचाऱ्यांची हजेरी' : 'For duty exemption or offline officers'}
             </span>
           </div>
           <button onClick={onClose} style={closeBtnStyle}>

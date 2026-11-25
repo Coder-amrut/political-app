@@ -584,7 +584,7 @@ export default function NotificationsAlerts({ lang = 'mr' }) {
                       onChange={(e) => setBroadcastTarget(e.target.value)}
                       style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}
                     >
-                      <option value="all_workers">{isMr ? 'सर्व २४५ कार्यकर्ते व बूथ प्रमुख' : 'All 245 Workers & Booth Heads'}</option>
+                      <option value="all_workers">{isMr ? 'सर्व २४५ अधिकारी व बूथ प्रमुख' : 'All 245 Officers & Booth Heads'}</option>
                       <option value="booth_heads">{isMr ? 'केवळ बूथ प्रमुख (३१८ प्रमुख)' : 'Booth Heads Only (318 Heads)'}</option>
                       <option value="ward_coordinators">{isMr ? 'प्रभाग व तालुका समन्वयक' : 'Ward & Taluka Coordinators'}</option>
                       <option value="sensitive_booths">{isMr ? 'केवळ २८ संवेदनशील बूथ कार्यकर्ते' : '28 Sensitive Booth Workers Only'}</option>

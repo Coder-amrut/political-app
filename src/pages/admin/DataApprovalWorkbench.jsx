@@ -631,7 +631,7 @@ export default function DataApprovalWorkbench({ lang = 'mr' }) {
         <div style={{ flex: '1 1 260px' }}>
           <input
             type="text"
-            placeholder={isMr ? '🔍 नाव, मतदार ओळखपत्र, फोन किंवा कार्यकर्त्याचे नाव...' : 'Search submissions...'}
+            placeholder={isMr ? '🔍 नाव, मतदार ओळखपत्र, फोन किंवा अधिकाऱ्याचे नाव...' : 'Search submissions...'}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             style={{
@@ -1074,8 +1074,8 @@ export default function DataApprovalWorkbench({ lang = 'mr' }) {
             </h3>
             <p style={{ margin: '0 0 12px 0', fontSize: '12px', color: '#64748b' }}>
               {isMr
-                ? 'कार्यकर्त्याला ही नोंद का नाकारली याचे स्पष्ट कारण द्या, जेणेकरून ते दुरुस्त करून पुन्हा पाठवू शकतील.'
-                : 'Provide a clear rejection reason so the field worker can correct and resubmit.'}
+                ? 'अधिकाऱ्याला ही नोंद का नाकारली याचे स्पष्ट कारण द्या, जेणेकरून ते दुरुस्त करून पुन्हा पाठवू शकतील.'
+                : 'Provide a clear rejection reason so the field officer can correct and resubmit.'}
             </p>
 
             <form onSubmit={handleReject}>

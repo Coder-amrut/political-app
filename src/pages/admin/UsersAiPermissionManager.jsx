@@ -315,7 +315,7 @@ export default function UsersAiPermissionManager({ language = 'mr', onNotice = n
 
         <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '10px', padding: '12px 14px' }}>
           <div style={{ fontSize: '11px', color: '#1e40af', fontWeight: '700', textTransform: 'uppercase' }}>
-            👷 {isMr ? 'कार्यकर्ते' : 'Field Workers'}
+            👮 {isMr ? 'अधिकारी' : 'Field Officers'}
           </div>
           <div style={{ fontSize: '20px', fontWeight: '800', color: '#1d4ed8', marginTop: '2px' }}>
             {stats.workersCount}
@@ -390,7 +390,7 @@ export default function UsersAiPermissionManager({ language = 'mr', onNotice = n
             { key: 'all', label_mr: 'सर्व वापरकर्ते', label_en: 'All' },
             { key: 'AI_ONLY', label_mr: '🤖 AI सुरू असलेले', label_en: 'AI Enabled' },
             { key: 'NO_AI', label_mr: '🔒 AI बंद असलेले', label_en: 'AI Disabled' },
-            { key: 'WORKER', label_mr: '👷 कार्यकर्ते', label_en: 'Workers' },
+            { key: 'WORKER', label_mr: '👮 अधिकारी', label_en: 'Officers' },
             { key: 'OFFICER', label_mr: '👔 अधिकारी', label_en: 'Officers' },
           ].map((pill) => {
             const isActive = roleFilter === pill.key;

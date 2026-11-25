@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\SurveyForm;
+use App\Models\PublishedForm;
 use Database\Seeders\SurveyFormSeeder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class SurveyFormController extends Controller
 {
@@ -297,6 +299,108 @@ class SurveyFormController extends Controller
             'source' => 'MySQL database table: survey_form',
             'db_id' => $record->id,
             'survey_id' => $surveyId,
+        ]);
+    }
+
+    /**
+     * GET /api/public-survey/{uuid}
+     * Publicly retrieve survey form details for public respondent filling without login.
+     */
+    public function getPublicSurvey(string $uuid): JsonResponse
+    {
+        // 1. Search in published_forms table
+        $published = PublishedForm::where('uuid', $uuid)
+            ->orWhere('id', $uuid)
+            ->first();
+
+        if ($published) {
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'uuid' => $published->uuid,
+                    'form_title' => $published->form_title,
+                    'form_title_mr' => $published->form_title_mr,
+                    'project_name' => $published->project_name,
+                    'geographic_scope' => $published->geographic_scope,
+                    'default_fields' => $published->default_fields,
+                    'custom_questions' => $published->custom_questions,
+                    'form_format' => $published->form_format,
+                    'status' => $published->status,
+                ],
+            ]);
+        }
+
+        // 2. Search in survey_form table
+        $survey = SurveyForm::where('form_code', $uuid)
+            ->orWhere('id', $uuid)
+            ->first();
+
+        if ($survey) {
+            $data = $survey->form_data ?: [];
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'uuid' => $survey->form_code ?: (string)$survey->id,
+                    'form_title' => $survey->title_en,
+                    'form_title_mr' => $survey->title_mr,
+                    'project_name' => $survey->title_mr ?: $survey->title_en,
+                    'geographic_scope' => $survey->scope,
+                    'default_fields' => $data['default_fields'] ?? [],
+                    'custom_questions' => $survey->custom_questions ?: ($data['customQuestions'] ?? []),
+                    'form_format' => $data['form_format'] ?? null,
+                    'status' => $survey->status,
+                ],
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Survey form not found or has been closed.',
+        ], 404);
+    }
+
+    /**
+     * POST /api/public-survey/{uuid}/submit
+     * Publicly submit a response from citizen/voter via public link and persist in MySQL.
+     */
+    public function submitPublicSurvey(Request $request, string $uuid): JsonResponse
+    {
+        $published = PublishedForm::where('uuid', $uuid)->orWhere('id', $uuid)->first();
+        $scope = $published?->geographic_scope ?: 'PUBLIC_SURVEY';
+        $projectName = $published?->project_name ?: 'Public Campaign';
+
+        $submissionId = 'PUB-SRV-' . strtoupper(Str::random(8));
+
+        $record = SurveyForm::create([
+            'scope' => strtoupper($scope),
+            'record_type' => 'SUBMISSION',
+            'form_code' => $submissionId,
+            'title_en' => ($request->respondent_name ?: 'Citizen') . ' - Public Submission',
+            'title_mr' => ($request->respondent_name ?: 'नागरिक') . ' - सार्वजनिक सर्व्हे प्रतिसाद',
+            'field_worker_name' => 'सार्वजनिक सोशल मीडिया लिंक (Public Respondent)',
+            'form_data' => [
+                'form_uuid' => $uuid,
+                'survey_id' => $submissionId,
+                'project_name' => $projectName,
+                'source' => 'PUBLIC_SOCIAL_SHARE',
+                'respondent_name' => $request->respondent_name,
+                'respondent_mobile' => $request->respondent_mobile,
+                'address' => $request->respondent_address,
+                'taluka' => $request->taluka,
+                'village' => $request->village,
+                'city' => $request->city,
+                'ward' => $request->ward,
+                'answers' => $request->answers,
+                'submitted_at' => now()->toISOString(),
+            ],
+            'status' => 'COMPLETED',
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'सर्व्हे यशस्वीरित्या नोंदवला गेला आहे! आपले मत नोंदवल्याबद्दल मनःपूर्वक धन्यवाद.',
+            'db_id' => $record->id,
+            'submission_id' => $submissionId,
         ]);
     }
 }

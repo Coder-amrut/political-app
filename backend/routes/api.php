@@ -62,6 +62,12 @@ Route::prefix('auth')->group(function () {
     });
 });
 
+// ---------------------------------------------------------------------------
+// Public Survey Form Endpoints (Unauthenticated for Social Media Respondents)
+// ---------------------------------------------------------------------------
+Route::get('/public-survey/{uuid}', [SurveyFormController::class, 'getPublicSurvey']);
+Route::post('/public-survey/{uuid}/submit', [SurveyFormController::class, 'submitPublicSurvey']);
+
 // Authenticated Survey Form endpoints (Workers, Officers, Admins)
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/survey-forms/templates', [SurveyFormController::class, 'getTemplates']);

@@ -4,6 +4,7 @@ import { useAuth } from './hooks/useAuth';
 import WorkerLogin from './pages/auth/WorkerLogin';
 import WorkerDashboard from './pages/worker_Karyakarta/WorkerDashboard';
 import AdminPhoneDashboard from './pages/admin/AdminPhoneDashboard';
+import PublicSurveyResponder from './pages/public/PublicSurveyResponder';
 
 export default function App() {
   const { isAuthenticated, loading, user } = useAuth();
@@ -46,6 +47,11 @@ export default function App() {
 
   return (
     <Routes>
+      {/* Public Survey Form Routes (Accessible without login for WhatsApp & Social Media Shares) */}
+      <Route path="/survey/public/:uuid" element={<PublicSurveyResponder />} />
+      <Route path="/public-survey/:uuid" element={<PublicSurveyResponder />} />
+      <Route path="/survey/:uuid" element={<PublicSurveyResponder />} />
+
       <Route
         path="/login"
         element={

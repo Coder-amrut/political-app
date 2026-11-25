@@ -604,6 +604,30 @@ function HouseholdSurveyForm({ user, language: appLang = 'en' }) {
     }
   };
 
+  // Social Media & Public Survey Sharing Handlers
+  const handleShareSurveyToWhatsApp = (form) => {
+    const formUuid = form?.uuid || form?.id || 'SURVEY_GENERAL';
+    const origin = window.location.origin;
+    const publicUrl = `${origin}/survey/public/${formUuid}`;
+    const title = isMr
+      ? (form?.form_title_mr || form?.form_title || 'नागरी जनमत व मतदार सर्व्हे')
+      : (form?.form_title || 'Civic Sentiment & Development Survey');
+    const project = form?.project_name ? `📍 निवडणूक / प्रकल्प: ${form.project_name}\n` : '';
+
+    const shareMsg = `📋 *${title}*\n${project}नमस्कार,\nकृपया खालील अधिकृत लिंकवर क्लिक करून आपला बहुमूल्य अभिप्राय आणि माहिती नोंदवा:\n\n👉 *सर्व्हे फॉर्म लिंक:*\n${publicUrl}\n\nधन्यवाद! 🙏`;
+    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareMsg)}`, '_blank');
+  };
+
+  const handleCopySurveyLink = (form) => {
+    const formUuid = form?.uuid || form?.id || 'SURVEY_GENERAL';
+    const origin = window.location.origin;
+    const publicUrl = `${origin}/survey/public/${formUuid}`;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(publicUrl);
+    }
+    alert(isMr ? `सर्व्हे फॉर्मची लिंक कॉपी झाली आहे!\n\n${publicUrl}\n\nआपण ही लिंक व्हॉट्सॲप, फेसबुक किंवा इतर सोशल मीडियावर पाठवून लोकांकडून सर्व्हे भरून घेऊ शकता.` : `Survey link copied to clipboard!\n\n${publicUrl}`);
+  };
+
   // 6. Manage User Access Modal Handlers (`published_form_users`)
   const handleOpenUserAccessModal = async (form) => {
     setSelectedPublishedForm(form);
@@ -1548,6 +1572,52 @@ function HouseholdSurveyForm({ user, language: appLang = 'en' }) {
                         {/* 6. Action: Manage User Access, Edit, Demo, Delete */}
                         <td style={{ padding: '14px 16px', borderTop: '1px solid #e2e8f0', borderBottom: '1px solid #e2e8f0', borderRight: '1px solid #e2e8f0', borderRadius: '0 12px 12px 0', textAlign: 'right', whiteSpace: 'nowrap' }}>
                           <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'flex-end', gap: '6px', whiteSpace: 'nowrap' }}>
+                            {/* WHATSAPP SHARE BUTTON */}
+                            <button
+                              type="button"
+                              onClick={() => handleShareSurveyToWhatsApp(pForm)}
+                              className="fb-btn-3d-secondary"
+                              style={{
+                                padding: '6.5px 10px',
+                                fontSize: '12px',
+                                fontWeight: '750',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                color: '#15803d',
+                                background: '#f0fdf4',
+                                border: '1px solid #bbf7d0',
+                                whiteSpace: 'nowrap',
+                              }}
+                              title={isMr ? 'हा सर्व्हे फॉर्म व्हॉट्सॲपवर पाठवा' : 'Share this survey form on WhatsApp'}
+                            >
+                              <span>📲</span>
+                              <span>{isMr ? 'व्हॉट्सॲप' : 'WhatsApp'}</span>
+                            </button>
+
+                            {/* COPY PUBLIC LINK BUTTON */}
+                            <button
+                              type="button"
+                              onClick={() => handleCopySurveyLink(pForm)}
+                              className="fb-btn-3d-secondary"
+                              style={{
+                                padding: '6.5px 9px',
+                                fontSize: '12px',
+                                fontWeight: '750',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                color: '#0369a1',
+                                background: '#f0f9ff',
+                                border: '1px solid #bae6fd',
+                                whiteSpace: 'nowrap',
+                              }}
+                              title={isMr ? 'सार्वजनिक लिंक कॉपी करा' : 'Copy Public Link'}
+                            >
+                              <span>🔗</span>
+                              <span>{isMr ? 'लिंक' : 'Link'}</span>
+                            </button>
+
                             {/* PROMINENT COMPACT BUTTON: GIVE / MANAGE USER ACCESS */}
                             <button
                               type="button"

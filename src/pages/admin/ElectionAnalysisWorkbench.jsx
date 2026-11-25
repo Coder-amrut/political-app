@@ -1335,7 +1335,7 @@ ${groundObservations || 'नोंद नाही'}
                         }}
                         onClick={(e) => e.stopPropagation()}
                       >
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1.5px solid #e2e8f0', paddingBottom: '12px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1.5px solid #e2e8f0', paddingBottom: '12px', flexShrink: 0 }}>
                           <div>
                             <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '850', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
                               <span>🏛️</span>
@@ -1355,7 +1355,7 @@ ${groundObservations || 'नोंद नाही'}
                         </div>
 
                         {/* Search & Quick Actions */}
-                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap', flexShrink: 0 }}>
                           <input
                             type="text"
                             placeholder={isMr ? '🔍 निवडणुकीचे नाव शोधा...' : '🔍 Search election name...'}
@@ -1369,7 +1369,7 @@ ${groundObservations || 'नोंद नाही'}
                               setIsElectionTypeMenuOpen(false);
                               setActiveTab('winners');
                             }}
-                            style={{ padding: '9px 14px', borderRadius: '8px', background: '#fef3c7', color: '#92400e', border: '1px solid #fde68a', fontWeight: '800', fontSize: '12.5px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
+                            style={{ padding: '9px 14px', borderRadius: '8px', background: '#fef3c7', color: '#92400e', border: '1px solid #fde68a', fontWeight: '800', fontSize: '12.5px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}
                           >
                             <span>🏆</span>
                             <span>{isMr ? 'मागील विजेता निकाल' : 'Past Winners View'}</span>
@@ -1381,7 +1381,7 @@ ${groundObservations || 'नोंद नाही'}
                           style={{
                             overflowY: 'auto',
                             WebkitOverflowScrolling: 'touch',
-                            flex: 1,
+                            flex: '1 1 auto',
                             minHeight: 0,
                             display: 'flex',
                             flexDirection: 'column',
@@ -1406,7 +1406,7 @@ ${groundObservations || 'नोंद नाही'}
                             const isExpanded = expandedCategory === cat.id || Boolean(electionSearchText.trim());
 
                             return (
-                              <div key={cat.id} style={{ border: '1.5px solid #e2e8f0', borderRadius: '12px', overflow: 'hidden' }}>
+                              <div key={cat.id} style={{ border: '1.5px solid #e2e8f0', borderRadius: '12px', overflow: 'hidden', flexShrink: 0 }}>
                                 <div
                                   onClick={() => setExpandedCategory(isExpanded ? null : cat.id)}
                                   style={{
@@ -1418,7 +1418,8 @@ ${groundObservations || 'नोंद नाही'}
                                     cursor: 'pointer',
                                     fontWeight: '850',
                                     fontSize: '13px',
-                                    color: '#1e293b'
+                                    color: '#1e293b',
+                                    flexShrink: 0
                                   }}
                                 >
                                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -1460,7 +1461,8 @@ ${groundObservations || 'नोंद नाही'}
                                             justifyContent: 'space-between',
                                             gap: '8px',
                                             width: '100%',
-                                            boxSizing: 'border-box'
+                                            boxSizing: 'border-box',
+                                            flexShrink: 0
                                           }}
                                         >
                                           <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>

@@ -19,6 +19,7 @@ import HouseholdSurveyForm from './HouseholdSurveyForm';
 import BackupRestoreEngine from './BackupRestoreEngine';
 import AuditLogViewer from './AuditLogViewer';
 import MatdanYadiManager from '../../components/MatdanYadiManager';
+import ProjectCreateForm from './ProjectCreateForm';
 import {
   Menu,
   Shield,
@@ -938,6 +939,7 @@ export default function AdminPhoneDashboard() {
   const [selectedCityVillage, setSelectedCityVillage] = useState('all');
   const [selectedWard, setSelectedWard] = useState('all');
   const [complaintViewMode, setComplaintViewMode] = useState('cards'); // 'cards' | 'table'
+  const [projectSubTab, setProjectSubTab] = useState('create'); // 'create' | 'list'
   const [assignModalComplaint, setAssignModalComplaint] = useState(null);
   const [assignForm, setAssignForm] = useState({
     officerId: '',
@@ -1141,6 +1143,16 @@ export default function AdminPhoneDashboard() {
   useEffect(() => {
     fetchAllAdminData();
   }, [fetchAllAdminData]);
+
+  const fetchProjects = async () => {
+    try {
+      const res = await apiClient.get('/admin/projects');
+      const projData = res?.data?.data || res?.data || [];
+      setProjects(Array.isArray(projData) ? projData : []);
+    } catch (e) {
+      console.warn('Failed to refresh projects:', e);
+    }
+  };
 
   // Fetch real districts from database on mount
   useEffect(() => {
@@ -3161,97 +3173,170 @@ export default function AdminPhoneDashboard() {
               </>
             )}
 
-            {/* ================= TAB 2: PROJECTS & CAMPAIGNS ================= */}
+            {/* ================= TAB 2: PROJECTS & CAMPAIGNS (प्रकल्प निर्मिती व व्यवस्थापन) ================= */}
             {activeTab === 'projects' && (
-              <>
-                <div className="admin-section-card">
-                  <div className="admin-section-header">
-                    <div className="admin-section-title">
-                      <Search size={18} style={{ color: '#2563eb' }} />
-                      <span>{isMr ? 'प्रकल्प शोध' : 'Search Projects'}</span>
-                    </div>
-                  </div>
-                  <input
-                    type="text"
-                    placeholder={isMr ? 'प्रकल्पाचे नाव किंवा प्रकार शोधा...' : 'Search by project name or type...'}
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+              <div className="admin-responsive-tab-pane">
+                {/* Sub-tab Navigation: Create Project with Geo Map vs Project List */}
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '14px', background: '#f1f5f9', padding: '4px', borderRadius: '12px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setProjectSubTab('create')}
                     style={{
-                      width: '100%',
-                      padding: '10px 14px',
+                      flex: 1,
+                      padding: '10px 12px',
                       borderRadius: '10px',
-                      border: '1.5px solid #cbd5e1',
+                      border: 'none',
+                      background: projectSubTab === 'create' ? 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)' : 'transparent',
+                      color: projectSubTab === 'create' ? '#ffffff' : '#64748b',
+                      fontWeight: '850',
                       fontSize: '12.5px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px',
+                      boxShadow: projectSubTab === 'create' ? '0 2px 8px rgba(37,99,235,0.3)' : 'none',
+                      transition: 'all 0.2s ease',
+                      whiteSpace: 'nowrap'
                     }}
-                  />
+                  >
+                    <span>➕</span>
+                    <span>{isMr ? 'नवीन प्रकल्प (Geo Map)' : 'Create Project'}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setProjectSubTab('list')}
+                    style={{
+                      flex: 1,
+                      padding: '10px 12px',
+                      borderRadius: '10px',
+                      border: 'none',
+                      background: projectSubTab === 'list' ? '#ffffff' : 'transparent',
+                      color: projectSubTab === 'list' ? '#0f172a' : '#64748b',
+                      fontWeight: '850',
+                      fontSize: '12.5px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px',
+                      boxShadow: projectSubTab === 'list' ? '0 2px 8px rgba(0,0,0,0.08)' : 'none',
+                      transition: 'all 0.2s ease',
+                      whiteSpace: 'nowrap'
+                    }}
+                  >
+                    <span>📁</span>
+                    <span>{isMr ? 'प्रकल्प यादी' : 'Projects List'}</span>
+                    <span style={{ fontSize: '11px', padding: '2px 7px', borderRadius: '10px', background: projectSubTab === 'list' ? '#eff6ff' : '#e2e8f0', color: projectSubTab === 'list' ? '#2563eb' : '#475569' }}>
+                      {projects.length}
+                    </span>
+                  </button>
                 </div>
 
-                <div className="admin-section-card">
-                  <div className="admin-section-header">
-                    <div className="admin-section-title">
-                      <FolderKanban size={18} style={{ color: '#7c3aed' }} />
-                      <span>{isMr ? 'डेटाबेस प्रकल्प यादी' : 'Database Projects'}</span>
-                    </div>
-                    <span className="admin-badge-count">{filteredProjects.length} प्रकल्प</span>
+                {projectSubTab === 'create' ? (
+                  <div id="project-create-form-section" style={{ width: '100%', maxWidth: '100%', overflowX: 'hidden' }}>
+                    <ProjectCreateForm
+                      language={lang}
+                      onCreated={async (newProj) => {
+                        await fetchProjects();
+                        setProjectSubTab('list');
+                        showToast(isMr ? 'प्रकल्प व नकाशा यशस्वीरित्या जतन झाला!' : 'Project created successfully with Geo Map!');
+                      }}
+                    />
                   </div>
-
-                  {filteredProjects.length === 0 ? (
-                    <div style={{ textAlign: 'center', padding: '30px 10px', color: '#64748b' }}>
-                      <div style={{ fontSize: '13px', fontWeight: '750' }}>
-                        {isMr ? 'कोणतेही प्रकल्प आढळले नाहीत' : 'No projects found'}
+                ) : (
+                  <>
+                    <div className="admin-section-card">
+                      <div className="admin-section-header">
+                        <div className="admin-section-title">
+                          <Search size={18} style={{ color: '#2563eb' }} />
+                          <span>{isMr ? 'प्रकल्प शोध' : 'Search Projects'}</span>
+                        </div>
                       </div>
+                      <input
+                        type="text"
+                        placeholder={isMr ? 'प्रकल्पाचे नाव किंवा प्रकार शोधा...' : 'Search by project name or type...'}
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        style={{
+                          width: '100%',
+                          padding: '10px 14px',
+                          borderRadius: '10px',
+                          border: '1.5px solid #cbd5e1',
+                          fontSize: '12.5px',
+                        }}
+                      />
                     </div>
-                  ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                      {filteredProjects.map((p) => (
-                        <div
-                          key={p.uuid || p.id}
-                          style={{
-                            border: '1px solid #e2e8f0',
-                            borderRadius: '10px',
-                            padding: '12px',
-                            background: '#ffffff',
-                          }}
-                        >
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <span style={{ fontSize: '13px', fontWeight: '800', color: '#0f172a' }}>
-                              {p.name}
-                            </span>
-                            <span
-                              style={{
-                                fontSize: '10px',
-                                padding: '2px 8px',
-                                borderRadius: '4px',
-                                fontWeight: '800',
-                                background: p.status === 'ACTIVE' ? '#dcfce7' : p.status === 'COMPLETED' ? '#e0f2fe' : '#fef3c7',
-                                color: p.status === 'ACTIVE' ? '#166534' : p.status === 'COMPLETED' ? '#075985' : '#854d0e',
-                              }}
-                            >
-                              {p.status}
-                            </span>
-                          </div>
 
-                          <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px' }}>
-                            प्रकार: <strong>{p.project_type || 'GENERAL'}</strong>
-                            {p.assigned_members_count > 0 && ` • नियुक्त सदस्य: ${p.assigned_members_count}`}
-                          </div>
+                    <div className="admin-section-card">
+                      <div className="admin-section-header">
+                        <div className="admin-section-title">
+                          <FolderKanban size={18} style={{ color: '#7c3aed' }} />
+                          <span>{isMr ? 'डेटाबेस प्रकल्प यादी' : 'Database Projects'}</span>
+                        </div>
+                        <span className="admin-badge-count">{filteredProjects.length} प्रकल्प</span>
+                      </div>
 
-                          {p.description && (
-                            <div style={{ fontSize: '11px', color: '#475569', marginTop: '4px', fontStyle: 'italic' }}>
-                              {p.description}
-                            </div>
-                          )}
-
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px', fontSize: '10px', color: '#94a3b8' }}>
-                            <span>व्याप्ती: {p.geographic_scope || 'विधानसभा'}</span>
-                            <span>तयार: {p.created_at ? new Date(p.created_at).toLocaleDateString() : '-'}</span>
+                      {filteredProjects.length === 0 ? (
+                        <div style={{ textAlign: 'center', padding: '30px 10px', color: '#64748b' }}>
+                          <div style={{ fontSize: '13px', fontWeight: '750' }}>
+                            {isMr ? 'कोणतेही प्रकल्प आढळले नाहीत' : 'No projects found'}
                           </div>
                         </div>
-                      ))}
+                      ) : (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                          {filteredProjects.map((p) => (
+                            <div
+                              key={p.uuid || p.id}
+                              style={{
+                                border: '1px solid #e2e8f0',
+                                borderRadius: '10px',
+                                padding: '12px',
+                                background: '#ffffff',
+                              }}
+                            >
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <span style={{ fontSize: '13px', fontWeight: '800', color: '#0f172a' }}>
+                                  {p.name}
+                                </span>
+                                <span
+                                  style={{
+                                    fontSize: '10px',
+                                    padding: '2px 8px',
+                                    borderRadius: '4px',
+                                    fontWeight: '800',
+                                    background: p.status === 'ACTIVE' ? '#dcfce7' : p.status === 'COMPLETED' ? '#e0f2fe' : '#fef3c7',
+                                    color: p.status === 'ACTIVE' ? '#166534' : p.status === 'COMPLETED' ? '#075985' : '#854d0e',
+                                  }}
+                                >
+                                  {p.status}
+                                </span>
+                              </div>
+
+                              <div style={{ fontSize: '11px', color: '#64748b', marginTop: '4px' }}>
+                                प्रकार: <strong>{p.project_type || 'GENERAL'}</strong>
+                                {p.assigned_members_count > 0 && ` • नियुक्त सदस्य: ${p.assigned_members_count}`}
+                              </div>
+
+                              {p.description && (
+                                <div style={{ fontSize: '11px', color: '#475569', marginTop: '4px', fontStyle: 'italic' }}>
+                                  {p.description}
+                                </div>
+                              )}
+
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px', fontSize: '10px', color: '#94a3b8' }}>
+                                <span>व्याप्ती: {p.geographic_scope || 'विधानसभा'}</span>
+                                <span>तयार: {p.created_at ? new Date(p.created_at).toLocaleDateString() : '-'}</span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              </>
+                  </>
+                )}
+              </div>
             )}
 
             {/* ================= TAB 3: ATTENDANCE ================= */}

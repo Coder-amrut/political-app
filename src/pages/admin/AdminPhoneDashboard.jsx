@@ -934,6 +934,9 @@ export default function AdminPhoneDashboard() {
 
   // Complaint Management Advanced Filters & Modal States
   const [selectedDistrict, setSelectedDistrict] = useState('all');
+  const [selectedTaluka, setSelectedTaluka] = useState('all');
+  const [selectedCityVillage, setSelectedCityVillage] = useState('all');
+  const [selectedWard, setSelectedWard] = useState('all');
   const [complaintViewMode, setComplaintViewMode] = useState('cards'); // 'cards' | 'table'
   const [assignModalComplaint, setAssignModalComplaint] = useState(null);
   const [assignForm, setAssignForm] = useState({
@@ -1582,10 +1585,40 @@ export default function AdminPhoneDashboard() {
     setSubmittingAssign(false);
     setAssignModalComplaint(null);
     showToast(isMr ? `तक्रार संबंधित अधिकाऱ्यांना (${assignedObj.name}) फॉरवर्ड केली!` : `Complaint forwarded to ${assignedObj.name}!`);
+  };
 
-    if (waUrl && window.confirm(isMr ? `अधिकाऱ्यांच्या व्हॉट्सअ‍ॅपवर (${assignedObj.name}) थेट अधिकृत सूचना पाठवायची का?` : `Send WhatsApp notification to ${assignedObj.name}?`)) {
-      window.open(waUrl, '_blank');
-    }
+  const buildOfficerAssignmentShareText = () => {
+    if (!assignModalComplaint) return '';
+    return `🚨 *नागरी तक्रार निवारण — अधिकारी नियुक्ती व आदेश* 🚨\n\n` +
+      `📋 *तक्रार संदर्भ क्र:* ${assignModalComplaint.complaint_code || `GRV-${assignModalComplaint.id}`}\n` +
+      `👤 *तक्रारदार नागरिक:* ${assignModalComplaint.name || 'नागरिक'}\n` +
+      `📞 *नागरिकाचा फोन:* ${assignModalComplaint.phone || 'उपलब्ध नाही'}\n` +
+      `📍 *पत्ता / परिसर:* ${assignModalComplaint.district || 'सांगली'} • ${assignModalComplaint.location || assignModalComplaint.notes || 'स्थानिक परिसर'}\n` +
+      `🏛️ *तक्रार विभाग:* ${assignForm.department || assignModalComplaint.department || 'नागरी तक्रार विभाग'}\n` +
+      `⚠️ *तक्रार तपशील:* ${assignModalComplaint.desc || 'नागरी समस्या'}\n\n` +
+      `━━━━━━━━━━━━━━━━━━━━\n` +
+      `🎖️ *नियुक्त अधिकारी:* ${assignForm.officerName || 'प्रशासकीय अधिकारी'}\n` +
+      `🎖️ *पदनाम:* ${assignForm.officerDesignation || 'विभागीय अधिकारी'}\n` +
+      `📞 *अधिकाऱ्याचा मोबाईल:* ${assignForm.officerPhone || 'उपलब्ध नाही'}\n` +
+      `📍 *जिल्हा:* ${assignForm.district || 'सांगली'}\n` +
+      `📝 *प्रशासकीय आदेश / सूचना:* ${assignForm.instructions || 'सदर तक्रारीची तत्काळ प्रत्यक्ष पाहणी करून विहित मुदतीत निवारण करावे.'}\n` +
+      `━━━━━━━━━━━━━━━━━━━━\n` +
+      `शासकीय तक्रार निवारण कक्ष — अधिकृत नोंद.`;
+  };
+
+  const handleShareOfficerAssignmentWhatsApp = () => {
+    const text = buildOfficerAssignmentShareText();
+    const cleanPhone = (assignForm.officerPhone || '').replace(/\D/g, '');
+    const url = cleanPhone.length >= 10
+      ? `https://api.whatsapp.com/send?phone=91${cleanPhone.slice(-10)}&text=${encodeURIComponent(text)}`
+      : `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+    window.open(url, '_blank');
+  };
+
+  const handleShareOfficerAssignmentSMS = () => {
+    const text = buildOfficerAssignmentShareText();
+    const cleanPhone = (assignForm.officerPhone || '').replace(/\D/g, '');
+    window.open(`sms:${cleanPhone}?body=${encodeURIComponent(text)}`, '_blank');
   };
 
   // Open Resolution Details Modal
@@ -2327,7 +2360,38 @@ export default function AdminPhoneDashboard() {
       );
     }
 
-    // 4. Reference Number & Keyword Search
+    // 4. Taluka Filter
+    if (selectedTaluka && selectedTaluka !== 'all') {
+      list = list.filter((i) =>
+        (i.taluka && (i.taluka.includes(selectedTaluka) || selectedTaluka.includes(i.taluka))) ||
+        (i.location && i.location.includes(selectedTaluka)) ||
+        (i.notes && i.notes.includes(selectedTaluka)) ||
+        (i.desc && i.desc.includes(selectedTaluka))
+      );
+    }
+
+    // 5. City / Village Filter
+    if (selectedCityVillage && selectedCityVillage !== 'all') {
+      list = list.filter((i) =>
+        (i.village && (i.village.includes(selectedCityVillage) || selectedCityVillage.includes(i.village))) ||
+        (i.city && (i.city.includes(selectedCityVillage) || selectedCityVillage.includes(i.city))) ||
+        (i.location && i.location.includes(selectedCityVillage)) ||
+        (i.notes && i.notes.includes(selectedCityVillage)) ||
+        (i.desc && i.desc.includes(selectedCityVillage))
+      );
+    }
+
+    // 6. Ward Filter
+    if (selectedWard && selectedWard !== 'all') {
+      list = list.filter((i) =>
+        (i.ward && String(i.ward).includes(selectedWard)) ||
+        (i.prabhag && String(i.prabhag).includes(selectedWard)) ||
+        (i.location && i.location.includes(selectedWard)) ||
+        (i.notes && i.notes.includes(selectedWard))
+      );
+    }
+
+    // 7. Reference Number & Keyword Search
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       list = list.filter(
@@ -2337,13 +2401,16 @@ export default function AdminPhoneDashboard() {
           (i.category && i.category.toLowerCase().includes(q)) ||
           (i.department && i.department.toLowerCase().includes(q)) ||
           (i.district && i.district.toLowerCase().includes(q)) ||
+          (i.taluka && i.taluka.toLowerCase().includes(q)) ||
+          (i.village && i.village.toLowerCase().includes(q)) ||
+          (i.city && i.city.toLowerCase().includes(q)) ||
           (i.desc && i.desc.toLowerCase().includes(q)) ||
           (i.phone && i.phone.includes(q)) ||
           (i.assigned_officer?.name && i.assigned_officer.name.toLowerCase().includes(q))
       );
     }
     return list;
-  }, [issues, issueFilter, selectedDepartment, selectedDistrict, searchQuery]);
+  }, [issues, issueFilter, selectedDepartment, selectedDistrict, selectedTaluka, selectedCityVillage, selectedWard, searchQuery]);
 
   // Grievance Stat Counts
   const totalIssuesCount = issues.length;
@@ -3942,8 +4009,8 @@ export default function AdminPhoneDashboard() {
                     )}
                   </div>
 
-                  {/* Dropdowns Row: District Filter & Department Filter */}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                  {/* Multi-tier Location & Department Filters: District, Taluka, City/Village, Ward, Dept */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(135px, 1fr))', gap: '8px' }}>
                     {/* District Dropdown */}
                     <div>
                       <label style={{ fontSize: '10.5px', fontWeight: '800', color: '#475569', marginBottom: '3px', display: 'block' }}>
@@ -3968,6 +4035,90 @@ export default function AdminPhoneDashboard() {
                         <option value="all">{isMr ? 'सर्व जिल्हे' : 'All Districts'}</option>
                         {MAHARASHTRA_DISTRICTS_LIST.map((dist) => (
                           <option key={dist} value={dist}>{dist}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Taluka Dropdown */}
+                    <div>
+                      <label style={{ fontSize: '10.5px', fontWeight: '800', color: '#475569', marginBottom: '3px', display: 'block' }}>
+                        🌾 {isMr ? 'तालुका निवडा' : 'Taluka Filter'}
+                      </label>
+                      <select
+                        value={selectedTaluka}
+                        onChange={(e) => setSelectedTaluka(e.target.value)}
+                        style={{
+                          width: '100%',
+                          padding: '8px 8px',
+                          borderRadius: '8px',
+                          border: '1.5px solid #cbd5e1',
+                          fontSize: '11.5px',
+                          fontWeight: '700',
+                          color: '#0f172a',
+                          background: '#ffffff',
+                          outline: 'none',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <option value="all">{isMr ? 'सर्व तालुके' : 'All Talukas'}</option>
+                        {['मिरज', 'तासगाव', 'जत', 'वाळवा / इस्लामपूर', 'शिराळा', 'खानापूर / विटा', 'आटपाडी', 'कवठेमहांकाळ', 'कडेगाव', 'पलूस'].map((t) => (
+                          <option key={t} value={t}>{t}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* City / Village Dropdown */}
+                    <div>
+                      <label style={{ fontSize: '10.5px', fontWeight: '800', color: '#475569', marginBottom: '3px', display: 'block' }}>
+                        🏘️ {isMr ? 'शहर / गाव निवडा' : 'City / Village'}
+                      </label>
+                      <select
+                        value={selectedCityVillage}
+                        onChange={(e) => setSelectedCityVillage(e.target.value)}
+                        style={{
+                          width: '100%',
+                          padding: '8px 8px',
+                          borderRadius: '8px',
+                          border: '1.5px solid #cbd5e1',
+                          fontSize: '11.5px',
+                          fontWeight: '700',
+                          color: '#0f172a',
+                          background: '#ffffff',
+                          outline: 'none',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <option value="all">{isMr ? 'सर्व शहरे / गावे' : 'All Cities / Villages'}</option>
+                        {['मिरज शहर', 'सांगली शहर', 'कुपवाड', 'माधवनगर', 'सांगलीवाडी', 'इस्लामपूर शहर', 'विटा शहर', 'तासगाव शहर', 'जत शहर', 'आष्टा', 'बुधगाव', 'कवलापूर'].map((cv) => (
+                          <option key={cv} value={cv}>{cv}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Ward Dropdown */}
+                    <div>
+                      <label style={{ fontSize: '10.5px', fontWeight: '800', color: '#475569', marginBottom: '3px', display: 'block' }}>
+                        🏷️ {isMr ? 'प्रभाग / वॉर्ड' : 'Ward / Prabhag'}
+                      </label>
+                      <select
+                        value={selectedWard}
+                        onChange={(e) => setSelectedWard(e.target.value)}
+                        style={{
+                          width: '100%',
+                          padding: '8px 8px',
+                          borderRadius: '8px',
+                          border: '1.5px solid #cbd5e1',
+                          fontSize: '11.5px',
+                          fontWeight: '700',
+                          color: '#0f172a',
+                          background: '#ffffff',
+                          outline: 'none',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <option value="all">{isMr ? 'सर्व वॉर्ड' : 'All Wards'}</option>
+                        {['१', '२', '३', '४', '५', '६', '७', '८', '९', '१०', '११', '१२', '१३', '१४', '१५', '१६', '१७', '१८', '१९', '२०'].map((w) => (
+                          <option key={w} value={w}>{isMr ? `प्रभाग ${w}` : `Ward ${w}`}</option>
                         ))}
                       </select>
                     </div>
@@ -7172,20 +7323,55 @@ export default function AdminPhoneDashboard() {
                 />
               </div>
 
-              {/* Notification Pill */}
-              <div style={{
-                background: '#ecfdf5',
-                border: '1px solid #a7f3d0',
-                borderRadius: '8px',
-                padding: '8px 10px',
-                fontSize: '10.5px',
-                color: '#065f46',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px'
-              }}>
-                <span>📲</span>
-                <span>नियुक्ती पूर्ण होताच अधिकाऱ्यांच्या व्हॉट्सअ‍ॅपवर (WhatsApp) तक्रारीचा संपूर्ण तपशील पाठवला जाईल.</span>
+              {/* Direct WhatsApp & SMS Share Action Buttons */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '2px' }}>
+                <button
+                  type="button"
+                  onClick={handleShareOfficerAssignmentWhatsApp}
+                  style={{
+                    padding: '10px 8px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    background: '#25D366',
+                    color: '#ffffff',
+                    fontSize: '11.5px',
+                    fontWeight: '800',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    boxShadow: '0 2px 6px rgba(37,211,102,0.3)',
+                  }}
+                  title={isMr ? 'व्हॉट्सॲपवर तक्रारीचा संपूर्ण तपशील पाठवा' : 'Share all details on WhatsApp'}
+                >
+                  <span style={{ fontSize: '14px' }}>📲</span>
+                  <span>{isMr ? 'व्हॉट्सॲपवर पाठवा' : 'Share WhatsApp'}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleShareOfficerAssignmentSMS}
+                  style={{
+                    padding: '10px 8px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    background: '#0284c7',
+                    color: '#ffffff',
+                    fontSize: '11.5px',
+                    fontWeight: '800',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    boxShadow: '0 2px 6px rgba(2,132,199,0.3)',
+                  }}
+                  title={isMr ? 'साध्या मेसेज (SMS) द्वारे पाठवा' : 'Send via SMS'}
+                >
+                  <span style={{ fontSize: '14px' }}>💬</span>
+                  <span>{isMr ? 'साधा मेसेज (SMS)' : 'Send SMS'}</span>
+                </button>
               </div>
 
               {/* Actions */}
@@ -7226,7 +7412,7 @@ export default function AdminPhoneDashboard() {
                     gap: '6px',
                   }}
                 >
-                  {submittingAssign ? <Loader2 size={15} className="animate-spin" /> : <span>➡️ {isMr ? 'नियुक्त करा व सूचना पाठवा' : 'Assign & Notify'}</span>}
+                  {submittingAssign ? <Loader2 size={15} className="animate-spin" /> : <span>➡️ {isMr ? 'नियुक्त करा व सेव्ह करा' : 'Assign & Save'}</span>}
                 </button>
               </div>
             </form>

@@ -809,8 +809,18 @@ export default function ElectionAnalysisWorkbench({ isMr = true, language = 'mr'
   // Save to Database and Generate Analysis Report
   const handleSaveAndGenerateAnalysis = async () => {
     const errors = [];
-    if (!electionName.trim()) errors.push(isMr ? 'निवडणुकीचे नाव प्रविष्ट करा.' : 'Election Name is required.');
-    if (!districtName.trim()) errors.push(isMr ? 'जिल्ह्याचे नाव प्रविष्ट करा.' : 'District is required.');
+    if (!electionName.trim()) errors.push(isMr ? 'निवडणुकीचे नाव प्रविष्ट करणे अनिवार्य आहे.' : 'Election Title is required.');
+    if (!stateName.trim()) errors.push(isMr ? '१. राज्य निवडणे अनिवार्य आहे.' : '1. State is required.');
+    if (!districtName.trim()) errors.push(isMr ? '२. जिल्हा निवडणे अनिवार्य आहे.' : '2. District is required.');
+    if (!talukaName.trim()) errors.push(isMr ? '३. तालुका निवडणे अनिवार्य आहे.' : '3. Taluka is required.');
+    if (!cityName.trim()) errors.push(isMr ? '४. शहर निवडणे अनिवार्य आहे.' : '4. City is required.');
+    if (!villageName.trim()) errors.push(isMr ? '५. गाव निवडणे अनिवार्य आहे.' : '5. Village is required.');
+    if (!wardName.trim()) errors.push(isMr ? '६. प्रभाग / वार्ड प्रविष्ट करणे अनिवार्य आहे.' : '6. Ward / Prabhag is required.');
+    if (!constituency.trim()) errors.push(isMr ? '७. विधानसभा मतदारसंघ प्रविष्ट करणे अनिवार्य आहे.' : '7. Assembly Constituency is required.');
+    if (!boothName.trim()) errors.push(isMr ? '८. मतदान केंद्र प्रविष्ट करणे अनिवार्य आहे.' : '8. Polling Station is required.');
+    if (!boothNumber.trim()) errors.push(isMr ? '९. मतदान केंद्र क्रमांक प्रविष्ट करणे अनिवार्य आहे.' : '9. Booth Number is required.');
+    if (!totalRegisteredVoters) errors.push(isMr ? 'एकूण नोंदणीकृत मतदार संख्या अनिवार्य आहे.' : 'Total Registered Voters is required.');
+    if (!votingPercentage) errors.push(isMr ? 'मतदानाची टक्केवारी (%) अनिवार्य आहे.' : 'Voting Percentage is required.');
     if (parties.length < 2) errors.push(isMr ? 'तौलनिक विश्लेषणासाठी किमान २ पक्ष/उमेदवार जोडा.' : 'Please add at least 2 parties/candidates.');
     if (calculatedVotesPolled > 0 && totalPartyVotes > (calculatedVotesPolled * 1.15)) {
       errors.push(isMr ? 'सर्व पक्षांची एकूण मते ही एकूण झालेल्या मतदानापेक्षा जास्त असू शकत नाहीत.' : 'Total party votes exceed total votes polled.');
@@ -1546,15 +1556,16 @@ ${groundObservations || 'नोंद नाही'}
               {/* १. राज्य */}
               <div>
                 <label style={{ display: 'block', fontSize: '12px', fontWeight: '750', color: '#334155', marginBottom: '5px' }}>
-                  १. {isMr ? 'राज्य:' : 'State:'}
+                  १. {isMr ? 'राज्य:' : 'State:'} <span style={{ color: '#ef4444' }}>*</span>
                 </label>
-                <input
-                  type="text"
+                <select
                   value={stateName}
                   onChange={(e) => setStateName(e.target.value)}
-                  placeholder={isMr ? 'उदा. महाराष्ट्र' : 'e.g. Maharashtra'}
-                  style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
-                />
+                  style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box', background: '#fff' }}
+                  required
+                >
+                  <option value="महाराष्ट्र (Maharashtra)">महाराष्ट्र (Maharashtra)</option>
+                </select>
               </div>
 
               {/* २. जिल्हा */}
@@ -1562,19 +1573,24 @@ ${groundObservations || 'नोंद नाही'}
                 <label style={{ display: 'block', fontSize: '12px', fontWeight: '750', color: '#334155', marginBottom: '5px' }}>
                   २. {isMr ? 'जिल्हा:' : 'District:'} <span style={{ color: '#ef4444' }}>*</span>
                 </label>
-                <input
-                  type="text"
+                <select
                   value={districtName}
                   onChange={(e) => setDistrictName(e.target.value)}
-                  placeholder={isMr ? 'उदा. सांगली' : 'e.g. Sangli'}
-                  style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
-                />
+                  style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1.5px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box', background: '#fff' }}
+                  required
+                >
+                  <option value="सांगली (Sangli)">सांगली (Sangli)</option>
+                  <option value="सातारा (Satara)">सातारा (Satara)</option>
+                  <option value="कोल्हापूर (Kolhapur)">कोल्हापूर (Kolhapur)</option>
+                  <option value="पुणे (Pune)">पुणे (Pune)</option>
+                  <option value="सोलापूर (Solapur)">सोलापूर (Solapur)</option>
+                </select>
               </div>
 
               {/* ३. तालुका (Cascading) */}
               <div>
                 <label style={{ display: 'block', fontSize: '12px', fontWeight: '750', color: '#334155', marginBottom: '5px' }}>
-                  ३. {isMr ? 'तालुका:' : 'Taluka:'}
+                  ३. {isMr ? 'तालुका:' : 'Taluka:'} <span style={{ color: '#ef4444' }}>*</span>
                 </label>
                 <select
                   value={talukaName}
@@ -1587,6 +1603,7 @@ ${groundObservations || 'नोंद नाही'}
                     }
                   }}
                   style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1.5px solid #93c5fd', fontSize: '13px', boxSizing: 'border-box', background: '#fff' }}
+                  required
                 >
                   <option value="">{isMr ? '-- तालुका निवडा --' : '-- Select Taluka --'}</option>
                   {Object.keys(TALUKA_VILLAGES_MAP).map((tName) => (
@@ -1599,27 +1616,38 @@ ${groundObservations || 'नोंद नाही'}
               {/* ४. शहर */}
               <div>
                 <label style={{ display: 'block', fontSize: '12px', fontWeight: '750', color: '#334155', marginBottom: '5px' }}>
-                  ४. {isMr ? 'शहर:' : 'City:'}
+                  ४. {isMr ? 'शहर:' : 'City:'} <span style={{ color: '#ef4444' }}>*</span>
                 </label>
-                <input
-                  type="text"
+                <select
                   value={cityName}
                   onChange={(e) => setCityName(e.target.value)}
-                  placeholder={isMr ? 'उदा. सांगली शहर' : 'e.g. Sangli City'}
-                  style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px', boxSizing: 'border-box' }}
-                />
+                  style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1.5px solid #93c5fd', fontSize: '13px', boxSizing: 'border-box', background: '#fff' }}
+                  required
+                >
+                  <option value="">{isMr ? '-- शहर निवडा --' : '-- Select City --'}</option>
+                  <option value="मिरज शहर (Miraj City)">मिरज शहर (Miraj City)</option>
+                  <option value="सांगली शहर (Sangli City)">सांगली शहर (Sangli City)</option>
+                  <option value="कुपवाड शहर (Kupwad City)">कुपवाड शहर (Kupwad City)</option>
+                  <option value="इस्लामपूर / वाळवा शहर (Islampur City)">इस्लामपूर / वाळवा शहर (Islampur City)</option>
+                  <option value="विटा शहर (Vita City)">विटा शहर (Vita City)</option>
+                  <option value="तासगाव शहर (Tasgaon City)">तासगाव शहर (Tasgaon City)</option>
+                  <option value="जत शहर (Jat City)">जत शहर (Jat City)</option>
+                  <option value="आष्टा शहर (Ashta City)">आष्टा शहर (Ashta City)</option>
+                  <option value="इतर शहर">{isMr ? 'इतर शहर' : 'Other City'}</option>
+                </select>
               </div>
 
               {/* ५. गाव (Cascading strictly filtered by Taluka) */}
               <div>
                 <label style={{ display: 'block', fontSize: '12px', fontWeight: '750', color: '#334155', marginBottom: '5px' }}>
-                  ५. {isMr ? 'गाव / प्रभाग:' : 'Village / Ward:'}
+                  ५. {isMr ? 'गाव / प्रभाग:' : 'Village / Ward:'} <span style={{ color: '#ef4444' }}>*</span>
                 </label>
                 {TALUKA_VILLAGES_MAP[talukaName] ? (
                   <select
                     value={villageName}
                     onChange={(e) => setVillageName(e.target.value)}
                     style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1.5px solid #93c5fd', fontSize: '13px', boxSizing: 'border-box', background: '#fff' }}
+                    required
                   >
                     <option value="">{isMr ? '-- गाव निवडा --' : '-- Select Village --'}</option>
                     {TALUKA_VILLAGES_MAP[talukaName].map((vName) => (
@@ -1630,6 +1658,7 @@ ${groundObservations || 'नोंद नाही'}
                 ) : (
                   <input
                     type="text"
+                    required
                     value={villageName}
                     onChange={(e) => setVillageName(e.target.value)}
                     placeholder={isMr ? 'उदा. सांगलीवाडी' : 'e.g. Sangliwadi'}
@@ -1641,10 +1670,11 @@ ${groundObservations || 'नोंद नाही'}
               {/* ६. प्रभाग / वार्ड */}
               <div>
                 <label style={{ display: 'block', fontSize: '12px', fontWeight: '750', color: '#334155', marginBottom: '5px' }}>
-                  ६. {isMr ? 'प्रभाग / वार्ड:' : 'Ward / Prabhag:'}
+                  ६. {isMr ? 'प्रभाग / वार्ड:' : 'Ward / Prabhag:'} <span style={{ color: '#ef4444' }}>*</span>
                 </label>
                 <input
                   type="text"
+                  required
                   value={wardName}
                   onChange={(e) => setWardName(e.target.value)}
                   placeholder={isMr ? 'उदा. प्रभाग क्र. १२' : 'e.g. Ward No. 12'}
@@ -1655,10 +1685,11 @@ ${groundObservations || 'नोंद नाही'}
               {/* ७. विधानसभा मतदारसंघ */}
               <div>
                 <label style={{ display: 'block', fontSize: '12px', fontWeight: '750', color: '#334155', marginBottom: '5px' }}>
-                  ७. {isMr ? 'विधानसभा मतदारसंघ:' : 'Assembly Constituency:'}
+                  ७. {isMr ? 'विधानसभा मतदारसंघ:' : 'Assembly Constituency:'} <span style={{ color: '#ef4444' }}>*</span>
                 </label>
                 <input
                   type="text"
+                  required
                   value={constituency}
                   onChange={(e) => setConstituency(e.target.value)}
                   placeholder={isMr ? 'उदा. २८२ - सांगली विधानसभा' : 'e.g. 282 - Sangli Assembly'}
@@ -1669,10 +1700,11 @@ ${groundObservations || 'नोंद नाही'}
               {/* ८. मतदान केंद्र */}
               <div>
                 <label style={{ display: 'block', fontSize: '12px', fontWeight: '750', color: '#334155', marginBottom: '5px' }}>
-                  ८. {isMr ? 'मतदान केंद्र:' : 'Polling Station / Booth:'}
+                  ८. {isMr ? 'मतदान केंद्र:' : 'Polling Station / Booth:'} <span style={{ color: '#ef4444' }}>*</span>
                 </label>
                 <input
                   type="text"
+                  required
                   value={boothName}
                   onChange={(e) => setBoothName(e.target.value)}
                   placeholder={isMr ? 'उदा. शासकीय कन्या शाळा' : 'e.g. Govt Girls School'}
@@ -1683,10 +1715,11 @@ ${groundObservations || 'नोंद नाही'}
               {/* ९. मतदान केंद्र क्रमांक */}
               <div>
                 <label style={{ display: 'block', fontSize: '12px', fontWeight: '750', color: '#334155', marginBottom: '5px' }}>
-                  ९. {isMr ? 'मतदान केंद्र क्रमांक:' : 'Polling Booth Number:'}
+                  ९. {isMr ? 'मतदान केंद्र क्रमांक:' : 'Polling Booth Number:'} <span style={{ color: '#ef4444' }}>*</span>
                 </label>
                 <input
                   type="text"
+                  required
                   value={boothNumber}
                   onChange={(e) => setBoothNumber(e.target.value)}
                   placeholder={isMr ? 'उदा. १०४' : 'e.g. 104'}
@@ -1696,10 +1729,11 @@ ${groundObservations || 'नोंद नाही'}
 
               <div>
                 <label style={{ display: 'block', fontSize: '12px', fontWeight: '750', color: '#334155', marginBottom: '5px' }}>
-                  {isMr ? 'एकूण नोंदणीकृत मतदार' : 'Total Registered Voters'}
+                  {isMr ? 'एकूण नोंदणीकृत मतदार' : 'Total Registered Voters'} <span style={{ color: '#ef4444' }}>*</span>
                 </label>
                 <input
                   type="number"
+                  required
                   value={totalRegisteredVoters}
                   onChange={(e) => setTotalRegisteredVoters(e.target.value)}
                   placeholder="348500"
@@ -1709,10 +1743,11 @@ ${groundObservations || 'नोंद नाही'}
 
               <div>
                 <label style={{ display: 'block', fontSize: '12px', fontWeight: '750', color: '#334155', marginBottom: '5px' }}>
-                  {isMr ? 'मतदानाची टक्केवारी (%)' : 'Voting Percentage (%)'}
+                  {isMr ? 'मतदानाची टक्केवारी (%)' : 'Voting Percentage (%)'} <span style={{ color: '#ef4444' }}>*</span>
                 </label>
                 <input
                   type="number"
+                  required
                   step="0.1"
                   value={votingPercentage}
                   onChange={(e) => setVotingPercentage(e.target.value)}

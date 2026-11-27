@@ -181,90 +181,94 @@ export default function InteractiveGeographicMap({
     if (!containerRef.current) return;
 
     ensureLeafletLoaded((L) => {
-      if (!containerRef.current) return;
+      try {
+        if (!containerRef.current) return;
 
-      if (!mapInstanceRef.current) {
-        const map = L.map(containerRef.current, {
-          center: [coords.lat, coords.lon],
-          zoom: zoom || coords.zoom || 12,
-          zoomControl: false, // We provide modern styled zoom controls
-          scrollWheelZoom: true,
-          smoothWheelZoom: true,
-          attributionControl: false,
-        });
+        if (!mapInstanceRef.current) {
+          const map = L.map(containerRef.current, {
+            center: [coords.lat, coords.lon],
+            zoom: zoom || coords.zoom || 12,
+            zoomControl: false, // We provide modern styled zoom controls
+            scrollWheelZoom: true,
+            smoothWheelZoom: true,
+            attributionControl: false,
+          });
 
-        // Track zoom level events
-        map.on('zoomend', () => {
-          const currentZ = map.getZoom();
-          setInternalZoom(currentZ);
-          onZoomChange?.(currentZ);
-        });
+          // Track zoom level events
+          map.on('zoomend', () => {
+            const currentZ = map.getZoom();
+            setInternalZoom(currentZ);
+            onZoomChange?.(currentZ);
+          });
 
-        mapInstanceRef.current = map;
-      }
-
-      const map = mapInstanceRef.current;
-
-      // Apply or switch Tile Layer (Roadmap vs Satellite)
-      if (tileLayerRef.current) {
-        map.removeLayer(tileLayerRef.current);
-      }
-
-      const tileUrl = mapMode === 'satellite'
-        ? 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
-        : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-
-      const attribution = mapMode === 'satellite'
-        ? '© Esri Imagery'
-        : '© OpenStreetMap contributors';
-
-      tileLayerRef.current = L.tileLayer(tileUrl, {
-        maxZoom: 19,
-        attribution,
-        subdomains: ['a', 'b', 'c']
-      }).addTo(map);
-
-      // Marker Update
-      if (markerRef.current) {
-        map.removeLayer(markerRef.current);
-      }
-
-      const pinIcon = createPinIcon(L, target?.type);
-      const pin = L.marker([coords.lat, coords.lon], {
-        ...(pinIcon ? { icon: pinIcon } : {})
-      }).addTo(map);
-
-      const displayName = (language === 'mr' ? (target?.name_mr || coords.nameMr || coords.title) : (target?.name_en || coords.title));
-      const targetTypeLabel = target?.type === 'TALUKA' ? (language === 'mr' ? 'तालुका' : 'Taluka')
-        : target?.type === 'VILLAGE' ? (language === 'mr' ? 'गाव' : 'Village')
-        : target?.type === 'POLLING_STATION' ? (language === 'mr' ? 'मतदान केंद्र' : 'Polling Station')
-        : (language === 'mr' ? 'जिल्हा' : 'District');
-
-      pin.bindPopup(`
-        <div style="font-family: inherit; font-size: 13px; line-height: 1.4; color: #1e293b; padding: 4px;">
-          <div style="font-weight: 800; font-size: 14px; color: #0f172a; margin-bottom: 2px;">
-            ${displayName}
-          </div>
-          <div style="color: #64748b; font-size: 12px; margin-bottom: 4px;">
-            ${targetTypeLabel} • महाराष्ट्र
-          </div>
-          <div style="font-size: 11px; color: #2563eb; font-weight: 600;">
-            Lat: ${coords.lat.toFixed(4)}, Lon: ${coords.lon.toFixed(4)}
-          </div>
-        </div>
-      `, { closeButton: false }).openPopup();
-
-      markerRef.current = pin;
-
-      // Smoothly fly / view target
-      map.flyTo([coords.lat, coords.lon], zoom || coords.zoom || 12, { duration: 0.8 });
-
-      // Handle resize
-      setTimeout(() => {
-        if (mapInstanceRef.current) {
-          mapInstanceRef.current.invalidateSize();
+          mapInstanceRef.current = map;
         }
-      }, 150);
+
+        const map = mapInstanceRef.current;
+
+        // Apply or switch Tile Layer (Roadmap vs Satellite)
+        if (tileLayerRef.current) {
+          map.removeLayer(tileLayerRef.current);
+        }
+
+        const tileUrl = mapMode === 'satellite'
+          ? 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
+          : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+
+        const attribution = mapMode === 'satellite'
+          ? '© Esri Imagery'
+          : '© OpenStreetMap contributors';
+
+        tileLayerRef.current = L.tileLayer(tileUrl, {
+          maxZoom: 19,
+          attribution,
+          subdomains: ['a', 'b', 'c']
+        }).addTo(map);
+
+        // Marker Update
+        if (markerRef.current) {
+          map.removeLayer(markerRef.current);
+        }
+
+        const pinIcon = createPinIcon(L, target?.type);
+        const pin = L.marker([coords.lat, coords.lon], {
+          ...(pinIcon ? { icon: pinIcon } : {})
+        }).addTo(map);
+
+        const displayName = (language === 'mr' ? (target?.name_mr || coords.nameMr || coords.title) : (target?.name_en || coords.title));
+        const targetTypeLabel = target?.type === 'TALUKA' ? (language === 'mr' ? 'तालुका' : 'Taluka')
+          : target?.type === 'VILLAGE' ? (language === 'mr' ? 'गाव' : 'Village')
+          : target?.type === 'POLLING_STATION' ? (language === 'mr' ? 'मतदान केंद्र' : 'Polling Station')
+          : (language === 'mr' ? 'जिल्हा' : 'District');
+
+        pin.bindPopup(`
+          <div style="font-family: inherit; font-size: 13px; line-height: 1.4; color: #1e293b; padding: 4px;">
+            <div style="font-weight: 800; font-size: 14px; color: #0f172a; margin-bottom: 2px;">
+              ${displayName}
+            </div>
+            <div style="color: #64748b; font-size: 12px; margin-bottom: 4px;">
+              ${targetTypeLabel} • महाराष्ट्र
+            </div>
+            <div style="font-size: 11px; color: #2563eb; font-weight: 600;">
+              Lat: ${coords.lat.toFixed(4)}, Lon: ${coords.lon.toFixed(4)}
+            </div>
+          </div>
+        `, { closeButton: false }).openPopup();
+
+        markerRef.current = pin;
+
+        // Smoothly fly / view target
+        map.flyTo([coords.lat, coords.lon], zoom || coords.zoom || 12, { duration: 0.8 });
+
+        // Handle resize
+        setTimeout(() => {
+          if (mapInstanceRef.current) {
+            mapInstanceRef.current.invalidateSize();
+          }
+        }, 150);
+      } catch (mapErr) {
+        console.warn('Map initialization note:', mapErr);
+      }
     });
   }, [coords.lat, coords.lon, mapMode]);
 

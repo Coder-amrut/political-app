@@ -1253,6 +1253,11 @@ export default function AdminPhoneDashboard() {
   };
 
   // Cascading Geography based on selected Division and District
+  const realDistricts = useMemo(() => {
+    if (!dbDistricts || dbDistricts.length === 0) return MAHARASHTRA_DISTRICTS_LIST;
+    return dbDistricts.map((d) => (typeof d === 'string' ? d : d.nameMr || d.name)).filter(Boolean);
+  }, [dbDistricts]);
+
   const availableDistrictsForDivision = useMemo(() => {
     if (!selectedDivision || selectedDivision === 'all') {
       return realDistricts && realDistricts.length > 0 ? realDistricts : MAHARASHTRA_DISTRICTS_LIST;

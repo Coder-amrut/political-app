@@ -157,6 +157,103 @@ export const GRIEVANCE_DEPARTMENTS_20 = [
 ];
 
 // Maharashtra Districts for Grievance Filtering
+// 6 Administrative Revenue Divisions of Maharashtra with their official Districts & Talukas
+export const MAHARASHTRA_DIVISIONS = [
+  {
+    id: 'pune',
+    name_mr: 'पुणे विभाग (पश्चिम महाराष्ट्र)',
+    name_en: 'Pune Division (Western Maharashtra)',
+    districts: [
+      {
+        name: 'सांगली',
+        talukas: ['मिरज', 'तासगाव', 'जत', 'वाळवा / इस्लामपूर', 'शिराळा', 'खानापूर / विटा', 'आटपाडी', 'कवठे महांकाळ', 'पलूस', 'कडेगाव']
+      },
+      {
+        name: 'पुणे',
+        talukas: ['हवेली', 'पुणे शहर', 'शिरूर', 'बारामती', 'जुन्नर', 'खेड', 'आंबेगाव', 'मावळ', 'मुळशी', 'दौंड', 'पुरंदर', 'भोर', 'वेल्हे', 'इंदापूर']
+      },
+      {
+        name: 'सातारा',
+        talukas: ['सातारा', 'कराड', 'वाई', 'महाबळेश्वर', 'फलटण', 'माण', 'खटाव', 'कोरेगाव', 'पाटण', 'जावळी', 'खंडाळा']
+      },
+      {
+        name: 'सोलापूर',
+        talukas: ['सोलापूर उत्तर', 'सोलापूर दक्षिण', 'बार्शी', 'पंढरपूर', 'माळशिरस', 'करमाळा', 'माढा', 'मोहोळ', 'सांगोला', 'मंगळवेढा', 'अक्कलकोट']
+      },
+      {
+        name: 'कोल्हापूर',
+        talukas: ['करवीर', 'कागल', 'पन्हाळा', 'शाहूवाडी', 'हातकणंगले', 'शिरोळ', 'राधानगरी', 'गगनबावडा', 'भुदरगड', 'आजरा', 'चंदगड', 'गडहिंग्लज']
+      }
+    ]
+  },
+  {
+    id: 'konkan',
+    name_mr: 'कोकण विभाग',
+    name_en: 'Konkan Division',
+    districts: [
+      { name: 'मुंबई शहर', talukas: ['मुंबई शहर'] },
+      { name: 'मुंबई उपनगर', talukas: ['अंधेरी', 'बोरीवली', 'कुर्ला'] },
+      { name: 'ठाणे', talukas: ['ठाणे', 'कल्याण', 'मुरबाड', 'भिवंडी', 'शहापूर', 'उल्हासनगर', 'अंबरनाथ'] },
+      { name: 'पालघर', talukas: ['पालघर', 'वसई', 'डहाणू', 'तलासरी', 'जव्हार', 'मोखाडा', 'वाडा', 'विक्रमगड'] },
+      { name: 'रायगड', talukas: ['अलिबाग', 'पेण', 'पनवेल', 'कर्जत', 'खालापूर', 'माणगाव', 'रोहा', 'तळा', 'म्हसळा', 'श्रीवर्धन', 'महाड', 'पोलादपूर', 'उरण', 'सुधागड'] },
+      { name: 'रत्नागिरी', talukas: ['रत्नागिरी', 'चिपळूण', 'दापोली', 'खेड', 'गुहागर', 'संगमेश्वर', 'लांजा', 'राजापूर', 'मंडणगड'] },
+      { name: 'सिंधुदुर्ग', talukas: ['कुडाळ', 'सावंतवाडी', 'कणकवली', 'मालवण', 'वेंगुर्ला', 'देवगड', 'वैभववाडी', 'दोडामार्ग'] }
+    ]
+  },
+  {
+    id: 'nashik',
+    name_mr: 'नाशिक विभाग (उत्तर महाराष्ट्र)',
+    name_en: 'Nashik Division (North Maharashtra)',
+    districts: [
+      { name: 'नाशिक', talukas: ['नाशिक', 'मालेगाव', 'सिन्नर', 'निफाड', 'दिंडोरी', 'इगतपुरी', 'चांदवड', 'कळवण', 'येवला', 'नांदगाव', 'सटाणा', 'सुरगाणा', 'त्र्यंबकेश्वर', 'पेठ', 'देवळा'] },
+      { name: 'अहिल्यानगर (अहमदनगर)', talukas: ['नगर', 'राहाता', 'संगमनेर', 'कोपरगाव', 'श्रीरामपूर', 'नेवासा', 'शेवगाव', 'पाथर्डी', 'जामखेड', 'कर्जत', 'श्रीगोंदा', 'पारनेर', 'अकोले', 'राहुरी'] },
+      { name: 'जळगाव', talukas: ['जळगाव', 'भुसावळ', 'चाळीसगाव', 'पाचोरा', 'जामनेर', 'रावेर', 'यावल', 'चोपडा', 'अमळनेर', 'एरंडोल', 'धरणगाव', 'पारोळा', 'बोदवड', 'भडगाव', 'मुक्ताईनगर'] },
+      { name: 'धुळे', talukas: ['धुळे', 'साक्री', 'शिरपूर', 'शिंदखेडा'] },
+      { name: 'नंदुरबार', talukas: ['नंदुरबार', 'नवापूर', 'शहादा', 'तळोदा', 'अक्राणी', 'अक्कलकुवा'] }
+    ]
+  },
+  {
+    id: 'chhatrapati_sambhajinagar',
+    name_mr: 'छत्रपती संभाजीनगर विभाग (मराठवाडा)',
+    name_en: 'Chhatrapati Sambhajinagar Division (Marathwada)',
+    districts: [
+      { name: 'छत्रपती संभाजीनगर', talukas: ['छत्रपती संभाजीनगर', 'वैजापूर', 'गंगापूर', 'पैठण', 'सिल्लोड', 'कन्नड', 'खुलताबाद', 'फुलंब्री', 'सोयगाव'] },
+      { name: 'जालना', talukas: ['जालना', 'भोकरदन', 'जाफराबाद', 'बदनापूर', 'अंबड', 'परतूर', 'मंठा', 'घनसावंगी'] },
+      { name: 'परभणी', talukas: ['परभणी', 'गंगाखेड', 'सोनपेठ', 'पाथरी', 'मानवत', 'सेलू', 'जिंतूर', 'पूर्णा', 'पालम'] },
+      { name: 'हिंगोली', talukas: ['हिंगोली', 'कळमनुरी', 'वसमत', 'औंढा नागनाथ', 'सेनगाव'] },
+      { name: 'नांदेड', talukas: ['नांदेड', 'लोहा', 'कंधार', 'मुखेड', 'देगलूर', 'बिलोली', 'धर्माबाद', 'उमरी', 'भोकर', 'हदगाव', 'हिमायतनगर', 'किनवट', 'माहूर', 'मुदखेड', 'नायगाव', 'अर्धापूर'] },
+      { name: 'बीड', talukas: ['बीड', 'गेवराई', 'माजलगाव', 'अंबाजोगाई', 'परळी वैजनाथ', 'केज', 'धारूर', 'वडवणी', 'आष्टी', 'पाटोदा', 'शिरूर कासार'] },
+      { name: 'लातूर', talukas: ['लातूर', 'औसा', 'अहमदपूर', 'निलंगा', 'उदगीर', 'चाकूर', 'रेणापूर', 'देवणी', 'शिरूर अनंतपाळ', 'जळकोट'] },
+      { name: 'धाराशिव', talukas: ['धाराशिव', 'तुळजापूर', 'उमरगा', 'लोहारा', 'कळंब', 'भूम', 'परांडा', 'वाशी'] }
+    ]
+  },
+  {
+    id: 'amravati',
+    name_mr: 'अमरावती विभाग (पश्चिम विदर्भ)',
+    name_en: 'Amravati Division (Western Vidarbha)',
+    districts: [
+      { name: 'अमरावती', talukas: ['अमरावती', 'भातकुली', 'नांदगाव खंडेश्वर', 'चांदूर रेल्वे', 'चांदूर बाजार', 'तिवसा', 'मोर्शी', 'वरुड', 'अचलपूर', 'चांदूर', 'दर्यापूर', 'अंजनगाव सुर्जी', 'धारणी', 'चिखलदरा'] },
+      { name: 'अकोला', talukas: ['अकोला', 'अकोट', 'तेल्हारा', 'बाळापूर', 'पातूर', 'बार्शीटाकळी', 'मूर्तिजापूर'] },
+      { name: 'यवतमाळ', talukas: ['यवतमाळ', 'पुसद', 'उमरखेड', 'दिग्रस', 'दारव्हा', 'नेर', 'वणी', 'पांढरकवडा', 'राळेगाव', 'घाटंजी', 'महागाव', 'कळंब', 'मारेगाव', 'झरी जामणी', 'आर्णी', 'बाभूळगाव'] },
+      { name: 'बुलढाणा', talukas: ['बुलढाणा', 'चिखली', 'देऊळगाव राजा', 'जळगाव जामोद', 'संग्रामपूर', 'खामगाव', 'शेगाव', 'मलकापूर', 'मोताळा', 'नांदुरा', 'मेहकर', 'सिंदखेड राजा', 'लोणार'] },
+      { name: 'वाशीम', talukas: ['वाशीम', 'रिसोड', 'मालेगाव', 'मंगरुळपीर', 'कारंजा', 'मानोरा'] }
+    ]
+  },
+  {
+    id: 'nagpur',
+    name_mr: 'नागपूर विभाग (पूर्व विदर्भ)',
+    name_en: 'Nagpur Division (Eastern Vidarbha)',
+    districts: [
+      { name: 'नागपूर', talukas: ['नागपूर शहर', 'नागपूर ग्रामीण', 'कामठी', 'हिंगणा', 'काटोल', 'नरखेड', 'सावनेर', 'कळमेश्वर', 'रामटेक', 'पारशिवनी', 'मौदा', 'उमरेड', 'कुही', 'भिवापूर'] },
+      { name: 'वर्धा', talukas: ['वर्धा', 'सेलू', 'देवळी', 'हिंगणघाट', 'समुद्रपूर', 'आर्वी', 'कारंजा', 'आष्टी'] },
+      { name: 'भंडारा', talukas: ['भंडारा', 'मोहाडी', 'तुमसर', 'पवनी', 'साकोली', 'लाखांदूर', 'लाखनी'] },
+      { name: 'गोंदिया', talukas: ['गोंदिया', 'तिरोडा', 'गोरेगाव', 'आमगाव', 'सालेकसा', 'देवरी', 'सडक अर्जुनी', 'अर्जुनी मोरगाव'] },
+      { name: 'चंद्रपूर', talukas: ['चंद्रपूर', 'भद्रावती', 'वरोरा', 'चिमूर', 'नागभीड', 'ब्रह्मपुरी', 'सिंदेवाही', 'मूल', 'गोंडपिपरी', 'पोंभुर्णा', 'सावली', 'राजुरा', 'कोरपना', 'जिवती', 'बल्लारपूर'] },
+      { name: 'गडचिरोली', talukas: ['गडचिरोली', 'धानोरा', 'चामोर्शी', 'मुलचेरा', 'अहेरी', 'सिरोंचा', 'एटापल्ली', 'भामरागड', 'कोरची', 'कुरखेडा', 'आरमोरी', 'वडसा (देसाईगंज)'] }
+    ]
+  }
+];
+
 export const MAHARASHTRA_DISTRICTS_LIST = [
   'सांगली', 'कोल्हापूर', 'सातारा', 'पुणे', 'सोलापूर',
   'अहमदनगर', 'मुंबई', 'ठाणे', 'पालघर', 'रायगड',
@@ -934,6 +1031,7 @@ export default function AdminPhoneDashboard() {
   const [toastMsg, setToastMsg] = useState('');
 
   // Complaint Management Advanced Filters & Modal States
+  const [selectedDivision, setSelectedDivision] = useState('all');
   const [selectedDistrict, setSelectedDistrict] = useState('all');
   const [selectedTaluka, setSelectedTaluka] = useState('all');
   const [selectedCityVillage, setSelectedCityVillage] = useState('all');
@@ -1153,6 +1251,98 @@ export default function AdminPhoneDashboard() {
       console.warn('Failed to refresh projects:', e);
     }
   };
+
+  // Cascading Geography based on selected Division and District
+  const availableDistrictsForDivision = useMemo(() => {
+    if (!selectedDivision || selectedDivision === 'all') {
+      return realDistricts && realDistricts.length > 0 ? realDistricts : MAHARASHTRA_DISTRICTS_LIST;
+    }
+    const divObj = MAHARASHTRA_DIVISIONS.find((d) => d.id === selectedDivision);
+    if (!divObj) return realDistricts.length > 0 ? realDistricts : MAHARASHTRA_DISTRICTS_LIST;
+    return divObj.districts.map((d) => (typeof d === 'string' ? d : d.name));
+  }, [selectedDivision, realDistricts]);
+
+  const availableTalukasForDistrict = useMemo(() => {
+    if (!selectedDistrict || selectedDistrict === 'all') {
+      return ['मिरज', 'तासगाव', 'जत', 'वाळवा / इस्लामपूर', 'शिराळा', 'खानापूर / विटा', 'आटपाडी', 'कवठे महांकाळ', 'पलूस', 'कडेगाव'];
+    }
+    for (const div of MAHARASHTRA_DIVISIONS) {
+      const foundD = div.districts.find((d) => (typeof d === 'string' ? d === selectedDistrict : d.name === selectedDistrict));
+      if (foundD && foundD.talukas) {
+        return foundD.talukas;
+      }
+    }
+    return ['मिरज', 'तासगाव', 'जत', 'वाळवा / इस्लामपूर', 'शिराळा', 'खानापूर / विटा', 'आटपाडी', 'कवठे महांकाळ', 'पलूस', 'कडेगाव'];
+  }, [selectedDistrict]);
+
+  // Generate complete complaint dossier text for Forwarding via WhatsApp, Mail, SMS
+  const getComplaintDossierText = useCallback((issue) => {
+    if (!issue) return '';
+    const code = issue.complaint_code || `GRV-${issue.id}`;
+    const cName = issue.name || 'तक्रारदार नागरिक';
+    const cPhone = issue.phone || '-';
+    const cAddr = issue.address || issue.location || '-';
+    const divObj = MAHARASHTRA_DIVISIONS.find((d) =>
+      d.id === issue.division ||
+      d.districts.some((dist) => (typeof dist === 'string' ? dist === issue.district : dist.name === issue.district))
+    );
+    const divName = divObj ? divObj.name_mr : (issue.division || 'पुणे विभाग');
+    const distName = issue.district || 'सांगली';
+    const talName = issue.taluka || '-';
+    const villName = issue.village || issue.city || '-';
+    const wardName = issue.ward || '-';
+    const catName = issue.category || issue.department || 'सामान्य';
+    const descText = issue.desc || issue.description || '-';
+    const urgText = issue.urgency || 'मध्यम';
+    const statText = issue.status === 'Resolved' ? 'निकाली (Resolved)' : issue.status === 'Forwarded' ? 'फॉरवर्ड (Forwarded)' : 'प्रलंबित (Pending)';
+    const offName = issue.assigned_officer?.name || 'अद्याप नियुक्त नाही';
+    const offDesig = issue.assigned_officer?.designation || '';
+    const offPhone = issue.assigned_officer?.phone || '-';
+
+    return `*🚨 नागरी तक्रार सविस्तर तपशील (Civic Grievance Dossier)*\n` +
+      `------------------------------------\n` +
+      `📌 *तक्रार संदर्भ क्र.:* ${code}\n` +
+      `👤 *नागरिकाचे नाव:* ${cName}\n` +
+      `📞 *मोबाईल नंबर:* ${cPhone}\n` +
+      `🏛️ *प्रशासकीय विभाग:* ${divName}\n` +
+      `📍 *जिल्हा:* ${distName} | *तालुका:* ${talName}\n` +
+      `🏘️ *शहर/गाव:* ${villName} | *प्रभाग:* ${wardName}\n` +
+      `🏠 *पत्ता/ठिकाण:* ${cAddr}\n` +
+      `📁 *तक्रार निवारण खाते:* ${catName}\n` +
+      `⚠️ *तातडीची पातळी:* ${urgText}\n` +
+      `📝 *तक्रारीचे स्वरूप:* ${descText}\n` +
+      `📊 *सद्यस्थिती:* ${statText}\n` +
+      `👮 *जबाबदार अधिकारी:* ${offName} ${offDesig ? `(${offDesig})` : ''} - 📞 ${offPhone}\n` +
+      `------------------------------------\n` +
+      `_हे परिपत्रक नागरी तक्रार निवारण कक्षाकडून अधिकृतपणे फॉरवर्ड केले आहे._`;
+  }, []);
+
+  const handleForwardWhatsApp = useCallback((issue) => {
+    const text = getComplaintDossierText(issue);
+    const targetPhone = issue.assigned_officer?.phone ? issue.assigned_officer.phone.replace(/\D/g, '') : '';
+    const url = targetPhone
+      ? `https://wa.me/91${targetPhone}?text=${encodeURIComponent(text)}`
+      : `https://wa.me/?text=${encodeURIComponent(text)}`;
+    window.open(url, '_blank');
+  }, [getComplaintDossierText]);
+
+  const handleForwardMail = useCallback((issue) => {
+    const code = issue.complaint_code || `GRV-${issue.id}`;
+    const subject = `[नागरी तक्रार फॉरवर्ड] संदर्भ क्र. ${code} - ${issue.name || ''} (${issue.category || ''})`;
+    const body = getComplaintDossierText(issue);
+    const targetEmail = issue.assigned_officer?.email || '';
+    const url = `mailto:${targetEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.open(url, '_blank');
+  }, [getComplaintDossierText]);
+
+  const handleForwardSMS = useCallback((issue) => {
+    const text = getComplaintDossierText(issue);
+    const targetPhone = issue.assigned_officer?.phone ? issue.assigned_officer.phone.replace(/\D/g, '') : '';
+    const url = targetPhone
+      ? `sms:${targetPhone}?body=${encodeURIComponent(text)}`
+      : `sms:?body=${encodeURIComponent(text)}`;
+    window.location.href = url;
+  }, [getComplaintDossierText]);
 
   // Fetch real districts from database on mount
   useEffect(() => {
@@ -2361,6 +2551,18 @@ export default function AdminPhoneDashboard() {
         (i.department && (i.department.includes(selectedDepartment) || selectedDepartment.includes(i.department))) ||
         (i.desc && i.desc.includes(selectedDepartment))
       );
+    }
+
+    // 2.5 Division Filter (६ प्रशासकीय महसूल विभाग)
+    if (selectedDivision && selectedDivision !== 'all') {
+      const divObj = MAHARASHTRA_DIVISIONS.find((d) => d.id === selectedDivision);
+      const divDistricts = divObj ? divObj.districts.map((d) => (typeof d === 'string' ? d : d.name)) : [];
+      list = list.filter((i) => {
+        const divMatch = i.division === selectedDivision || (divObj && i.division && i.division.includes(divObj.name_mr));
+        const distMatch = i.district && divDistricts.some((d) => i.district.includes(d) || d.includes(i.district));
+        const locMatch = i.location && divDistricts.some((d) => i.location.includes(d));
+        return divMatch || distMatch || locMatch;
+      });
     }
 
     // 3. District Filter
@@ -4750,6 +4952,63 @@ export default function AdminPhoneDashboard() {
                                         </button>
                                       )}
 
+                                      {/* Forward via WhatsApp */}
+                                      <button
+                                        type="button"
+                                        onClick={() => handleForwardWhatsApp(issue)}
+                                        title={isMr ? "WhatsApp वर फॉरवर्ड करा" : "Forward via WhatsApp"}
+                                        style={{
+                                          background: '#ecfdf5',
+                                          border: '1px solid #a7f3d0',
+                                          borderRadius: '6px',
+                                          padding: '4px 6px',
+                                          fontSize: '11px',
+                                          fontWeight: '800',
+                                          color: '#047857',
+                                          cursor: 'pointer'
+                                        }}
+                                      >
+                                        💬
+                                      </button>
+
+                                      {/* Forward via Mail */}
+                                      <button
+                                        type="button"
+                                        onClick={() => handleForwardMail(issue)}
+                                        title={isMr ? "ईमेलवर फॉरवर्ड करा" : "Forward via Email"}
+                                        style={{
+                                          background: '#eff6ff',
+                                          border: '1px solid #bfdbfe',
+                                          borderRadius: '6px',
+                                          padding: '4px 6px',
+                                          fontSize: '11px',
+                                          fontWeight: '800',
+                                          color: '#1d4ed8',
+                                          cursor: 'pointer'
+                                        }}
+                                      >
+                                        ✉️
+                                      </button>
+
+                                      {/* Forward via SMS */}
+                                      <button
+                                        type="button"
+                                        onClick={() => handleForwardSMS(issue)}
+                                        title={isMr ? "SMS वर फॉरवर्ड करा" : "Forward via SMS"}
+                                        style={{
+                                          background: '#faf5ff',
+                                          border: '1px solid #ddd6fe',
+                                          borderRadius: '6px',
+                                          padding: '4px 6px',
+                                          fontSize: '11px',
+                                          fontWeight: '800',
+                                          color: '#7c3aed',
+                                          cursor: 'pointer'
+                                        }}
+                                      >
+                                        📱
+                                      </button>
+
                                       {/* Assign & Forward */}
                                       <button
                                         type="button"
@@ -5033,6 +5292,76 @@ export default function AdminPhoneDashboard() {
                               >
                                 👁️ सविस्तर
                               </button>
+
+                              {/* Forward Toolbar: WhatsApp, Mail, SMS */}
+                              <div style={{ display: 'inline-flex', gap: '3px', alignItems: 'center' }}>
+                                <button
+                                  type="button"
+                                  onClick={() => handleForwardWhatsApp(issue)}
+                                  title={isMr ? "व्हॉट्सअ‍ॅपवर फॉरवर्ड करा" : "Forward via WhatsApp"}
+                                  style={{
+                                    flex: 1,
+                                    background: '#ecfdf5',
+                                    border: '1px solid #a7f3d0',
+                                    borderRadius: '6px',
+                                    padding: '6px 4px',
+                                    fontSize: '10.5px',
+                                    fontWeight: '800',
+                                    color: '#047857',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '2px'
+                                  }}
+                                >
+                                  💬 WA
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleForwardMail(issue)}
+                                  title={isMr ? "ईमेलवर फॉरवर्ड करा" : "Forward via Email"}
+                                  style={{
+                                    flex: 1,
+                                    background: '#eff6ff',
+                                    border: '1px solid #bfdbfe',
+                                    borderRadius: '6px',
+                                    padding: '6px 4px',
+                                    fontSize: '10.5px',
+                                    fontWeight: '800',
+                                    color: '#1d4ed8',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '2px'
+                                  }}
+                                >
+                                  ✉️ Mail
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleForwardSMS(issue)}
+                                  title={isMr ? "SMS वर फॉरवर्ड करा" : "Forward via SMS"}
+                                  style={{
+                                    flex: 1,
+                                    background: '#faf5ff',
+                                    border: '1px solid #ddd6fe',
+                                    borderRadius: '6px',
+                                    padding: '6px 4px',
+                                    fontSize: '10.5px',
+                                    fontWeight: '800',
+                                    color: '#7c3aed',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '2px'
+                                  }}
+                                >
+                                  📱 SMS
+                                </button>
+                              </div>
 
                               {!isVerified && (
                                 <button
@@ -6952,53 +7281,266 @@ export default function AdminPhoneDashboard() {
               </button>
             </div>
 
-            <form onSubmit={handleCreateNewComplaint} className="admin-dossier-body" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              {/* Field 1: Citizen Name */}
-              <div>
-                <label style={{ fontSize: '12px', fontWeight: '800', color: '#1e293b', marginBottom: '5px', display: 'block' }}>
-                  {isMr ? 'नागरिकाचे नाव *' : 'Citizen Name *'}
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder={isMr ? "उदा. रमेश पाटील" : "e.g. Ramesh Patil"}
-                  value={newComplaintForm.name}
-                  onChange={(e) => setNewComplaintForm({ ...newComplaintForm, name: e.target.value })}
-                  style={{
-                    width: '100%',
-                    padding: '10px 12px',
-                    borderRadius: '8px',
-                    border: '1.5px solid #cbd5e1',
-                    fontSize: '13px',
-                    color: '#0f172a',
-                    boxSizing: 'border-box',
-                    outline: 'none',
-                  }}
-                />
+            <form onSubmit={handleCreateNewComplaint} className="admin-dossier-body" style={{ display: 'flex', flexDirection: 'column', gap: '14px', maxHeight: '75vh', overflowY: 'auto' }}>
+              {/* Geographic Fields Grid: Division, District, Taluka */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                <div>
+                  <label style={{ fontSize: '11px', fontWeight: '800', color: '#1e293b', marginBottom: '4px', display: 'block' }}>
+                    🏛️ {isMr ? 'प्रशासकीय विभाग *' : 'Administrative Division *'}
+                  </label>
+                  <select
+                    value={newComplaintForm.division || 'pune'}
+                    onChange={(e) => {
+                      const divVal = e.target.value;
+                      const divObj = MAHARASHTRA_DIVISIONS.find((d) => d.id === divVal);
+                      const defDist = divObj ? (typeof divObj.districts[0] === 'string' ? divObj.districts[0] : divObj.districts[0].name) : 'सांगली';
+                      setNewComplaintForm({
+                        ...newComplaintForm,
+                        division: divVal,
+                        district: defDist
+                      });
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: '9px 10px',
+                      borderRadius: '8px',
+                      border: '1.5px solid #cbd5e1',
+                      fontSize: '12px',
+                      fontWeight: '700',
+                      color: '#0f172a',
+                      background: '#ffffff',
+                      outline: 'none'
+                    }}
+                  >
+                    {MAHARASHTRA_DIVISIONS.map((div) => (
+                      <option key={div.id} value={div.id}>
+                        {isMr ? div.name_mr : div.name_en}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '11px', fontWeight: '800', color: '#1e293b', marginBottom: '4px', display: 'block' }}>
+                    📍 {isMr ? 'जिल्हा *' : 'District *'}
+                  </label>
+                  <select
+                    value={newComplaintForm.district || 'सांगली'}
+                    onChange={(e) => {
+                      const distVal = e.target.value;
+                      setNewComplaintForm({
+                        ...newComplaintForm,
+                        district: distVal
+                      });
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: '9px 10px',
+                      borderRadius: '8px',
+                      border: '1.5px solid #cbd5e1',
+                      fontSize: '12px',
+                      fontWeight: '700',
+                      color: '#0f172a',
+                      background: '#ffffff',
+                      outline: 'none'
+                    }}
+                  >
+                    {(() => {
+                      const curDiv = MAHARASHTRA_DIVISIONS.find((d) => d.id === (newComplaintForm.division || 'pune'));
+                      const dists = curDiv ? curDiv.districts.map((d) => (typeof d === 'string' ? d : d.name)) : MAHARASHTRA_DISTRICTS_LIST;
+                      return dists.map((d) => <option key={d} value={d}>{d}</option>);
+                    })()}
+                  </select>
+                </div>
               </div>
 
-              {/* Field 2: Phone Number */}
-              <div>
-                <label style={{ fontSize: '12px', fontWeight: '800', color: '#1e293b', marginBottom: '5px', display: 'block' }}>
-                  {isMr ? 'मोबाईल नंबर' : 'Mobile Number'}
-                </label>
-                <input
-                  type="tel"
-                  maxLength={10}
-                  placeholder={isMr ? "१० अंकी मोबाईल नंबर" : "10-digit mobile number"}
-                  value={newComplaintForm.phone}
-                  onChange={(e) => setNewComplaintForm({ ...newComplaintForm, phone: e.target.value.replace(/\D/g, '') })}
-                  style={{
-                    width: '100%',
-                    padding: '10px 12px',
-                    borderRadius: '8px',
-                    border: '1.5px solid #cbd5e1',
-                    fontSize: '13px',
-                    color: '#0f172a',
-                    boxSizing: 'border-box',
-                    outline: 'none',
-                  }}
-                />
+              {/* Taluka, City/Village & Ward */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                <div>
+                  <label style={{ fontSize: '11px', fontWeight: '800', color: '#1e293b', marginBottom: '4px', display: 'block' }}>
+                    🌾 {isMr ? 'तालुका *' : 'Taluka *'}
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder={isMr ? "उदा. मिरज, तासगाव" : "e.g. Miraj, Tasgaon"}
+                    value={newComplaintForm.taluka}
+                    onChange={(e) => setNewComplaintForm({ ...newComplaintForm, taluka: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '9px 10px',
+                      borderRadius: '8px',
+                      border: '1.5px solid #cbd5e1',
+                      fontSize: '12px',
+                      color: '#0f172a',
+                      boxSizing: 'border-box',
+                      outline: 'none',
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '11px', fontWeight: '800', color: '#1e293b', marginBottom: '4px', display: 'block' }}>
+                    🏘️ {isMr ? 'शहर / गाव' : 'City / Village'}
+                  </label>
+                  <input
+                    type="text"
+                    placeholder={isMr ? "उदा. सांगली शहर, माधवनगर" : "e.g. Sangli, Madhavnagar"}
+                    value={newComplaintForm.village}
+                    onChange={(e) => setNewComplaintForm({ ...newComplaintForm, village: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '9px 10px',
+                      borderRadius: '8px',
+                      border: '1.5px solid #cbd5e1',
+                      fontSize: '12px',
+                      color: '#0f172a',
+                      boxSizing: 'border-box',
+                      outline: 'none',
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                <div>
+                  <label style={{ fontSize: '11px', fontWeight: '800', color: '#1e293b', marginBottom: '4px', display: 'block' }}>
+                    🏷️ {isMr ? 'प्रभाग / वॉर्ड क्र.' : 'Ward / Prabhag No.'}
+                  </label>
+                  <input
+                    type="text"
+                    placeholder={isMr ? "उदा. प्रभाग क्र. ३" : "e.g. Ward 3"}
+                    value={newComplaintForm.ward || ''}
+                    onChange={(e) => setNewComplaintForm({ ...newComplaintForm, ward: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '9px 10px',
+                      borderRadius: '8px',
+                      border: '1.5px solid #cbd5e1',
+                      fontSize: '12px',
+                      color: '#0f172a',
+                      boxSizing: 'border-box',
+                      outline: 'none',
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '11px', fontWeight: '800', color: '#1e293b', marginBottom: '4px', display: 'block' }}>
+                    🏠 {isMr ? 'पत्ता / मुख्य खूण' : 'Address / Landmark'}
+                  </label>
+                  <input
+                    type="text"
+                    placeholder={isMr ? "उदा. मारुती मंदिराजवळ, मेन रोड" : "e.g. Near Maruti Temple"}
+                    value={newComplaintForm.address || ''}
+                    onChange={(e) => setNewComplaintForm({ ...newComplaintForm, address: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '9px 10px',
+                      borderRadius: '8px',
+                      border: '1.5px solid #cbd5e1',
+                      fontSize: '12px',
+                      color: '#0f172a',
+                      boxSizing: 'border-box',
+                      outline: 'none',
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Citizen Details: Name, Phone & Email */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '10px' }}>
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: '800', color: '#1e293b', marginBottom: '4px', display: 'block' }}>
+                    👤 {isMr ? 'नागरिकाचे नाव *' : 'Citizen Name *'}
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder={isMr ? "उदा. रमेश पाटील" : "e.g. Ramesh Patil"}
+                    value={newComplaintForm.name}
+                    onChange={(e) => setNewComplaintForm({ ...newComplaintForm, name: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '9px 10px',
+                      borderRadius: '8px',
+                      border: '1.5px solid #cbd5e1',
+                      fontSize: '12.5px',
+                      color: '#0f172a',
+                      boxSizing: 'border-box',
+                      outline: 'none',
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: '800', color: '#1e293b', marginBottom: '4px', display: 'block' }}>
+                    📞 {isMr ? 'मोबाईल नंबर' : 'Mobile Number'}
+                  </label>
+                  <input
+                    type="tel"
+                    maxLength={10}
+                    placeholder={isMr ? "१० अंकी मोबाईल" : "10-digit number"}
+                    value={newComplaintForm.phone}
+                    onChange={(e) => setNewComplaintForm({ ...newComplaintForm, phone: e.target.value.replace(/\D/g, '') })}
+                    style={{
+                      width: '100%',
+                      padding: '9px 10px',
+                      borderRadius: '8px',
+                      border: '1.5px solid #cbd5e1',
+                      fontSize: '12.5px',
+                      color: '#0f172a',
+                      boxSizing: 'border-box',
+                      outline: 'none',
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                <div>
+                  <label style={{ fontSize: '11px', fontWeight: '800', color: '#1e293b', marginBottom: '4px', display: 'block' }}>
+                    ✉️ {isMr ? 'ईमेल आयडी (ऐच्छिक)' : 'Email ID (Optional)'}
+                  </label>
+                  <input
+                    type="email"
+                    placeholder={isMr ? "उदा. citizen@domain.com" : "e.g. citizen@domain.com"}
+                    value={newComplaintForm.email || ''}
+                    onChange={(e) => setNewComplaintForm({ ...newComplaintForm, email: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '9px 10px',
+                      borderRadius: '8px',
+                      border: '1.5px solid #cbd5e1',
+                      fontSize: '12px',
+                      color: '#0f172a',
+                      boxSizing: 'border-box',
+                      outline: 'none',
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '11px', fontWeight: '800', color: '#1e293b', marginBottom: '4px', display: 'block' }}>
+                    🆔 {isMr ? 'मतदार ओळखपत्र क्र. (EPIC)' : 'Voter ID (EPIC)'}
+                  </label>
+                  <input
+                    type="text"
+                    placeholder={isMr ? "उदा. ABC1234567" : "e.g. ABC1234567"}
+                    value={newComplaintForm.epic_id || ''}
+                    onChange={(e) => setNewComplaintForm({ ...newComplaintForm, epic_id: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '9px 10px',
+                      borderRadius: '8px',
+                      border: '1.5px solid #cbd5e1',
+                      fontSize: '12px',
+                      color: '#0f172a',
+                      boxSizing: 'border-box',
+                      outline: 'none',
+                    }}
+                  />
+                </div>
               </div>
 
               {/* Field 3: Department (All 20 Grievance Departments) */}

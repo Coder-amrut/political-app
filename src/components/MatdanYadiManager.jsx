@@ -545,6 +545,32 @@ export const getVoterNameParts = (fullName = '') => {
   };
 };
 
+export const CASTE_COMMUNITIES_LIST = [
+  'मराठा',
+  'कुणबी',
+  'बौद्ध',
+  'मातंग',
+  'चर्मकार',
+  'लिंगायत',
+  'जैन',
+  'ब्राह्मण',
+  'धनगर',
+  'माळी',
+  'मुस्लिम',
+  'ख्रिश्चन',
+  'कोळी',
+  'आदिवासी / भिल्ल',
+  'वंजारी',
+  'सुतार',
+  'लोहार',
+  'नाभिक',
+  'तेली',
+  'गुरव',
+  'कुंभार',
+  'गोसावी',
+  'इतर'
+];
+
 export const getSearchPlaceholder = (type, isMr) => {
   switch (type) {
     case 'caste':
@@ -1265,6 +1291,26 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
   const filteredVoters = useMemo(() => {
     if (!selectedDistrict && !searchQuery.trim() && !showAllDistrictVoters) return [];
     return voters.filter((v) => {
+      // 1. Dedicated Name Filter (outside)
+      if (nameSearch.trim()) {
+        const nq = nameSearch.toLowerCase().trim();
+        const partsMr = getVoterNameParts(v.name_mr || '');
+        const partsEn = getVoterNameParts(v.name_en || '');
+        const fNameMr = (v.first_name || partsMr.firstName || '').toLowerCase();
+        const fNameEn = (v.first_name_en || partsEn.firstName || '').toLowerCase();
+        const sNameMr = (v.surname || partsMr.surname || '').toLowerCase();
+        const sNameEn = (v.surname_en || partsEn.surname || '').toLowerCase();
+        const mrMatch = (v.name_mr || '').toLowerCase().includes(nq) || fNameMr.includes(nq) || sNameMr.includes(nq);
+        const enMatch = (v.name_en || '').toLowerCase().includes(nq) || fNameEn.includes(nq) || sNameEn.includes(nq);
+        if (!mrMatch && !enMatch) return false;
+      }
+
+      // 2. Dedicated Caste Filter (outside)
+      if (casteFilter && casteFilter !== 'all') {
+        const voterCaste = (v.caste || v.cast || getVoterCaste(v)).toLowerCase();
+        const cf = casteFilter.toLowerCase().trim();
+        if (!voterCaste.includes(cf) && !cf.includes(voterCaste)) return false;
+      }
       // 1. जिल्हा (District)
       if (selectedDistrict && v.district !== selectedDistrict) return false;
       // 2. तालुका (Taluka)
@@ -1341,16 +1387,8 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
         const aName = (v.prabhag || v.area || v.area_name || '').toLowerCase();
         const cName = (v.city || '').toLowerCase();
 
-        if (searchType === 'caste') {
-          if (!voterCaste.includes(q)) return false;
-        } else if (searchType === 'name') {
-          const mrMatch = (v.name_mr || '').toLowerCase().includes(q) || fNameMr.includes(q);
-          const enMatch = (v.name_en || '').toLowerCase().includes(q) || fNameEn.includes(q);
-          if (!mrMatch && !enMatch) return false;
-        } else if (searchType === 'surname') {
-          const sMatchMr = sNameMr.includes(q);
-          const sMatchEn = sNameEn.includes(q);
-          if (!sMatchMr && !sMatchEn) return false;
+        if (searchType === 'epic') {
+          if (!v.epic_no?.toLowerCase().includes(q)) return false;
         } else if (searchType === 'village') {
           if (!vName.includes(q)) return false;
         } else if (searchType === 'area') {
@@ -1390,6 +1428,8 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
   const hasActiveSearchOrFilter = Boolean(
     isSearched ||
     searchQuery.trim().length > 0 ||
+    nameSearch.trim().length > 0 ||
+    casteFilter !== 'all' ||
     genderFilter !== 'all' ||
     ageGroupFilter !== 'all' ||
     customAge.trim().length > 0 ||
@@ -2271,9 +2311,7 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
                   }}
                 >
                   <option value="all">{isMr ? '🔍 सर्व (All)' : '🔍 All Fields'}</option>
-                  <option value="caste">{isMr ? '🏷️ जात (Cast)' : '🏷️ Cast'}</option>
-                  <option value="name">{isMr ? '👤 नाव (Name)' : '👤 Name'}</option>
-                  <option value="surname">{isMr ? '👥 आडनाव (Surname)' : '👥 Surname'}</option>
+                  <option value="epic">{isMr ? '🆔 ओळखपत्र (EPIC)' : '🆔 EPIC ID'}</option>
                   <option value="village">{isMr ? '🏡 गाव (Gav)' : '🏡 Gav'}</option>
                   <option value="area">{isMr ? '🏘️ परिसर (Area)' : '🏘️ Area'}</option>
                   <option value="ward">{isMr ? '🏛️ वॉर्ड (Ward)' : '🏛️ Ward'}</option>
@@ -2313,6 +2351,64 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
                   )}
                 </div>
               </div>
+
+              {/* Dedicated Name Filter (नाव शोध) */}
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center', minWidth: '170px', flex: '0 1 200px' }}>
+                <Search size={15} color={nameSearch.trim() ? '#2563eb' : '#94a3b8'} style={{ position: 'absolute', left: '10px' }} />
+                <input
+                  type="text"
+                  value={nameSearch}
+                  onChange={(e) => setNameSearch(e.target.value)}
+                  placeholder={isMr ? "👤 मतदाराचे नाव..." : "👤 Voter name..."}
+                  title={isMr ? "मतदाराच्या नावाने शोधा" : "Filter by voter name"}
+                  style={{
+                    width: '100%',
+                    padding: '9px 28px 9px 32px',
+                    borderRadius: '8px',
+                    border: nameSearch.trim() ? '1.5px solid #2563eb' : '1.5px solid #cbd5e1',
+                    background: nameSearch.trim() ? '#eff6ff' : '#ffffff',
+                    fontSize: '13px',
+                    fontWeight: '600',
+                    color: '#0f172a',
+                    outline: 'none',
+                    boxSizing: 'border-box',
+                  }}
+                />
+                {nameSearch && (
+                  <button
+                    type="button"
+                    onClick={() => setNameSearch('')}
+                    style={{ position: 'absolute', right: '8px', background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', padding: '2px' }}
+                    title={isMr ? "नाव साफ करा" : "Clear Name"}
+                  >
+                    <X size={15} />
+                  </button>
+                )}
+              </div>
+
+              {/* Dedicated Caste Filter (जात / प्रवर्ग) */}
+              <select
+                value={casteFilter}
+                onChange={(e) => setCasteFilter(e.target.value)}
+                title={isMr ? "जात / प्रवर्ग निवडा" : "Select Caste"}
+                style={{
+                  padding: '9px 12px',
+                  borderRadius: '8px',
+                  border: casteFilter !== 'all' ? '1.5px solid #8b5cf6' : '1.5px solid #cbd5e1',
+                  background: casteFilter !== 'all' ? '#faf5ff' : '#ffffff',
+                  fontSize: '13px',
+                  fontWeight: '600',
+                  color: casteFilter !== 'all' ? '#6d28d9' : '#334155',
+                  outline: 'none',
+                  cursor: 'pointer',
+                  minWidth: '145px',
+                }}
+              >
+                <option value="all">{isMr ? "🏷️ जात: सर्व (Caste: All)" : "Caste: All"}</option>
+                {CASTE_COMMUNITIES_LIST.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
 
               {/* Gender Filter */}
               <select

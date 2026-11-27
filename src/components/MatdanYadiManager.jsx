@@ -697,6 +697,8 @@ export default function MatdanYadiManager({ lang = 'mr', title = null }) {
   const [customAge, setCustomAge] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [searchType, setSearchType] = useState('all'); // 'all' | 'caste' | 'name' | 'surname' | 'village' | 'area'
+  const [nameSearch, setNameSearch] = useState('');
+  const [casteFilter, setCasteFilter] = useState('all');
 
   // Dynamic Geography States directly from DB
   const [dbDistricts, setDbDistricts] = useState([]);

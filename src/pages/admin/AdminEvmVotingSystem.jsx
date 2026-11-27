@@ -337,8 +337,8 @@ function KarkartaEvmVotingSystem({ user, isMr = true, isAdmin: isAdminProp }) {
         }
       }
     } catch (err) {
-      console.error('Error loading EVM data:', err);
-      setError('डेटाबेसकडून माहिती मिळवताना अडचण आली.');
+      console.error('Error loading data:', err);
+      setError('माहिती मिळवताना अडचण आली.');
     } finally {
       setLoading(false);
     }
@@ -895,7 +895,7 @@ function KarkartaEvmVotingSystem({ user, isMr = true, isAdmin: isAdminProp }) {
                 <span>{election?.name || '२८२ - सांगली मतदारसंघ (Sangli Constituency)'}</span>
                 <span>•</span>
                 <span style={{ color: '#059669', fontWeight: '700' }}>
-                  ✓ {isMr ? 'थेट डेटाबेस जोडणी' : 'MySQL Live'}
+                  ✓ {isMr ? 'Live' : 'Live'}
                 </span>
               </div>
             </div>
@@ -968,7 +968,7 @@ function KarkartaEvmVotingSystem({ user, isMr = true, isAdmin: isAdminProp }) {
               }}
             >
               <BarChart2 size={14} />
-              <span>{isMr ? 'मतदान निकाल' : 'Results & Tally'} ({totalVotes})</span>
+              <span>{isMr ? 'मतदान निकाल' : 'Election Results'} ({totalVotes})</span>
             </button>
 
             <button
@@ -1048,8 +1048,8 @@ function KarkartaEvmVotingSystem({ user, isMr = true, isAdmin: isAdminProp }) {
             }} />
             <span>
               {election?.status === 'ACTIVE' && !timeLeft.isExpired
-                ? (isMr ? '🟢 निवडणूक सुरू आहे (LIVE)' : '🟢 ELECTION LIVE')
-                : (isMr ? '🔴 निवडणूक थांबवली आहे (ENDED / STOPPED)' : '🔴 ELECTION CLOSED')}
+                ? (isMr ? '🟢 निवडणूक सुरू आहे' : '🟢 ELECTION LIVE')
+                : (isMr ? '🔴 निवडणूक थांबवली आहे' : '🔴 ELECTION CLOSED')}
             </span>
           </div>
 
@@ -1070,7 +1070,7 @@ function KarkartaEvmVotingSystem({ user, isMr = true, isAdmin: isAdminProp }) {
                   fontWeight: '800',
                   fontSize: '12px'
                 }}>
-                  ⏱️ {isMr ? 'मुदत संपली (Time Expired)' : 'Expired'}
+                  ⏱️ {isMr ? 'मुदत संपली' : 'Expired'}
                 </span>
               ) : (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -1156,7 +1156,7 @@ function KarkartaEvmVotingSystem({ user, isMr = true, isAdmin: isAdminProp }) {
               }}
             >
               <Share2 size={15} />
-              <span>{isMr ? '📲 WhatsApp / लिंक शेअर करा' : 'Share on WhatsApp'}</span>
+              <span>{isMr ? '📲 लिंक शेअर करा' : 'Share on WhatsApp'}</span>
             </button>
 
             {election?.status === 'ACTIVE' && !timeLeft.isExpired ? (
@@ -1204,7 +1204,7 @@ function KarkartaEvmVotingSystem({ user, isMr = true, isAdmin: isAdminProp }) {
                 }}
               >
                 <Play size={15} />
-                <span>{isMr ? '▶ निवडणूक सुरू करा (Start Timer)' : 'Start Election with Timer'}</span>
+                <span>{isMr ? '▶ निवडणूक सुरू करा' : 'Start Election with Timer'}</span>
               </button>
             )}
           </div>
@@ -1276,7 +1276,7 @@ function KarkartaEvmVotingSystem({ user, isMr = true, isAdmin: isAdminProp }) {
               <span style={{ fontSize: '24px' }}>🔒</span>
               <div>
                 <div style={{ fontWeight: '800', color: '#991b1b', fontSize: '14.5px' }}>
-                  {isMr ? 'सध्या मतदान बंद आहे (Election Paused / Closed)' : 'Voting is Currently Closed'}
+                  {isMr ? 'सध्या मतदान बंद आहे ' : 'Voting is Currently Closed'}
                 </div>
                 <div style={{ fontSize: '12.5px', color: '#b91c1c', marginTop: '2px' }}>
                   {isMr

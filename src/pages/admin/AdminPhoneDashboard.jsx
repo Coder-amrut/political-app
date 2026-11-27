@@ -1122,6 +1122,7 @@ export default function AdminPhoneDashboard() {
   const [attendanceMonth, setAttendanceMonth] = useState('ALL');
   const [selectedApprovalForDetail, setSelectedApprovalForDetail] = useState(null);
   const [selectedIssueForDetail, setSelectedIssueForDetail] = useState(null);
+  const [forwardModalIssue, setForwardModalIssue] = useState(null); // Dedicated Grievance Forward Modal (WhatsApp, Mail, SMS)
 
   // Village Demographics Cascade Filters & Database Locations
   const [dbDistricts, setDbDistricts] = useState(MAHARASHTRA_DISTRICTS_MASTER);
@@ -1271,6 +1272,11 @@ export default function AdminPhoneDashboard() {
     if (!selectedDistrict || selectedDistrict === 'all') {
       return ['मिरज', 'तासगाव', 'जत', 'वाळवा / इस्लामपूर', 'शिराळा', 'खानापूर / विटा', 'आटपाडी', 'कवठे महांकाळ', 'पलूस', 'कडेगाव'];
     }
+    // Check if dbTalukas from database has items for selected district
+    if (dbTalukas && dbTalukas.length > 0) {
+      const dbList = dbTalukas.map((t) => (typeof t === 'string' ? t : t.nameMr || t.taluka_mr || t.name)).filter(Boolean);
+      if (dbList.length > 0) return Array.from(new Set(dbList));
+    }
     for (const div of MAHARASHTRA_DIVISIONS) {
       const foundD = div.districts.find((d) => (typeof d === 'string' ? d === selectedDistrict : d.name === selectedDistrict));
       if (foundD && foundD.talukas) {
@@ -1278,7 +1284,16 @@ export default function AdminPhoneDashboard() {
       }
     }
     return ['मिरज', 'तासगाव', 'जत', 'वाळवा / इस्लामपूर', 'शिराळा', 'खानापूर / विटा', 'आटपाडी', 'कवठे महांकाळ', 'पलूस', 'कडेगाव'];
-  }, [selectedDistrict]);
+  }, [selectedDistrict, dbTalukas]);
+
+  // Hook selectedDistrict to DB district code to trigger dynamic DB talukas loading
+  useEffect(() => {
+    if (!selectedDistrict || selectedDistrict === 'all') return;
+    const match = (dbDistricts || []).find((d) => (typeof d === 'string' ? d === selectedDistrict : d.nameMr === selectedDistrict || d.name === selectedDistrict));
+    if (match && match.code && match.code !== selectedDistrictCode) {
+      setSelectedDistrictCode(match.code);
+    }
+  }, [selectedDistrict, dbDistricts, selectedDistrictCode]);
 
   // Generate complete complaint dossier text for Forwarding via WhatsApp, Mail, SMS
   const getComplaintDossierText = useCallback((issue) => {
@@ -2629,7 +2644,7 @@ export default function AdminPhoneDashboard() {
       );
     }
     return list;
-  }, [issues, issueFilter, selectedDepartment, selectedDistrict, selectedTaluka, selectedCityVillage, selectedWard, searchQuery]);
+  }, [issues, issueFilter, selectedDepartment, selectedDivision, selectedDistrict, selectedTaluka, selectedCityVillage, selectedWard, searchQuery]);
 
   // Grievance Stat Counts
   const totalIssuesCount = issues.length;
@@ -4301,40 +4316,238 @@ export default function AdminPhoneDashboard() {
                     )}
                   </div>
 
-                  {/* Multi-tier Location & Department Filters: District, Taluka, City/Village, Ward, Dept */}
+                  {/* 🏛️ ६ प्रशासकीय महसूल विभागानुसार तक्रार शोध (Division-wise Grievance Explorer) */}
+                  <div style={{
+                    background: 'linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%)',
+                    border: '1.5px solid #bfdbfe',
+                    borderRadius: '12px',
+                    padding: '10px 12px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px'
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span style={{ fontSize: '15px' }}>🏛️</span>
+                        <span style={{ fontSize: '12px', fontWeight: '850', color: '#1e3a8a' }}>
+                          {isMr ? 'महाराष्ट्र ६ प्रशासकीय महसूल विभागानुसार तक्रारी पहा:' : 'View Grievances by Maharashtra 6 Administrative Divisions:'}
+                        </span>
+                      </div>
+                      {selectedDivision !== 'all' && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedDivision('all');
+                            setSelectedDistrict('all');
+                            setSelectedTaluka('all');
+                          }}
+                          style={{
+                            background: '#fee2e2',
+                            border: '1px solid #fca5a5',
+                            color: '#b91c1c',
+                            padding: '2px 8px',
+                            borderRadius: '6px',
+                            fontSize: '10.5px',
+                            fontWeight: '800',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          ✕ {isMr ? 'विभाग फिल्टर काढा' : 'Reset Division'}
+                        </button>
+                      )}
+                    </div>
+
+                    {/* 6 Division Clickable Pills */}
+                    <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '3px', touchAction: 'pan-x' }}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedDivision('all');
+                          setSelectedDistrict('all');
+                          setSelectedTaluka('all');
+                        }}
+                        style={{
+                          padding: '6px 12px',
+                          borderRadius: '20px',
+                          border: selectedDivision === 'all' ? '1.5px solid #2563eb' : '1px solid #cbd5e1',
+                          background: selectedDivision === 'all' ? '#2563eb' : '#ffffff',
+                          color: selectedDivision === 'all' ? '#ffffff' : '#334155',
+                          fontSize: '11px',
+                          fontWeight: '800',
+                          cursor: 'pointer',
+                          whiteSpace: 'nowrap',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '4px'
+                        }}
+                      >
+                        <span>🌐</span>
+                        <span>{isMr ? 'सर्व ६ विभाग' : 'All 6 Divisions'}</span>
+                        <span style={{
+                          background: selectedDivision === 'all' ? 'rgba(255,255,255,0.25)' : '#f1f5f9',
+                          color: selectedDivision === 'all' ? '#ffffff' : '#475569',
+                          padding: '1px 6px',
+                          borderRadius: '10px',
+                          fontSize: '10px'
+                        }}>
+                          {issues.length}
+                        </span>
+                      </button>
+
+                      {MAHARASHTRA_DIVISIONS.map((div) => {
+                        const isSelected = selectedDivision === div.id;
+                        const countInDiv = issues.filter((i) => {
+                          const divMatch = i.division === div.id || (i.division && i.division.includes(div.name_mr));
+                          const divDistricts = div.districts.map((d) => (typeof d === 'string' ? d : d.name));
+                          const distMatch = i.district && divDistricts.some((d) => i.district.includes(d) || d.includes(i.district));
+                          const locMatch = i.location && divDistricts.some((d) => i.location.includes(d));
+                          return divMatch || distMatch || locMatch;
+                        }).length;
+
+                        return (
+                          <button
+                            key={div.id}
+                            type="button"
+                            onClick={() => {
+                              setSelectedDivision(isSelected ? 'all' : div.id);
+                              setSelectedDistrict('all');
+                              setSelectedTaluka('all');
+                            }}
+                            style={{
+                              padding: '6px 12px',
+                              borderRadius: '20px',
+                              border: isSelected ? '1.5px solid #ff5200' : '1px solid #cbd5e1',
+                              background: isSelected ? '#ff5200' : '#ffffff',
+                              color: isSelected ? '#ffffff' : '#1e293b',
+                              fontSize: '11px',
+                              fontWeight: '800',
+                              cursor: 'pointer',
+                              whiteSpace: 'nowrap',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '5px',
+                              boxShadow: isSelected ? '0 2px 6px rgba(255,82,0,0.25)' : 'none'
+                            }}
+                          >
+                            <span>{div.id === 'pune' ? '🏰' : div.id === 'konkan' ? '🌊' : div.id === 'nashik' ? '🍇' : div.id === 'chhatrapati_sambhajinagar' ? '🏛️' : div.id === 'amravati' ? '🌾' : '🐅'}</span>
+                            <span>{isMr ? div.name_mr.split('(')[0].trim() : div.name_en.split('(')[0].trim()}</span>
+                            <span style={{
+                              background: isSelected ? 'rgba(255,255,255,0.3)' : '#e2e8f0',
+                              color: isSelected ? '#ffffff' : '#475569',
+                              padding: '1px 6px',
+                              borderRadius: '10px',
+                              fontSize: '10px'
+                            }}>
+                              {countInDiv}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Active Cascading Hierarchy Breadcrumb */}
+                    {selectedDivision !== 'all' && (
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        fontSize: '11px',
+                        color: '#1e3a8a',
+                        background: '#ffffff',
+                        padding: '6px 10px',
+                        borderRadius: '8px',
+                        border: '1px solid #dbeafe',
+                        flexWrap: 'wrap'
+                      }}>
+                        <span style={{ fontWeight: '800' }}>📍 निवडलेले कार्यक्षेत्र:</span>
+                        <span style={{ background: '#eff6ff', color: '#1d4ed8', padding: '1px 6px', borderRadius: '4px', fontWeight: '850' }}>
+                          {MAHARASHTRA_DIVISIONS.find((d) => d.id === selectedDivision)?.name_mr || selectedDivision}
+                        </span>
+                        <span>➔</span>
+                        <span style={{ fontWeight: '750' }}>
+                          {selectedDistrict !== 'all' ? `जिल्हा: ${selectedDistrict}` : `सर्व ${availableDistrictsForDivision.length} जिल्हे`}
+                        </span>
+                        {selectedTaluka !== 'all' && (
+                          <>
+                            <span>➔</span>
+                            <span style={{ fontWeight: '800', color: '#ff5200' }}>तालुका: ${selectedTaluka}</span>
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Multi-tier Location & Department Filters: Division, District, Taluka, City/Village, Ward, Dept */}
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(135px, 1fr))', gap: '8px' }}>
-                    {/* District Dropdown */}
+                    {/* 1. Division Dropdown */}
                     <div>
                       <label style={{ fontSize: '10.5px', fontWeight: '800', color: '#475569', marginBottom: '3px', display: 'block' }}>
-                        📍 {isMr ? 'जिल्हा निवडा' : 'District Filter'}
+                        🏛️ {isMr ? '१. प्रशासकीय विभाग' : '1. Division'}
                       </label>
                       <select
-                        value={selectedDistrict}
-                        onChange={(e) => setSelectedDistrict(e.target.value)}
+                        value={selectedDivision}
+                        onChange={(e) => {
+                          setSelectedDivision(e.target.value);
+                          setSelectedDistrict('all');
+                          setSelectedTaluka('all');
+                        }}
                         style={{
                           width: '100%',
                           padding: '8px 8px',
                           borderRadius: '8px',
-                          border: '1.5px solid #cbd5e1',
+                          border: selectedDivision !== 'all' ? '1.5px solid #2563eb' : '1.5px solid #cbd5e1',
                           fontSize: '11.5px',
                           fontWeight: '700',
-                          color: '#0f172a',
-                          background: '#ffffff',
+                          color: selectedDivision !== 'all' ? '#1d4ed8' : '#0f172a',
+                          background: selectedDivision !== 'all' ? '#eff6ff' : '#ffffff',
                           outline: 'none',
                           cursor: 'pointer'
                         }}
                       >
-                        <option value="all">{isMr ? 'सर्व जिल्हे' : 'All Districts'}</option>
-                        {MAHARASHTRA_DISTRICTS_LIST.map((dist) => (
+                        <option value="all">{isMr ? 'सर्व ६ विभाग' : 'All 6 Divisions'}</option>
+                        {MAHARASHTRA_DIVISIONS.map((d) => (
+                          <option key={d.id} value={d.id}>{isMr ? d.name_mr : d.name_en}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* 2. District Dropdown (Cascaded from Division + DB) */}
+                    <div>
+                      <label style={{ fontSize: '10.5px', fontWeight: '800', color: '#475569', marginBottom: '3px', display: 'block' }}>
+                        📍 {isMr ? '२. जिल्हा निवडा' : '2. District Filter'}
+                      </label>
+                      <select
+                        value={selectedDistrict}
+                        onChange={(e) => {
+                          setSelectedDistrict(e.target.value);
+                          setSelectedTaluka('all');
+                        }}
+                        style={{
+                          width: '100%',
+                          padding: '8px 8px',
+                          borderRadius: '8px',
+                          border: selectedDistrict !== 'all' ? '1.5px solid #2563eb' : '1.5px solid #cbd5e1',
+                          fontSize: '11.5px',
+                          fontWeight: '700',
+                          color: selectedDistrict !== 'all' ? '#1d4ed8' : '#0f172a',
+                          background: selectedDistrict !== 'all' ? '#eff6ff' : '#ffffff',
+                          outline: 'none',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <option value="all">
+                          {selectedDivision !== 'all' ? (isMr ? `या विभागातील सर्व जिल्हे (${availableDistrictsForDivision.length})` : 'All Division Districts') : (isMr ? 'सर्व जिल्हे' : 'All Districts')}
+                        </option>
+                        {availableDistrictsForDivision.map((dist) => (
                           <option key={dist} value={dist}>{dist}</option>
                         ))}
                       </select>
                     </div>
 
-                    {/* Taluka Dropdown */}
+                    {/* 3. Taluka Dropdown (Cascaded from District + DB) */}
                     <div>
                       <label style={{ fontSize: '10.5px', fontWeight: '800', color: '#475569', marginBottom: '3px', display: 'block' }}>
-                        🌾 {isMr ? 'तालुका निवडा' : 'Taluka Filter'}
+                        🌾 {isMr ? '३. तालुका निवडा' : '3. Taluka Filter'}
                       </label>
                       <select
                         value={selectedTaluka}
@@ -4343,17 +4556,19 @@ export default function AdminPhoneDashboard() {
                           width: '100%',
                           padding: '8px 8px',
                           borderRadius: '8px',
-                          border: '1.5px solid #cbd5e1',
+                          border: selectedTaluka !== 'all' ? '1.5px solid #2563eb' : '1.5px solid #cbd5e1',
                           fontSize: '11.5px',
                           fontWeight: '700',
-                          color: '#0f172a',
-                          background: '#ffffff',
+                          color: selectedTaluka !== 'all' ? '#1d4ed8' : '#0f172a',
+                          background: selectedTaluka !== 'all' ? '#eff6ff' : '#ffffff',
                           outline: 'none',
                           cursor: 'pointer'
                         }}
                       >
-                        <option value="all">{isMr ? 'सर्व तालुके' : 'All Talukas'}</option>
-                        {['मिरज', 'तासगाव', 'जत', 'वाळवा / इस्लामपूर', 'शिराळा', 'खानापूर / विटा', 'आटपाडी', 'कवठेमहांकाळ', 'कडेगाव', 'पलूस'].map((t) => (
+                        <option value="all">
+                          {selectedDistrict !== 'all' ? (isMr ? `या जिल्ह्यातील सर्व तालुके (${availableTalukasForDistrict.length})` : 'All District Talukas') : (isMr ? 'सर्व तालुके' : 'All Talukas')}
+                        </option>
+                        {availableTalukasForDistrict.map((t) => (
                           <option key={t} value={t}>{t}</option>
                         ))}
                       </select>
@@ -4957,6 +5172,29 @@ export default function AdminPhoneDashboard() {
                                         </button>
                                       )}
 
+                                      {/* Forward Modal Trigger */}
+                                      <button
+                                        type="button"
+                                        onClick={() => setForwardModalIssue(issue)}
+                                        title={isMr ? "तक्रार फॉरवर्ड करा (WhatsApp, Mail, SMS)" : "Forward Grievance"}
+                                        style={{
+                                          background: '#eff6ff',
+                                          border: '1.5px solid #60a5fa',
+                                          borderRadius: '6px',
+                                          padding: '3px 7px',
+                                          fontSize: '11px',
+                                          fontWeight: '850',
+                                          color: '#1d4ed8',
+                                          cursor: 'pointer',
+                                          display: 'inline-flex',
+                                          alignItems: 'center',
+                                          gap: '3px'
+                                        }}
+                                      >
+                                        <span>📤</span>
+                                        <span>{isMr ? 'फॉरवर्ड' : 'Forward'}</span>
+                                      </button>
+
                                       {/* Forward via WhatsApp */}
                                       <button
                                         type="button"
@@ -5296,6 +5534,29 @@ export default function AdminPhoneDashboard() {
                                 }}
                               >
                                 👁️ सविस्तर
+                              </button>
+
+                              {/* Dedicated Forward Modal Trigger */}
+                              <button
+                                type="button"
+                                onClick={() => setForwardModalIssue(issue)}
+                                style={{
+                                  background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)',
+                                  border: '1.5px solid #60a5fa',
+                                  borderRadius: '8px',
+                                  padding: '7px 6px',
+                                  fontSize: '11px',
+                                  fontWeight: '850',
+                                  color: '#1d4ed8',
+                                  cursor: 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  gap: '3px'
+                                }}
+                              >
+                                <span>📤</span>
+                                <span>{isMr ? 'फॉरवर्ड करा' : 'Forward'}</span>
                               </button>
 
                               {/* Forward Toolbar: WhatsApp, Mail, SMS */}
@@ -7189,6 +7450,92 @@ export default function AdminPhoneDashboard() {
               )}
 
               {/* Resolution Action Button */}
+              <div style={{
+                background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)',
+                border: '1.5px solid #93c5fd',
+                borderRadius: '12px',
+                padding: '10px 12px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px'
+              }}>
+                <div style={{ fontSize: '12px', fontWeight: '850', color: '#1e3a8a', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span>📤</span>
+                    <span>{isMr ? 'तक्रार थेट फॉरवर्ड करा (WhatsApp, Email, SMS):' : 'Forward Grievance (WhatsApp, Mail, SMS):'}</span>
+                  </div>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '6px' }}>
+                  <button
+                    type="button"
+                    onClick={() => handleForwardWhatsApp(selectedIssueForDetail)}
+                    style={{
+                      background: '#22c55e',
+                      color: '#ffffff',
+                      border: 'none',
+                      padding: '8px 6px',
+                      borderRadius: '8px',
+                      fontSize: '11px',
+                      fontWeight: '850',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '4px',
+                      boxShadow: '0 2px 6px rgba(34,197,94,0.3)'
+                    }}
+                  >
+                    <span>💬</span>
+                    <span>WhatsApp</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleForwardMail(selectedIssueForDetail)}
+                    style={{
+                      background: '#2563eb',
+                      color: '#ffffff',
+                      border: 'none',
+                      padding: '8px 6px',
+                      borderRadius: '8px',
+                      fontSize: '11px',
+                      fontWeight: '850',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '4px',
+                      boxShadow: '0 2px 6px rgba(37,99,235,0.3)'
+                    }}
+                  >
+                    <span>✉️</span>
+                    <span>Email</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleForwardSMS(selectedIssueForDetail)}
+                    style={{
+                      background: '#7c3aed',
+                      color: '#ffffff',
+                      border: 'none',
+                      padding: '8px 6px',
+                      borderRadius: '8px',
+                      fontSize: '11px',
+                      fontWeight: '850',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '4px',
+                      boxShadow: '0 2px 6px rgba(124,58,237,0.3)'
+                    }}
+                  >
+                    <span>📱</span>
+                    <span>SMS</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Resolution Action Button */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '4px' }}>
                 <button
                   type="button"
@@ -7265,7 +7612,166 @@ export default function AdminPhoneDashboard() {
         </div>
       )}
 
-      {/* ================= 5. NEW CITIZEN COMPLAINT REGISTRATION MODAL ================= */}
+      {/* ================= 4.5 DEDICATED GRIEVANCE FORWARD MODAL (WhatsApp, Mail, SMS) ================= */}
+      {forwardModalIssue && (
+        <div className="admin-detail-modal-overlay" onClick={() => setForwardModalIssue(null)}>
+          <div className="admin-detail-modal-sheet" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '520px' }}>
+            <div className="admin-dossier-header" style={{ background: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)' }}>
+              <div className="admin-dossier-header-title">
+                <span style={{ fontSize: '24px' }}>📤</span>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '900', color: '#ffffff' }}>
+                    {isMr ? 'नागरी तक्रार फॉरवर्ड करा' : 'Forward Civic Grievance'}
+                  </h3>
+                  <p style={{ margin: '2px 0 0 0', fontSize: '11px', color: '#bfdbfe' }}>
+                    संदर्भ क्र. {forwardModalIssue.complaint_code || `GRV-${forwardModalIssue.id}`} • {forwardModalIssue.name}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="admin-dossier-close-btn"
+                onClick={() => setForwardModalIssue(null)}
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="admin-dossier-body" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              {/* Brief Summary Box */}
+              <div style={{ background: '#f8fafc', border: '1.5px solid #e2e8f0', borderRadius: '10px', padding: '12px', fontSize: '12px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                  <span style={{ fontWeight: '850', color: '#0f172a' }}>👤 {forwardModalIssue.name}</span>
+                  <span style={{ fontWeight: '800', color: '#2563eb' }}>📞 {forwardModalIssue.phone}</span>
+                </div>
+                <div style={{ color: '#475569', fontSize: '11px', marginBottom: '6px' }}>
+                  📍 {forwardModalIssue.district || 'सांगली'} {forwardModalIssue.taluka ? `• ${forwardModalIssue.taluka}` : ''} • 🏛️ {forwardModalIssue.department || forwardModalIssue.category}
+                </div>
+                <div style={{ color: '#334155', background: '#ffffff', padding: '8px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '11.5px', lineHeight: 1.4 }}>
+                  📝 {forwardModalIssue.desc}
+                </div>
+              </div>
+
+              {/* 3 Prominent Forward Action Buttons */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {/* 1. WhatsApp Button */}
+                <button
+                  type="button"
+                  onClick={() => handleForwardWhatsApp(forwardModalIssue)}
+                  style={{
+                    padding: '12px 16px',
+                    borderRadius: '10px',
+                    background: '#22c55e',
+                    color: '#ffffff',
+                    border: 'none',
+                    fontWeight: '850',
+                    fontSize: '13px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    boxShadow: '0 2px 8px rgba(34,197,94,0.3)'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontSize: '20px' }}>💬</span>
+                    <div style={{ textAlign: 'left' }}>
+                      <div>{isMr ? 'WhatsApp वर फॉरवर्ड करा' : 'Forward on WhatsApp'}</div>
+                      <div style={{ fontSize: '10.5px', opacity: 0.9 }}>{isMr ? 'नागरिक / अधिकाऱ्याला थेट मेसेज पाठवा' : 'Send complete Marathi dossier'}</div>
+                    </div>
+                  </div>
+                  <span>➔</span>
+                </button>
+
+                {/* 2. Mail Button */}
+                <button
+                  type="button"
+                  onClick={() => handleForwardMail(forwardModalIssue)}
+                  style={{
+                    padding: '12px 16px',
+                    borderRadius: '10px',
+                    background: '#2563eb',
+                    color: '#ffffff',
+                    border: 'none',
+                    fontWeight: '850',
+                    fontSize: '13px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    boxShadow: '0 2px 8px rgba(37,99,235,0.3)'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontSize: '20px' }}>✉️</span>
+                    <div style={{ textAlign: 'left' }}>
+                      <div>{isMr ? 'ईमेलद्वारे अधिकृत फॉरवर्ड करा' : 'Forward via Official Email'}</div>
+                      <div style={{ fontSize: '10.5px', opacity: 0.9 }}>{isMr ? 'विषय व संपूर्ण अहवालासह ईमेल कंपोज करा' : 'Compose email with pre-filled report'}</div>
+                    </div>
+                  </div>
+                  <span>➔</span>
+                </button>
+
+                {/* 3. SMS Button */}
+                <button
+                  type="button"
+                  onClick={() => handleForwardSMS(forwardModalIssue)}
+                  style={{
+                    padding: '12px 16px',
+                    borderRadius: '10px',
+                    background: '#7c3aed',
+                    color: '#ffffff',
+                    border: 'none',
+                    fontWeight: '850',
+                    fontSize: '13px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    boxShadow: '0 2px 8px rgba(124,58,237,0.3)'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontSize: '20px' }}>📱</span>
+                    <div style={{ textAlign: 'left' }}>
+                      <div>{isMr ? 'SMS वर तात्काळ फॉरवर्ड करा' : 'Forward via SMS'}</div>
+                      <div style={{ fontSize: '10.5px', opacity: 0.9 }}>{isMr ? 'मोबाईलवर थेट मजकूर संदेश पाठवा' : 'Send direct SMS to contact'}</div>
+                    </div>
+                  </div>
+                  <span>➔</span>
+                </button>
+
+                {/* 4. Copy Dossier Button */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    const text = getComplaintDossierText(forwardModalIssue);
+                    navigator.clipboard?.writeText(text);
+                    showToast(isMr ? 'तक्रारीचा सविस्तर तपशील क्लिपबोर्डवर कॉपी झाला!' : 'Complaint dossier copied to clipboard!');
+                  }}
+                  style={{
+                    padding: '10px 16px',
+                    borderRadius: '10px',
+                    background: '#f8fafc',
+                    color: '#334155',
+                    border: '1.5px solid #cbd5e1',
+                    fontWeight: '800',
+                    fontSize: '12px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px'
+                  }}
+                >
+                  <span>📋</span>
+                  <span>{isMr ? 'तक्रारीचा संपूर्ण मजकूर कॉपी करा' : 'Copy Dossier Text'}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       {showNewComplaintModal && (
         <div className="admin-detail-modal-overlay" onClick={() => setShowNewComplaintModal(false)}>
           <div className="admin-detail-modal-sheet" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '540px' }}>

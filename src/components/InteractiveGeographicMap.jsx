@@ -1,6 +1,41 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
+
+// Helper to ensure Leaflet library and CSS are loaded dynamically without breaking Vite/Rollup bundling on Vercel
+function ensureLeafletLoaded(callback) {
+  if (typeof window === 'undefined') return;
+  if (window.L && window.L.map) {
+    callback(window.L);
+    return;
+  }
+
+  // Inject Leaflet CSS if not already present
+  if (!document.getElementById('leaflet-cdn-css')) {
+    const link = document.createElement('link');
+    link.id = 'leaflet-cdn-css';
+    link.rel = 'stylesheet';
+    link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+    document.head.appendChild(link);
+  }
+
+  // Inject Leaflet JS if not already present
+  if (!document.getElementById('leaflet-cdn-js')) {
+    const script = document.createElement('script');
+    script.id = 'leaflet-cdn-js';
+    script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+    script.async = true;
+    script.onload = () => {
+      if (window.L) callback(window.L);
+    };
+    document.head.appendChild(script);
+  } else {
+    const interval = setInterval(() => {
+      if (window.L && window.L.map) {
+        clearInterval(interval);
+        callback(window.L);
+      }
+    }, 50);
+  }
+}
 
 // Geographic Coordinates Knowledge Base (focused on Sangli District, Talukas, and Maharashtra)
 export const GEO_COORDINATES = {
@@ -73,18 +108,19 @@ export function resolveCoordinates(target) {
   if (distName) {
     for (const [key, val] of Object.entries(GEO_COORDINATES)) {
       if (distName.includes(key)) {
-        return { lat: val.lat, lon: val.lon, zoom: 12, title: target.name_en || target.name, nameMr: target.name_mr };
+        return { lat: val.lat, lon: val.lon, zoom: 12, title: target.name_en || target.name, nameMr: target.name_mr || val.nameMr };
       }
     }
   }
 
   // Default to Sangli center
-  return { lat: 16.8524, lon: 74.5815, zoom: 11, title: target.name_en || 'Sangli District', nameMr: target.name_mr || 'सांगली' };
+  return { lat: 16.8524, lon: 74.5815, zoom: 11, title: target.name_en || 'Sangli District', nameMr: 'सांगली' };
 }
 
-function createPinIcon(type = 'DISTRICT') {
-  const iconEmoji = type === 'VILLAGE' ? '🏡' : type === 'TALUKA' ? '📍' : type === 'POLLING_STATION' ? '🎯' : '🏢';
-  const bgColor = type === 'VILLAGE' ? '#7c3aed' : type === 'TALUKA' ? '#16a34a' : type === 'POLLING_STATION' ? '#ea580c' : '#2563eb';
+function createPinIcon(L, type = 'DISTRICT') {
+  if (!L || !L.divIcon) return undefined;
+  const iconEmoji = type === 'VILLAGE' ? '🏡' : type === 'TALUKA' ? '📍' : type === 'POLLING_STATION' ? '🗳️' : '🏛️';
+  const bgColor = type === 'VILLAGE' ? '#7c3aed' : type === 'TALUKA' ? '#16a34a' : type === 'POLLING_STATION' ? '#2563eb' : '#ff5200';
 
   return L.divIcon({
     className: 'interactive-geo-pin',
@@ -140,93 +176,96 @@ export default function InteractiveGeographicMap({
     }
   }, [zoom]);
 
-  // Initialize Map
+  // Initialize Map using dynamically ensured Leaflet instance
   useEffect(() => {
     if (!containerRef.current) return;
 
-    if (!mapInstanceRef.current) {
-      const map = L.map(containerRef.current, {
-        center: [coords.lat, coords.lon],
-        zoom: zoom || coords.zoom || 12,
-        zoomControl: false, // We provide modern styled zoom controls
-        scrollWheelZoom: true,
-        smoothWheelZoom: true,
-        attributionControl: false,
-      });
+    ensureLeafletLoaded((L) => {
+      if (!containerRef.current) return;
 
-      // Track zoom level events
-      map.on('zoomend', () => {
-        const currentZ = map.getZoom();
-        setInternalZoom(currentZ);
-        onZoomChange?.(currentZ);
-      });
+      if (!mapInstanceRef.current) {
+        const map = L.map(containerRef.current, {
+          center: [coords.lat, coords.lon],
+          zoom: zoom || coords.zoom || 12,
+          zoomControl: false, // We provide modern styled zoom controls
+          scrollWheelZoom: true,
+          smoothWheelZoom: true,
+          attributionControl: false,
+        });
 
-      mapInstanceRef.current = map;
-    }
+        // Track zoom level events
+        map.on('zoomend', () => {
+          const currentZ = map.getZoom();
+          setInternalZoom(currentZ);
+          onZoomChange?.(currentZ);
+        });
 
-    const map = mapInstanceRef.current;
+        mapInstanceRef.current = map;
+      }
 
-    // Apply or switch Tile Layer (Roadmap vs Satellite)
-    if (tileLayerRef.current) {
-      map.removeLayer(tileLayerRef.current);
-    }
+      const map = mapInstanceRef.current;
 
-    const tileUrl = mapMode === 'satellite'
-      ? 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
-      : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+      // Apply or switch Tile Layer (Roadmap vs Satellite)
+      if (tileLayerRef.current) {
+        map.removeLayer(tileLayerRef.current);
+      }
 
-    const attribution = mapMode === 'satellite'
-      ? '© Esri Imagery'
-      : '© OpenStreetMap contributors';
+      const tileUrl = mapMode === 'satellite'
+        ? 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
+        : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 
-    tileLayerRef.current = L.tileLayer(tileUrl, {
-      maxZoom: 19,
-      attribution,
-      subdomains: ['a', 'b', 'c']
-    }).addTo(map);
+      const attribution = mapMode === 'satellite'
+        ? '© Esri Imagery'
+        : '© OpenStreetMap contributors';
 
-    // Marker Update
-    if (markerRef.current) {
-      map.removeLayer(markerRef.current);
-    }
+      tileLayerRef.current = L.tileLayer(tileUrl, {
+        maxZoom: 19,
+        attribution,
+        subdomains: ['a', 'b', 'c']
+      }).addTo(map);
 
-    const pin = L.marker([coords.lat, coords.lon], {
-      icon: createPinIcon(target?.type)
-    }).addTo(map);
+      // Marker Update
+      if (markerRef.current) {
+        map.removeLayer(markerRef.current);
+      }
 
-    const displayName = (language === 'mr' ? (target?.name_mr || coords.nameMr || coords.title) : (target?.name_en || coords.title));
-    const targetTypeLabel = target?.type === 'TALUKA' ? (language === 'mr' ? 'तालुका' : 'Taluka')
-      : target?.type === 'VILLAGE' ? (language === 'mr' ? 'गाव' : 'Village')
-      : target?.type === 'POLLING_STATION' ? (language === 'mr' ? 'मतदान केंद्र' : 'Polling Station')
-      : (language === 'mr' ? 'जिल्हा' : 'District');
+      const pinIcon = createPinIcon(L, target?.type);
+      const pin = L.marker([coords.lat, coords.lon], {
+        ...(pinIcon ? { icon: pinIcon } : {})
+      }).addTo(map);
 
-    pin.bindPopup(`
-      <div style="font-family: inherit; font-size: 13px; line-height: 1.4; color: #1e293b; padding: 2px;">
-        <div style="font-weight: 800; font-size: 14px; color: #0f172a; margin-bottom: 2px;">
-          ${displayName}
+      const displayName = (language === 'mr' ? (target?.name_mr || coords.nameMr || coords.title) : (target?.name_en || coords.title));
+      const targetTypeLabel = target?.type === 'TALUKA' ? (language === 'mr' ? 'तालुका' : 'Taluka')
+        : target?.type === 'VILLAGE' ? (language === 'mr' ? 'गाव' : 'Village')
+        : target?.type === 'POLLING_STATION' ? (language === 'mr' ? 'मतदान केंद्र' : 'Polling Station')
+        : (language === 'mr' ? 'जिल्हा' : 'District');
+
+      pin.bindPopup(`
+        <div style="font-family: inherit; font-size: 13px; line-height: 1.4; color: #1e293b; padding: 4px;">
+          <div style="font-weight: 800; font-size: 14px; color: #0f172a; margin-bottom: 2px;">
+            ${displayName}
+          </div>
+          <div style="color: #64748b; font-size: 12px; margin-bottom: 4px;">
+            ${targetTypeLabel} • महाराष्ट्र
+          </div>
+          <div style="font-size: 11px; color: #2563eb; font-weight: 600;">
+            Lat: ${coords.lat.toFixed(4)}, Lon: ${coords.lon.toFixed(4)}
+          </div>
         </div>
-        <div style="color: #64748b; font-size: 12px; margin-bottom: 4px;">
-          ${targetTypeLabel} • महाराष्ट्र
-        </div>
-        <div style="font-size: 11px; color: #2563eb; font-weight: 600;">
-          Lat: ${coords.lat.toFixed(4)}, Lon: ${coords.lon.toFixed(4)}
-        </div>
-      </div>
-    `, { closeButton: false }).openPopup();
+      `, { closeButton: false }).openPopup();
 
-    markerRef.current = pin;
+      markerRef.current = pin;
 
-    // Smoothly fly / view target
-    map.flyTo([coords.lat, coords.lon], zoom || coords.zoom || 12, { duration: 0.8 });
+      // Smoothly fly / view target
+      map.flyTo([coords.lat, coords.lon], zoom || coords.zoom || 12, { duration: 0.8 });
 
-    // Handle resize
-    setTimeout(() => {
-      map.invalidateSize();
-    }, 150);
-
-    return () => {
-      // Don't destroy on every re-render, unmount handles cleanup
-    };
+      // Handle resize
+      setTimeout(() => {
+        if (mapInstanceRef.current) {
+          mapInstanceRef.current.invalidateSize();
+        }
+      }, 150);
+    });
   }, [coords.lat, coords.lon, mapMode]);
 
   // Clean up on component unmount

@@ -537,7 +537,7 @@ export default function AdminChatbotDesk({ lang = 'mr', isFloating = false, onCl
                 {msg.structuredItems && msg.structuredItems.length > 0 && (
                   <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     <div style={{ fontSize: '11px', fontWeight: '800', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
-                      {isMr ? '📌 संबंधित रेकॉर्ड्स (क्लिक करा):' : '📌 Related Records (Clickable):'}
+                      {isMr ? '📌 संबंधित रेकॉर्ड्स:' : '📌 Related Records:'}
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: isFloating ? '1fr' : 'repeat(auto-fit, minmax(200px, 1fr))', gap: '8px' }}>
                       {msg.structuredItems.map((item, idx) => (
@@ -609,7 +609,7 @@ export default function AdminChatbotDesk({ lang = 'mr', isFloating = false, onCl
             <span style={{ fontSize: '18px' }}>🤖</span>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               <span style={{ fontSize: '12.5px', fontWeight: '700', color: '#1e293b' }}>
-                {isMr ? 'MySQL डेटाबेसमधून माहिती शोधत आहे...' : 'Querying MySQL Database...'}
+                {isMr ? 'माहिती शोधत आहे...' : 'Searching...'}
               </span>
               <span style={{ fontSize: '11px', color: '#64748b' }}>
                 {isMr ? 'मतदार, बूथ व सर्व्हे रेकॉर्ड्स विश्लेषण सुरू' : 'Analyzing voter, booth & survey records'}
@@ -648,8 +648,8 @@ export default function AdminChatbotDesk({ lang = 'mr', isFloating = false, onCl
             isFloating
               ? (isMr ? 'उदा. "बूथ क्र. १", "सतीश खोत", "समस्या"...' : 'E.g. "Booth 1", "Search voter"...')
               : (isMr
-                  ? 'उदा. "बूथ क्र. १ ची सद्यस्थिती काय आहे?", "सतीश खोत यांची माहिती", "नागरी समस्या"...'
-                  : 'E.g. "What is status of Booth 1?", "Search voter Satish Khot", "Pending issues"...')
+                ? 'उदा. "बूथ क्र. १ ची सद्यस्थिती काय आहे?", "सतीश खोत यांची माहिती", "नागरी समस्या"...'
+                : 'E.g. "What is status of Booth 1?", "Search voter Satish Khot", "Pending issues"...')
           }
           disabled={loading}
           style={{
